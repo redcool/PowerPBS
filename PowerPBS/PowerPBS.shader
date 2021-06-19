@@ -85,6 +85,7 @@ Shader "Character/PowerPBS"
 
         [Space(10)][Header(AlphaTest)]
         [Toggle]_AlphaTestOn("_AlphaTestOn",int) = 0
+        _Cutoff("_Cutoff",range(0,1)) = 0.5
 
         [Space(10)][Header(AlphaBlendMode)]
         [Enum(UnityEngine.Rendering.BlendMode)]_SrcMode("_SrcMode",int) = 1
@@ -96,7 +97,7 @@ Shader "Character/PowerPBS"
         [Space(10)][Header(DepthMode)]
         [Toggle]_ZWriteOn("_ZWriteOn?",int) = 1
 
-        [Space(10)][Header(CullMode)]
+        // [Space(10)][Header(CullMode)]
         [Enum(UnityEngine.Rendering.CullMode)]_CullMode("_CullMode",int) = 2
 
 

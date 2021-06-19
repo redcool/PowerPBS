@@ -29,6 +29,7 @@
         float3 tb = lerp(data.tangent,data.binormal,data.tbMask);
         float3 t = ShiftTangent(tb,data.normal,data.shift);
         float spec = StrandSpecular(t,data.viewDir,data.lightDir,data.specPower);
+        spec = smoothstep(0.5,0.9,spec);
         return spec;
     }
 #endif // STRAND_SPEC_LIB_CGINC

@@ -25,6 +25,8 @@ float _Smoothness;
 float _Metallic;
 float _Occlusion;
 
+float _Cutoff;
+
 //-------------------------- detail map 
 // detail map mode id
 #define DETAIL_MAP_MODE_MULTIPLY 0

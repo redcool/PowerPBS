@@ -142,7 +142,7 @@ float4 frag (v2f i) : SV_Target
 
 
     if(_AlphaTestOn)
-        clip(alpha - 0.5);
+        clip(alpha - _Cutoff);
 
     UnityLight light = GetLight();
 
