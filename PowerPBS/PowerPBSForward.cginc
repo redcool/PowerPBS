@@ -7,7 +7,6 @@
 #include "UnityStandardBRDF.cginc"
 #include "PowerPBSCore.cginc"
 #include "PowerPBSHair.cginc"
-#include "AutoLight.cginc"
 #include "PowerPBSUrpShadows.cginc"
 
 struct appdata

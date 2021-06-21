@@ -17,9 +17,8 @@ Shader "Unlit/ShadowTest"
             #pragma fragment frag
 
             #include "UnityCG.cginc"
-#pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-            #define URP_SHADOW
-            // #define SHADOWS_SCREEN
+            // #define URP_SHADOW
+            #define SHADOWS_SCREEN
             
             #include "../PowerPBSUrpShadows.cginc"
 
@@ -68,7 +67,6 @@ Shader "Unlit/ShadowTest"
             #pragma vertex vert
             #pragma fragment frag
 
-            #define URP_SHADOW
             #include "../PowerPBSShadowCasterPass.cginc"
             ENDCG
         }

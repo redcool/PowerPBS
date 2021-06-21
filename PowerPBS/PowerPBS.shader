@@ -8,12 +8,28 @@
     2021/03/11 
         1 加入阴影
         2 调整Occlusion的算法
+    
+    2021/06/21
+        PowerPBSInput.cginc中使用cbuffer UnityPerMaterial
+
+    usecase :
+    drp 
+        uncomment 
+            Tags{"LightMode"="ForwardBase" }
+        comment
+            #define URP_SHADOW
+    urp
+        comment
+            Tags{"LightMode"="ForwardBase" }
+        comment
+            #define URP_SHADOW
 */
 Shader "Character/PowerPBS"
 {
     Properties
     {
         [Header(Lighting Process Is Required)]
+        
         [Space(20)][Header(MainProp)]
         _MainTex ("Texture", 2D) = "white" {}
         _Color("Color",color) = (1,1,1,1)
@@ -155,19 +171,17 @@ Shader "Character/PowerPBS"
 
         Pass
         {
-            // Tags{"LightMode"="ForwardBase" }
+            // Tags{"LightMode"="ForwardBase" } // drp need this, otherwise shadow out
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             // make fog work
             #pragma multi_compile_fog
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
             // #pragma multi_compile_fwdbase
             #pragma target 3.0
             #define UNITY_BRDF_PBS BRDF1_Unity_PBS
             #define PBS1
 
-            // #define SHADOWS_SCREEN // for drp
             #define URP_SHADOW // for urp 
             #include "PowerPBSForward.cginc"
            
@@ -184,7 +198,7 @@ Shader "Character/PowerPBS"
             #pragma vertex vert
             #pragma fragment frag
 
-            #define URP_SHADOW // for urp 
+            #define URP_SHADOW
             #include "PowerPBSShadowCasterPass.cginc"
             ENDCG
         }

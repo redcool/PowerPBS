@@ -6,12 +6,16 @@
 #if !defined(POWER_PBS_SHADOW_CGINC)
 #define POWER_PBS_SHADOW_CGINC
 
+// open keywords
+#if defined(URP_SHADOW)
+    #undef SHADOWS_SCREEN
+#else    
+    #define SHADOWS_SCREEN
+#endif
+
 #include "AutoLight.cginc"
 
-
-
 #if defined (URP_SHADOW)
-
 //--------- urp shadow handles
 // CBUFFER_START(MainLightShadows)
     #define MAX_SHADOW_CASCADES 4
@@ -34,6 +38,7 @@
         positionWS = normalWS * scale.xxx + positionWS;
         return positionWS;
     }
+    
     float GetShadowFade(float3 positionWS)
     {
         float3 camToPixel = positionWS - _WorldSpaceCameraPos;
@@ -47,10 +52,6 @@
     #define TRANSFER_SHADOW(a) a._ShadowCoord = mul( _MainLightWorldToShadow[0], mul( unity_ObjectToWorld, v.vertex ) );
     inline float CalcShadow (unityShadowCoord4 shadowCoord,float3 worldPos)
     {
-        #if !defined(_MAIN_LIGHT_SHADOWS)
-            return 1;
-        #endif
-
         #if defined(SHADOWS_NATIVE)
             float shadow = UNITY_SAMPLE_SHADOW(_MainLightShadowmapTexture, shadowCoord.xyz);
                 //float shadow = _MainLightShadowmapTexture.SampleCmpLevelZero(sampler_MainLightShadowmapTexture,shadowCoord.xy,shadowCoord.z);

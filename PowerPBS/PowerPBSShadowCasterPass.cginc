@@ -1,8 +1,12 @@
 #if !defined(POWERPBS_SHADOW_CASTER_PASS_CGINC)
 #define POWERPBS_SHADOW_CASTER_PASS_CGINC
+/**
+    handle DRP and URP shadow offset ,remove shadowMap artifact
+    urp need define URP_SHADOW before include this file
+**/
 
-//#define URP_SHADOW , define this in shader file
 #include "UnityCG.cginc"
+#include "PowerPBSInput.cginc"
 #include "PowerPBSUrpShadows.cginc"
 
 float3 _LightDirection;
@@ -11,10 +15,9 @@ struct v2f{
     float2 uv:TEXCOORD0;
     float4 pos:SV_POSITION;
 };
-sampler2D _MainTex;
-float4 _MainTex_ST;
 
 //--------- shadow helpers
+#if defined(URP_SHADOW)
 float4 GetShadowPositionHClip(appdata_full input){
     float3 worldPos = mul(unity_ObjectToWorld,input.vertex);
     float3 worldNormal = UnityObjectToWorldNormal(input.normal);
@@ -26,17 +29,17 @@ float4 GetShadowPositionHClip(appdata_full input){
     #endif
     return positionCS;
 }
-
+#endif
 
 v2f vert(appdata_full input){
     v2f output;
+
     #if defined(URP_SHADOW)
         output.pos = GetShadowPositionHClip(input);
     #else 
         output.pos = UnityClipSpaceShadowCasterPos(input.vertex, input.normal);
-        output.pos = UnityApplyLinearShadowBias(output.pos );
+        output.pos = UnityApplyLinearShadowBias(output.pos);
     #endif
-    // output.pos = mul(unity_ObjectToWorld,input.vertex);
     output.uv = TRANSFORM_TEX(input.texcoord,_MainTex);
     return output;
 }
