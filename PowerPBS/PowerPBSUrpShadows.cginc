@@ -49,6 +49,8 @@
     }
 
     UNITY_DECLARE_SHADOWMAP(_MainLightShadowmapTexture);
+
+    #undef TRANSFER_SHADOW
     #define TRANSFER_SHADOW(a) a._ShadowCoord = mul( _MainLightWorldToShadow[0], mul( unity_ObjectToWorld, v.vertex ) );
     inline float CalcShadow (unityShadowCoord4 shadowCoord,float3 worldPos)
     {
@@ -64,6 +66,7 @@
         #endif
     }
 
+    #undef SHADOW_COORDS
     #define SHADOW_COORDS(idx1) unityShadowCoord4 _ShadowCoord : TEXCOORD##idx1;
 #endif
 

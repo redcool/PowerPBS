@@ -2,12 +2,14 @@
 
 #if !defined (SIMPLE_PBS_CORE_CGINC)
 #define SIMPLE_PBS_CORE_CGINC
-
+#include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
 #include "PowerPBSInput.cginc"
 #define PI 3.1415926
 #define INV_PI 0.31830988618f
 #define DielectricSpec 0.04
+#define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats
+#define HALF_MIN_SQRT 0.0078125
 
 inline UnityLight GetLight(){
     #if !LIGHTMAP_ON
@@ -40,12 +42,26 @@ inline float3 CalcSSS(float2 uv,float3 l,float3 v,float frontSSSMask,float backS
     return (front + back);
 }
 
+inline float3 GetWorldViewDir(float3 worldPos){
+    if(unity_OrthoParams.w != 0){ // ortho
+        return -float3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
+    }
+    return UnityWorldSpaceViewDir(worldPos);
+}
+
 
 inline float3 GetIndirectSpecular(float3 reflectDir,float rough){
     rough = rough *(1.7 - rough * 0.7);
     float mip = rough * 6;
-    float4 rgbm = texCUBElod(_EnvCube,float4(reflectDir,mip));
-    return DecodeHDR(rgbm,unity_SpecCube0_HDR);
+
+    float4 encodeIrradiance = 0;
+    if(_CustomIBLOn){
+        encodeIrradiance = UNITY_SAMPLE_TEXCUBE_LOD(_EnvCube,reflectDir,mip);
+        encodeIrradiance *= _EnvIntensity;
+    }else{
+        encodeIrradiance = UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, reflectDir, mip);
+    }
+    return DecodeHDR(encodeIrradiance,unity_SpecCube0_HDR);
 }
 
 
@@ -72,17 +88,8 @@ inline float2 Parallax(float2 uv,float height,float3 viewTangentSpace){
     return uv;
 }
 
-//inline float3 CalcDetailNormal(Texture2D tex, float2 uv, float scale,float4 uvTilingOffset, float3 tn, float mask, bool isOn) {
-//	if (isOn) {
-//		float3 dtn = UnpackScaleNormal(tex.Sample(tex_linear_repeat_sampler,uv * uvTilingOffset.xy + uvTilingOffset.zw), scale);
-//        dtn = normalize(float3(tn.xy+dtn.xy,tn.z*dtn.z));
-//		tn = lerp(tn, dtn, mask);
-//	}
-//	return tn;
-//}
-
 inline float3 CalcNormal(float2 uv, float detailMask ){
-    float3 tn = UnpackScaleNormal(tex2D(_NormalMap,uv),_NormalMapScale);
+    float3 tn = UnpackScaleNormal(UNITY_SAMPLE_TEX2D(_NormalMap,uv),_NormalMapScale);
 	
 	if (_DetailMapOn) {
 		float3 dtn = UnpackScaleNormal(_DetailNormalMap.Sample(tex_linear_repeat_sampler, uv * _DetailNormalMap_ST.xy + _DetailNormalMap_ST.zw), _DetailNormalMapScale);
@@ -93,39 +100,38 @@ inline float3 CalcNormal(float2 uv, float detailMask ){
 }
 
 
-inline void ApplyDetailAlbedo(inout float4 mainColor, float3 detailMapColor,  float mask,bool isOn,int detailMapMode){
+inline float CalcDetailAlbedo(inout float4 mainColor, UNITY_DECLARE_TEX2D_NOSAMPLER(texObj),float2 uv, float detailIntensity,bool isOn,int detailMapMode){
+    float detailMask = 0;
     if(isOn){
-        //float3 detailAlbedo = tex2D(tex, uv);
-		//float3 detailAlbedo=tex.Sample(tex_linear_repeat_sampler,uv);
-		float3 detailAlbedo = detailMapColor;
+        float4 tex = texObj.Sample(tex_linear_repeat_sampler,uv);
+		float3 detailAlbedo = tex.xyz;
+        detailMask = tex.w;
+        float mask = detailMask * detailIntensity;
         if(detailMapMode == DETAIL_MAP_MODE_MULTIPLY){
             mainColor.rgb *= lerp(1,detailAlbedo * unity_ColorSpaceDouble.rgb,mask);
         }else if(detailMapMode == DETAIL_MAP_MODE_REPLACE){
             mainColor.rgb = lerp(mainColor,detailAlbedo,mask);
         }
     }
-    
+    return detailMask;
 }
 
-inline float4 CalcAlbedo(float2 uv, 
-    float3 detailMapCol, float3 detail1MapCol, float3 detail2MapCol, float3 detail3MapCol, float3 detail4MapCol,
-    float detailMask, float detail1Mask,float detail2Mask, float detail3Mask, float detail4Mask) 
+inline float4 CalcAlbedo(float2 uv,out float detailMask) 
 {
-
-    float4 albedo = tex2D(_MainTex,uv) ;
-    ApplyDetailAlbedo(albedo, detailMapCol, detailMask, _DetailMapOn,_DetailMapMode);
-    ApplyDetailAlbedo(albedo, detail1MapCol, detail1Mask, _Detail1_MapOn,_Detail1_MapMode);
-    ApplyDetailAlbedo(albedo, detail2MapCol, detail2Mask, _Detail2_MapOn,_Detail2_MapMode);
-    // return albedo;
-	ApplyDetailAlbedo(albedo, detail3MapCol, detail3Mask, _Detail3_MapOn, _Detail3_MapMode);
-	ApplyDetailAlbedo(albedo, detail4MapCol, detail4Mask, _Detail4_MapOn, _Detail4_MapMode);
+    float4 albedo = UNITY_SAMPLE_TEX2D(_MainTex,uv) ;
+    detailMask = CalcDetailAlbedo(albedo, _DetailMap,TRANSFORM_TEX(uv,_DetailMap), _DetailMapIntensity, _DetailMapOn,_DetailMapMode);
+    CalcDetailAlbedo(albedo, _Detail1_Map,TRANSFORM_TEX(uv,_Detail1_Map), _Detail1_MapIntensity, _Detail1_MapOn,_Detail1_MapMode);
+    CalcDetailAlbedo(albedo, _Detail2_Map,TRANSFORM_TEX(uv,_Detail2_Map), _Detail2_MapIntensity, _Detail2_MapOn,_Detail2_MapMode);
+	CalcDetailAlbedo(albedo, _Detail3_Map,TRANSFORM_TEX(uv,_Detail3_Map), _Detail3_MapIntensity, _Detail3_MapOn, _Detail3_MapMode);
+	CalcDetailAlbedo(albedo, _Detail4_Map,TRANSFORM_TEX(uv,_Detail4_Map), _Detail4_MapIntensity, _Detail4_MapOn, _Detail4_MapMode);
     return albedo * _Color;
 }
 
 inline UnityIndirect CalcGI(float3 albedo,float2 uv,float3 reflectDir,float3 normal,float occlusion,float roughness){
-    float3 indirectSpecular = GetIndirectSpecular(reflectDir,roughness) * occlusion * _EnvIntensity * _IndirectIntensity;
-    float3 indirectDiffuse = albedo * occlusion;
-    indirectDiffuse += ShadeSH9(float4(normal,1));
+    float3 indirectSpecular = GetIndirectSpecular(reflectDir,roughness) * occlusion * _IndirectIntensity;
+    // float3 indirectDiffuse = albedo * occlusion;
+    // indirectDiffuse += ShadeSH9(float4(normal,1));
+    float3 indirectDiffuse = ShadeSH9(float4(normal,1)) * occlusion;
     UnityIndirect indirect = {indirectDiffuse,indirectSpecular};
     return indirect;
 }
@@ -223,12 +229,22 @@ inline float Cloth(float nv,float clothMask){
     return saturate(offset) * clothMask;
 }
 
+inline float3 PreScattering(float3 normal,UnityLight light,float nl,float4 mainTex,float3 worldPos,float curveScale,float scatterIntensity){
+    float wrappedNL = dot(normal,light.dir) * 0.5 + 0.5;
+    // float deltaNormal = length(fwidth(normal));
+    // float deltaPos = length(fwidth(worldPos));
+    // float curvature = deltaNormal/1 * curveScale;
+    float atten = smoothstep(0.,0.3,nl) * (1 - wrappedNL);
+    float3 scattering = UNITY_SAMPLE_TEX2D(_ScatteringLUT,float2(wrappedNL,mainTex.a * curveScale));
+    return scattering * light.color * mainTex.xyz * atten * scatterIntensity;
+}
+
 /**
     emission color : rgb
     emission Mask : a
 */
 float3 CalcEmission(float3 albedo,float2 uv){
-    float4 tex = tex2D(_EmissionMap,uv);
+    float4 tex = UNITY_SAMPLE_TEX2D(_EmissionMap,uv);
     return albedo * tex.rgb * tex.a * _Emission * _EmissionColor;
 }
 
@@ -239,15 +255,17 @@ struct PBSData{
     bool isClothOn;
     bool isHairOn;
     float3 hairSpecColor;
+    //
+    float nl;
 };
 
 inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float smoothness,
     float3 normal,float3 viewDir,
-    UnityLight light,UnityIndirect gi,PBSData data){
+    UnityLight light,UnityIndirect gi,inout PBSData data){
 
-    float a = 1- smoothness;
-    float a2 = a*a;
-    a2 = max(0.002,a2);
+    // perceptualRoughness,roughness
+    float a = max(1- smoothness,HALF_MIN_SQRT);
+    float a2 = max(a*a,HALF_MIN);
     
     float3 l = normalize(light.dir);
     float3 n = normalize(normal);
@@ -262,6 +280,9 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
     float lv = saturate(dot(l,v));
     float lh = saturate(dot(l,h));
 
+    // set pbsdata for others flow.
+    data.nl = nl;
+
     if(data.isClothOn){
         float offset = Cloth(nv,data.clothMask);
         nh += offset;
@@ -273,7 +294,6 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
     float3 directDiffuse = light.color * diffuseTerm;
     float3 indirectDiffuse = gi.diffuse;
     float3 diffuse = (directDiffuse + indirectDiffuse) * diffColor;
-
     // -------------- specular part
     float3 F = FresnelTerm(specColor,lh);
     float3 specularTerm = (float3)0;
@@ -292,22 +312,21 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
         // }
         specularTerm = V * D * PI * nl;
     }
-
     specularTerm = max(0,specularTerm);
     specularTerm *= any(specColor)? 1 : 0;
 
     float surfaceReduction =1 /(a2 * a2+1);
     float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity));
-
+    float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
+    
     float3 directSpecular = specularTerm * light.color * F;
-    float3 indirecSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
-    float3 specular = directSpecular + indirecSpecular;
+    float3 specular = directSpecular + indirectSpecular;
     return float4(diffuse + specular,1);
 }
 
 float4 CalcPBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float smoothness,
     float3 normal,float3 viewDir,
-    UnityLight light,UnityIndirect gi,PBSData data){
+    UnityLight light,UnityIndirect gi,inout PBSData data){
         #if defined(PBS1)
             return PBS(diffColor,specColor,oneMinusReflectivity,smoothness,normal,viewDir,light,gi,data);
         #else

@@ -31,7 +31,7 @@ Shader "Character/PowerPBS"
         [Header(Lighting Process Is Required)]
         
         [Space(20)][Header(MainProp)]
-        _MainTex ("Texture", 2D) = "white" {}
+        _MainTex ("Main Texture", 2D) = "white" {}
         _Color("Color",color) = (1,1,1,1)
         
         [noscaleoffset]_NormalMap("NormalMap",2d) = "bump"{}
@@ -41,6 +41,12 @@ Shader "Character/PowerPBS"
         _Metallic("_Metallic",range(0,1)) = 0.5
         _Smoothness("Smoothness",range(0,1)) = 0
         _Occlusion("_Occlusion",range(0,1)) = 1
+
+        [Header(ScatterLUT)]
+        [Toggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
+        [NoScaleOffset]_ScatteringLUT("_ScatteringLUT",2d) = ""{}
+        _ScatteringIntensity("_ScatteringIntensity",range(0,3)) = 1
+        _CurvatureScale("_CurvatureScale (MainTex.a)",range(0.01,1)) = 1
 
         [Space(10)][Header(Shadow)]
         [Toggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
@@ -82,6 +88,7 @@ Shader "Character/PowerPBS"
         _DetailNormalMapScale("_DetailNormalMapScale",range(0,5)) = 1
         
         [Space(10)][Header(IBL)]
+        [Toggle]_CustomIBLOn("_CustomIBLOn",float) = 0
         [noscaleoffset]_EnvCube("_EnvCube",cube) = "white"{}
         _EnvIntensity("_EnvIntensity",float) = 1
         _ReflectionOffsetDir("_ReflectionOffsetDir",vector) = (0,0,0,0)
@@ -92,7 +99,7 @@ Shader "Character/PowerPBS"
         _Emission("_Emission",float) = 0
 
         [Space(10)][Header(Indirect Diffuse)]
-        _IndirectIntensity("_IndirectIntensity",float) = 0.5
+        _IndirectIntensity("_IndirectIntensity",float) = 1
 
         [Space(10)][Header(CustomLight)]
         [Toggle]_CustomLightOn("_CustomLightOn",int) = 0
@@ -203,55 +210,6 @@ Shader "Character/PowerPBS"
             ENDCG
         }
     }
-/*    
-    SubShader
-    {
-        Tags { "RenderType"="Opaque" }
-        LOD 421
-        Blend [_SrcMode][_DstMode]
-        ZWrite [_ZWriteOn]
-        Cull[_CullMode]
 
-        Pass
-        {
-            Tags{"LightMode"="ForwardBase"}
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
-            #pragma target 3.0
-            #define UNITY_BRDF_PBS BRDF2_Unity_PBS
-            #define PBS2
-            #include "PowerPBSForward.cginc"
-           
-            ENDCG
-        }
-    }
-    SubShader
-    {
-        Tags { "RenderType"="Opaque" }
-        LOD 100
-        Blend [_SrcMode][_DstMode]
-        ZWrite [_ZWriteOn]
-        Cull[_CullMode]
-
-        Pass
-        {
-            Tags{"LightMode"="ForwardBase"}
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            // make fog work
-            #pragma multi_compile_fog
-            #pragma target 3.0
-            #define UNITY_BRDF_PBS BRDF3_Unity_PBS
-            #define PBS3
-            #include "PowerPBSForward.cginc"
-           
-            ENDCG
-        }
-    }
-*/
     FallBack "Diffuse"
 }

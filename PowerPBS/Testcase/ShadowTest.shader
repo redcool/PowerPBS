@@ -36,7 +36,7 @@ Shader "Unlit/ShadowTest"
                 float4 worldPos:TEXCOORD3;
             };
 
-            sampler2D _MainTex;
+            UNITY_DECLARE_TEX2D(_MainTex);
             float4 _MainTex_ST;
 
             v2f vert (appdata v)

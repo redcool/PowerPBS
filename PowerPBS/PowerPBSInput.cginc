@@ -4,11 +4,11 @@
 
 #define MAX_SPECULAR 25
 
-sampler2D _MainTex;
-sampler2D _NormalMap;
+UNITY_DECLARE_TEX2D(_MainTex);
+UNITY_DECLARE_TEX2D(_NormalMap);
 
-sampler2D _MetallicMap; //metallicSmoothnessOcclusion,
-sampler2D _HeightClothSSSMask;
+UNITY_DECLARE_TEX2D(_MetallicMap); //metallicSmoothnessOcclusion,
+UNITY_DECLARE_TEX2D(_HeightClothSSSMask);
 
 // detail map mode id
 #define DETAIL_MAP_MODE_MULTIPLY 0
@@ -22,27 +22,40 @@ UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail2_Map);
 UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail4_Map);
 UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail3_Map);
 
-samplerCUBE _EnvCube;
-sampler2D _EmissionMap;
+UNITY_DECLARE_TEXCUBE(_EnvCube);
+UNITY_DECLARE_TEX2D(_EmissionMap);
+UNITY_DECLARE_TEX2D(_ScatteringLUT);
+
+// #define DECLARE_DETAIL(id) int _Detail_MapOn;
+    // int _Detail##id_MapMode;/
+    // float _Detail##id_MapIntensity;/
+    // float4 _Detail##id_Map_ST/
 
 //------------------------- main texture
 CBUFFER_START(UnityPerMaterial)
     float4 _Color;
     float4 _MainTex_ST;
     float _NormalMapScale;
-    int _ApplyShadowOn;
 
     float _Smoothness;
     float _Metallic;
     float _Occlusion;
     float _Cutoff;
 
+    int _ApplyShadowOn;
+
+
+    int _ScatteringLUTOn;
+    float _ScatteringIntensity;
+    float _CurvatureScale;
     //-------------------------- detail map 
 
     int _DetailMapOn;
     int _DetailMapMode;
     float _DetailMapIntensity;
     float4 _DetailMap_ST;
+    // DECLARE_DETAIL();
+    // main detail normalMap
     float4 _DetailNormalMap_ST;
     float _DetailNormalMapScale;
     //Mouth
@@ -50,36 +63,24 @@ CBUFFER_START(UnityPerMaterial)
     int _Detail1_MapMode;
     float _Detail1_MapIntensity;
     float4 _Detail1_Map_ST;
-    //UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail1_NormalMap);
-    //float4 _Detail1_NormalMap_ST;
-    //float _Detail1_NormalMapScale;
     //Eye
     int _Detail2_MapOn;
     int _Detail2_MapMode;
     float _Detail2_MapIntensity;
     float4 _Detail2_Map_ST;
-    //UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail2_NormalMap);
-    //float4 _Detail2_NormalMap_ST;
-    //float _Detail2_NormalMapScale;
     //Eyebrow
     int _Detail3_MapOn;
     int _Detail3_MapMode;
     float _Detail3_MapIntensity;
     float4 _Detail3_Map_ST;
-    //UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail3_NormalMap);
-    //float4 _Detail3_NormalMap_ST;
-    //float _Detail3_NormalMapScale;
     //Face
     int _Detail4_MapOn;
     int _Detail4_MapMode;
     float _Detail4_MapIntensity;
     float4 _Detail4_Map_ST;
-    //UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail4_NormalMap);
-    //float4 _Detail4_NormalMap_ST;
-    //float _Detail4_NormalMapScale;
 
     //---------------------------- ibl
-
+    float _CustomIBLOn;
     float _EnvIntensity;
     float3 _ReflectionOffsetDir;
 

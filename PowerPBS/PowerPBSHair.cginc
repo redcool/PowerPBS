@@ -7,8 +7,8 @@
     Move StrandSpec parameters to PowerPBSInput.cginc 's UnityPerMaterial
 */
 
-sampler2D _TBMaskMap;
-sampler2D _ShiftTex;
+UNITY_DECLARE_TEX2D(_TBMaskMap);
+UNITY_DECLARE_TEX2D(_ShiftTex);
 
 float3 CalcStrandSpec(float3 tangent,float3 normal,float3 binormal,float3 lightDir,float3 viewDir,float tangentShift,float tbMask,float2 specMask){
     StrandSpecularData data = (StrandSpecularData)0;
@@ -34,11 +34,11 @@ float3 CalcStrandSpec(float3 tangent,float3 normal,float3 binormal,float3 lightD
     strandSpec main
 */
 float3 CalcHairSpecColor(float2 uv,float3 tangent,float3 normal,float3 binormal,float3 lightDir,float3 viewDir,out float hairAo){
-    float4 shiftTex = tex2D(_ShiftTex,uv);
+    float4 shiftTex = UNITY_SAMPLE_TEX2D(_ShiftTex,uv);
     float shift = shiftTex.g;
     float specMask = shiftTex.b;
 	hairAo = shiftTex.r;
-    float tbMask = tex2D(_TBMaskMap,uv);
+    float tbMask = UNITY_SAMPLE_TEX2D(_TBMaskMap,uv);
     return CalcStrandSpec(tangent,normal,binormal,lightDir,viewDir,shift,tbMask,float2(1,specMask));
 }
 

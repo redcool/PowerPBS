@@ -44,11 +44,11 @@ Shader "Lit/Diffuse With Shadows"
                 return o;
             }
 
-            sampler2D _MainTex;
+            UNITY_DECLARE_TEX2D(_MainTex);
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.uv);
+                fixed4 col = UNITY_SAMPLE_TEX2D(_MainTex, i.uv);
                 // compute shadow attenuation (1.0 = fully lit, 0.0 = fully shadowed)
                 fixed shadow = SHADOW_ATTENUATION(i);
                 // darken light's illumination with shadow, keep ambient intact
