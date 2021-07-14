@@ -4,12 +4,9 @@
 #define SIMPLE_PBS_CORE_CGINC
 #include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
-#include "PowerPBSInput.cginc"
-#define PI 3.1415926
-#define INV_PI 0.31830988618f
-#define DielectricSpec 0.04
-#define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats
-#define HALF_MIN_SQRT 0.0078125
+#include "PowerPBSData.cginc"
+#include "BSDF.cginc"
+
 
 inline UnityLight GetLight(){
     #if !LIGHTMAP_ON
@@ -29,11 +26,6 @@ inline UnityLight GetLight(){
     return l;
 }
 
-
-inline float FastSSS(float3 l,float3 v){
-    return saturate(dot(l,v));
-}
-
 inline float3 CalcSSS(float2 uv,float3 l,float3 v,float frontSSSMask,float backSSSMask){
     float sss1 = FastSSS(l,v);
     float sss2 = FastSSS(-l,v);
@@ -49,6 +41,15 @@ inline float3 GetWorldViewDir(float3 worldPos){
     return UnityWorldSpaceViewDir(worldPos);
 }
 
+inline float3 PreScattering(float3 normal,UnityLight light,float nl,float4 mainTex,float3 worldPos,float curveScale,float scatterIntensity){
+    float wrappedNL = dot(normal,light.dir) * 0.5 + 0.5;
+    // float deltaNormal = length(fwidth(normal));
+    // float deltaPos = length(fwidth(worldPos));
+    // float curvature = deltaNormal/1 * curveScale;
+    float atten = smoothstep(0.,0.3,nl) * (1 - wrappedNL);
+    float3 scattering = UNITY_SAMPLE_TEX2D(_ScatteringLUT,float2(wrappedNL,mainTex.a * curveScale));
+    return scattering * light.color * mainTex.xyz * atten * scatterIntensity;
+}
 
 inline float3 GetIndirectSpecular(float3 reflectDir,float rough){
     rough = rough *(1.7 - rough * 0.7);
@@ -81,12 +82,7 @@ inline half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflect
     return diffColor;
 }
 
-inline float2 Parallax(float2 uv,float height,float3 viewTangentSpace){
-    if(_ParallalOn){
-        uv += ParallaxOffset(height,_Height,viewTangentSpace);
-    }
-    return uv;
-}
+
 
 inline float3 CalcNormal(float2 uv, float detailMask ){
     float3 tn = UnpackScaleNormal(UNITY_SAMPLE_TEX2D(_NormalMap,uv),_NormalMapScale);
@@ -136,108 +132,6 @@ inline UnityIndirect CalcGI(float3 albedo,float2 uv,float3 reflectDir,float3 nor
     return indirect;
 }
 
-inline float Pow4(float a){
-    float a2 = a*a;
-    return a2*a2;
-}
-inline float Pow5(float a){
-    float a2 = a*a;
-    return a2*a2*a;
-}
-
-inline float DisneyDiffuse(float nv,float nl,float lh,float roughness){
-    float fd90 = 0.5 + 2*roughness*lh*lh;
-    float lightScatter = 1 - (fd90 - 1) * Pow5(1 - nl);
-    float viewScatter = 1 - (fd90 - 1 ) * Pow5(1 - nv);
-    return lightScatter * viewScatter;
-}
-
-inline float RoughnessToSpecPower(float a){
-    float a2 = a * a;
-    float sq = max(1e-4f,a2 * a2);
-    float n = 2.0/sq - 2;
-    n = max(n,1e-4f);
-    return n;
-}
-
-inline float SmithJointGGXTerm(float nl,float nv,float a2){
-    float v = nv * (nv * (1-a2)+a2);
-    float l = nl * (nl * (1-a2)+a2);
-    return 0.5f/(v + l + 1e-5f);
-}
-
-inline float NDFBlinnPhongTerm(float nh,float a){
-    float normTerm = (a + 2)* 0.5/PI;
-    float specularTerm = pow(nh,a);
-    return normTerm * specularTerm;
-}
-
-inline float D_GGXTerm(float nh,float a){
-    float a2 = a  * a;
-    float d = (nh*a2-nh)*nh + 1;
-    return INV_PI * a2 / (d*d + 1e-7f);
-}
-
-inline float3 FresnelTerm(float3 F0,float lh){
-    return F0 + (1-F0) * Pow5(1 - lh);
-}
-inline float3 FresnelLerp(float3 f0,float3 f90,float lh){
-    float t = Pow5(1-lh);
-    return lerp(f0,f90,t);
-}
-inline float3 FresnelLerpFast(float3 F0,float3 F90,float lh){
-    float t = Pow4(1 - lh);
-    return lerp(F0,F90,t);
-}
-
-inline float D_GGXAnisoNoPI(float TdotH, float BdotH, float NdotH, float roughnessT, float roughnessB)
-{
-    float a2 = roughnessT * roughnessB;
-    float3 v = float3(roughnessB * TdotH, roughnessT * BdotH, a2 * NdotH);
-    float  s = dot(v, v);
-
-    // If roughness is 0, returns (NdotH == 1 ? 1 : 0).
-    // That is, it returns 1 for perfect mirror reflection, and 0 otherwise.
-    return (a2 * a2 * a2)/ (s * s);
-}
-
-float BankBRDF(float3 l,float3 v,float3 t,float ks,float power){
-    float lt = dot(l,t);
-    float vt = dot(v,t);
-    float lt2 = lt*lt;
-    float vt2 = vt*vt;
-    return ks * pow(sqrt(1-lt2)*sqrt(1-vt2) - lt*vt,power);
-}
-
-
-float CharlieD(float roughness, float ndoth)
-{
-    float invR = 1. / roughness;
-    float cos2h = ndoth * ndoth;
-    float sin2h = 1. - cos2h;
-    return (2. + invR) * pow(sin2h, invR * .5) / (2. * PI);
-}
-
-float AshikhminV(float ndotv, float ndotl)
-{
-    return 1. / (4. * (ndotl + ndotv - ndotl * ndotv));
-}
-
-inline float Cloth(float nv,float clothMask){
-    float offset = smoothstep(_ClothSpecWidthMin,_ClothSpecWidthMax,nv);
-    // float offsetMask = smoothstep(0.3,0.31,smoothness);
-    return saturate(offset) * clothMask;
-}
-
-inline float3 PreScattering(float3 normal,UnityLight light,float nl,float4 mainTex,float3 worldPos,float curveScale,float scatterIntensity){
-    float wrappedNL = dot(normal,light.dir) * 0.5 + 0.5;
-    // float deltaNormal = length(fwidth(normal));
-    // float deltaPos = length(fwidth(worldPos));
-    // float curvature = deltaNormal/1 * curveScale;
-    float atten = smoothstep(0.,0.3,nl) * (1 - wrappedNL);
-    float3 scattering = UNITY_SAMPLE_TEX2D(_ScatteringLUT,float2(wrappedNL,mainTex.a * curveScale));
-    return scattering * light.color * mainTex.xyz * atten * scatterIntensity;
-}
 
 /**
     emission color : rgb
@@ -248,16 +142,6 @@ float3 CalcEmission(float3 albedo,float2 uv){
     return albedo * tex.rgb * tex.a * _Emission * _EmissionColor;
 }
 
-struct PBSData{
-    float3 tangent;
-    float3 binormal;
-    float clothMask;
-    bool isClothOn;
-    bool isHairOn;
-    float3 hairSpecColor;
-    //
-    float nl;
-};
 
 inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float smoothness,
     float3 normal,float3 viewDir,
@@ -272,22 +156,20 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
     float3 v = normalize(viewDir);
     float3 h = normalize(l + v);
     float3 t = normalize(data.tangent);
-    float3 tb = normalize(data.binormal);
+    float3 b = normalize(data.binormal);
 
     float nh = saturate(dot(n,h));
     float nl = saturate(dot(n,l));
     float nv = abs(dot(n,v));
     float lv = saturate(dot(l,v));
     float lh = saturate(dot(l,h));
+    float th = 0;
+    float bh = 0;
+    
 
     // set pbsdata for others flow.
     data.nl = nl;
 
-    if(data.isClothOn){
-        float offset = Cloth(nv,data.clothMask);
-        nh += offset;
-        a2 = offset;
-    }
     // -------------- diffuse part
     float diffuseTerm = DisneyDiffuse(nv,nl,lh,a) * nl;
     // float diffuseTerm = nl;
@@ -304,19 +186,24 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
         // pbs specularTerm
         float V = SmithJointGGXTerm(nl,nv,a2);
         //float D = NDFBlinnPhongTerm(nh,RoughnessToSpecPower(a));
-        float D = D_GGXTerm(nh,a2);
+        float D = 0;
 
-        // if(data.isClothOn){
-        //     V = AshikhminV(nv,nl);
-        //     D = CharlieD(a,nh);
-        // }
+        if(data.isAnisoOn){
+            th = dot(t,h);
+            bh = dot(b,h);
+            // V = AshikhminV(nv,nl);
+            // D += CharlieD(a,nh);
+            D = D_GGXAniso(th,bh,nh,_RoughT,_RoughB) * _AnisoIntensity;
+        }else{
+            D = D_GGXTerm(nh,a2);
+        }
         specularTerm = V * D * PI * nl;
     }
     specularTerm = max(0,specularTerm);
     specularTerm *= any(specColor)? 1 : 0;
 
-    float surfaceReduction =1 /(a2 * a2+1);
-    float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity));
+    float surfaceReduction =1 /(a2 * a2+1); // [1,0.5]
+    float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity)); //smoothness + metallic
     float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
     
     float3 directSpecular = specularTerm * light.color * F;

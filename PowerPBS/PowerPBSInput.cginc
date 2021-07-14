@@ -35,6 +35,7 @@ UNITY_DECLARE_TEX2D(_ScatteringLUT);
 CBUFFER_START(UnityPerMaterial)
     float4 _Color;
     float4 _MainTex_ST;
+    float4 _NormalMap_ST;
     float _NormalMapScale;
 
     float _Smoothness;
@@ -42,13 +43,16 @@ CBUFFER_START(UnityPerMaterial)
     float _Occlusion;
     float _Cutoff;
 
-    int _ApplyShadowOn;
+    float _AnisoOn;
+    float _RoughT,_RoughB;
+    float _AnisoIntensity;
 
+    int _ApplyShadowOn;
 
     int _ScatteringLUTOn;
     float _ScatteringIntensity;
     float _CurvatureScale;
-    //-------------------------- detail map 
+    //-------------------------- detail maps
 
     int _DetailMapOn;
     int _DetailMapMode;
@@ -84,17 +88,13 @@ CBUFFER_START(UnityPerMaterial)
     float _EnvIntensity;
     float3 _ReflectionOffsetDir;
 
+    float _EmissionOn;
     float4 _EmissionColor;
     float _Emission;
     float _IndirectIntensity;
 
     int _AlphaTestOn;
     int _AlphaPreMultiply;
-
-    int _ClothOn;
-    float _ClothSpecWidthMin;
-    float _ClothSpecWidthMax;
-    int _ClothMaskOn;
 
     // -------------------------------------- main light
 

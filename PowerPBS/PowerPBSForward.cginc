@@ -19,7 +19,7 @@ struct appdata
 
 struct v2f
 {
-    float2 uv : TEXCOORD0;
+    float4 uv : TEXCOORD0;
     UNITY_FOG_COORDS(1)
     float4 pos : SV_POSITION;
     float4 tSpace0:TEXCOORD2;
@@ -27,7 +27,6 @@ struct v2f
     float4 tSpace2:TEXCOORD4;
     float3 viewTangentSpace:TEXCOORD5;
     SHADOW_COORDS(6)
-    // UNITY_LIGHTING_COORDS(6,7)
 };
 
 //-------------------------------------
@@ -35,7 +34,7 @@ v2f vert (appdata v)
 {
     v2f o = (v2f)0;
     o.pos = UnityObjectToClipPos(v.vertex);
-    o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+    o.uv = float4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
     float3 worldPos = mul(unity_ObjectToWorld,v.vertex);
     float3 n = UnityObjectToWorldNormal(v.normal);
@@ -67,7 +66,9 @@ float4 frag (v2f i) : SV_Target
     float frontSSS = heightClothSSSMask.b;
     float backSSS = heightClothSSSMask.a;
 
-    float2 uv = Parallax(i.uv,height,i.viewTangentSpace);
+    float2 uv = i.uv.xy;
+    if(_ParallalOn)
+        uv += ParallaxOffset(height,_Height,i.viewTangentSpace);
 
     // metallicSmoothnessOcclusion
     float4 metallicSmoothnessOcclusion = UNITY_SAMPLE_TEX2D(_MetallicMap ,uv);
@@ -87,7 +88,8 @@ float4 frag (v2f i) : SV_Target
     if(_AlphaTestOn)
         clip(alpha - _Cutoff);
 
-    float3 tn = CalcNormal(uv,detailMask);
+    float2 normalMapUV = TRANSFORM_TEX(i.uv.zw , _NormalMap);
+    float3 tn = CalcNormal(normalMapUV,detailMask);
     float3 n = normalize(float3(
         dot(i.tSpace0.xyz,tn),
         dot(i.tSpace1.xyz,tn),
@@ -118,32 +120,27 @@ float4 frag (v2f i) : SV_Target
     half outputAlpha;
     albedo = AlphaPreMultiply (albedo, alpha, oneMinusReflectivity, /*out*/ outputAlpha);
 
-    // half4 c = UNITY_BRDF_PBS (albedo, specColor, oneMinusReflectivity, smoothness, n, v, light, indirect);
-    PBSData data = (PBSData)0;
-    data.tangent = tangent;
-    data.binormal = binormal;
-    data.clothMask = 1;
-    data.isClothOn = _ClothOn;
-    data.isHairOn = _HairOn;
-
-    if(_ClothMaskOn){
-        data.clothMask = clothMask;
-    }
+    PBSData data = InitPBSData(tangent,binormal,clothMask);
 
     if(_HairOn){
 		float hairAo;
         data.hairSpecColor = CalcHairSpecColor(i.uv,tangent,n,binormal,light.dir,v, hairAo);
 		albedo *= lerp(1, hairAo, _HairAoIntensity);
     }
-float outputNL;
+
     half4 c = CalcPBS(albedo, specColor, oneMinusReflectivity, smoothness, n, v, light, indirect,data/**/);
     c.a = outputAlpha;
 
+    //for preintegrated lut
     if(_ScatteringLUTOn){
         c.rgb += PreScattering(worldNormal,light,data.nl,mainTex,worldPos,_CurvatureScale,_ScatteringIntensity);
     }
-    c.rgb += CalcEmission(albedo,uv);
 
+    //for emission
+    if(_EmissionOn){
+        c.rgb += CalcEmission(albedo,uv);
+    }
+    
     if(_SSSOn){
         c.rgb += CalcSSS(uv,light.dir,v,frontSSS,backSSS);
     }

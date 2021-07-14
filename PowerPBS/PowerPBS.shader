@@ -34,13 +34,19 @@ Shader "Character/PowerPBS"
         _MainTex ("Main Texture", 2D) = "white" {}
         _Color("Color",color) = (1,1,1,1)
         
-        [noscaleoffset]_NormalMap("NormalMap",2d) = "bump"{}
+        _NormalMap("NormalMap",2d) = "bump"{}
         _NormalMapScale("_NormalMapScale",range(0,5)) = 1
 
         [noscaleoffset]_MetallicMap("Metallic(R),Smoothness(G),Occlusion(B)",2d) = "white"{}
         _Metallic("_Metallic",range(0,1)) = 0.5
         _Smoothness("Smoothness",range(0,1)) = 0
         _Occlusion("_Occlusion",range(0,1)) = 1
+
+        [Header(Anisotropic)]
+        [Toggle]_AnisoOn("_AnisoOn",float) = 0
+        _AnisoIntensity("_AnisoIntensity",float) = 1
+        _RoughT("_RoughT",range(0,1)) = 0.5
+        _RoughB("_RoughB",range(0,1)) = 0.1
 
         [Header(ScatterLUT)]
         [Toggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
@@ -94,6 +100,7 @@ Shader "Character/PowerPBS"
         _ReflectionOffsetDir("_ReflectionOffsetDir",vector) = (0,0,0,0)
 
         [Space(10)][Header(Emission)]
+        [Toggle]_EmissionOn("_EmissionOn",float) = 0
         [noscaleoffset]_EmissionMap("_EmissionMap(RGB),EmissionMask(A)",2d) = "white"{}
         [hdr]_EmissionColor("_EmissionColor",color) = (1,1,1,1)
         _Emission("_Emission",float) = 0
@@ -139,13 +146,6 @@ Shader "Character/PowerPBS"
 
         _Height("_Height",range(0.005,0.08)) = 0
         
-        [Space(10)][Header(Cloth)]
-        [Toggle]_ClothOn("_ClothOn",int) = 0
-        _ClothSpecWidthMin("_ClothSpecWidthMin",range(0.1,1)) =0.8
-        _ClothSpecWidthMax("_ClothSpecWidthMax",range(0.1,1)) =1
-        
-        [Toggle]_ClothMaskOn("_ClothMaskOn",int) = 0
-
         [Space(10)][Header(Hair)]
         [Toggle]_HairOn("_HairOn (SpecTerm Use StrandSpec)",int) = 0
         [Header(Tangent Binormal Mask Map)]
