@@ -11,6 +11,7 @@ struct PBSData{
     bool isHairOn;
     float3 hairSpecColor;
     bool isAnisoOn;
+    bool isAnisoLayer2On;
     //
     float nl;
 };
@@ -22,6 +23,7 @@ inline PBSData InitPBSData(float3 tangent,float3 binormal,float clothMask){
     data.clothMask = 1;
     data.isHairOn = _HairOn;
     data.isAnisoOn = _AnisoOn;
+    data.isAnisoLayer2On = _AnisoLayer2On;
 
     return data;
 }    

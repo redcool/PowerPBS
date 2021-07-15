@@ -47,6 +47,10 @@ CBUFFER_START(UnityPerMaterial)
     float _RoughT,_RoughB;
     float _AnisoIntensity;
 
+    int _AnisoLayer2On;
+    float _Layer2RoughT,_Layer2RoughB;
+    float _Layer2AnisoIntensity;
+
     int _ApplyShadowOn;
 
     int _ScatteringLUTOn;

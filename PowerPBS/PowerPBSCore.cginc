@@ -188,12 +188,16 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
         //float D = NDFBlinnPhongTerm(nh,RoughnessToSpecPower(a));
         float D = 0;
 
+        // calc D
         if(data.isAnisoOn){
             th = dot(t,h);
             bh = dot(b,h);
             // V = AshikhminV(nv,nl);
             // D += CharlieD(a,nh);
             D = D_GGXAniso(th,bh,nh,_RoughT,_RoughB) * _AnisoIntensity;
+            if(data.isAnisoLayer2On){
+                D += D_GGXAniso(th,bh,nh,_Layer2RoughT,_Layer2RoughB) * _Layer2AnisoIntensity;
+            }
         }else{
             D = D_GGXTerm(nh,a2);
         }

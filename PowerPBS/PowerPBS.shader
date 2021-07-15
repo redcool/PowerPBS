@@ -43,10 +43,15 @@ Shader "Character/PowerPBS"
         _Occlusion("_Occlusion",range(0,1)) = 1
 
         [Header(Anisotropic)]
-        [Toggle]_AnisoOn("_AnisoOn",float) = 0
+        [Toggle]_AnisoOn("_AnisoOn",int) = 0
         _AnisoIntensity("_AnisoIntensity",float) = 1
         _RoughT("_RoughT",range(0,1)) = 0.5
         _RoughB("_RoughB",range(0,1)) = 0.1
+        // ---- layer2
+        [Toggle]_AnisoLayer2On("_AnisoLayer2On",int) = 0
+        _Layer2AnisoIntensity("_Layer2AnisoIntensity",float) = 1
+        _Layer2RoughT("_Layer2RoughT",range(0,1)) = 0.1
+        _Layer2RoughB("_Layer2RoughB",range(0,1)) = 0.5
 
         [Header(ScatterLUT)]
         [Toggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
