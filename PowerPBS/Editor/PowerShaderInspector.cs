@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 using System.Linq;
 using System;
 
-namespace PowerShader
+namespace PowerPBS
 {
     //UnityEngine.Rendering.BlendMode
     public enum PresetBlendMode

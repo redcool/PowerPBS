@@ -214,6 +214,6 @@ Shader "Character/PowerPBS"
             ENDCG
         }
     }
-    CustomEditor "PowerShader.PowerPBSInspector"
+    CustomEditor "PowerPBS.PowerPBSInspector"
     FallBack "Diffuse"
 }
