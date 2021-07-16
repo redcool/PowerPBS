@@ -22,7 +22,7 @@ namespace PowerPBS
     public class PowerPBSInspector : ShaderGUI
     {
         const string SRC_MODE = "_SrcMode", DST_MODE = "_DstMode";
-        const string POWER_VFX_SHADER = "PowerPBS";
+        const string SHADER_NAME = "PowerPBS";
 
         static string[] tabNames;
         static List<string[]> propNameList = new List<string[]> ();
@@ -30,7 +30,7 @@ namespace PowerPBS
         int selectedTabId;
         bool showOriginalPage;
 
-        const string POWERVFX_SELETECTED_ID = "PowerPBS_SeletectedId";
+        const string POWERVFX_SELETECTED_ID = SHADER_NAME + "_SeletectedId";
         const int SETTING_TAB_ID = 0; // preset blend mode 显示在 0 号tab页
 
         Dictionary<PresetBlendMode, BlendMode[]> blendModeDict;
@@ -111,15 +111,15 @@ namespace PowerPBS
                 materialEditor.ShaderProperty(prop, ConfigTool.Text(propNameTextDict, prop.name));
             }
 
-            if (selectedTabId == SETTING_TAB_ID && IsPowerPBSShader(mat))
+            if (selectedTabId == SETTING_TAB_ID && IsTargetShader(mat))
             {
                 DrawBlendMode(mat);
             }
         }
 
-        private static bool IsPowerPBSShader(Material mat)
+        private static bool IsTargetShader(Material mat)
         {
-            return mat.shader.name.Contains(POWER_VFX_SHADER);
+            return mat.shader.name.Contains(SHADER_NAME);
         }
 
         private void DrawPageTabs()
@@ -132,7 +132,7 @@ namespace PowerPBS
 
         private void OnInit(Material mat,MaterialProperty[] properties)
         {
-            if(IsPowerPBSShader(mat))
+            if(IsTargetShader(mat))
                 presetBlendMode = GetPresetBlendMode(mat);
 
             var shaderFilePath = AssetDatabase.GetAssetPath(mat.shader);
