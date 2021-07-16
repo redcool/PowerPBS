@@ -28,7 +28,7 @@ Shader "Character/PowerPBS"
 {
     Properties
     {
-        [Header(Lighting Process Is Required)]
+        [Header(Drp BakedLight LightingProcess Is Required)]
         
         [Space(20)][Header(MainProp)]
         _MainTex ("Main Texture", 2D) = "white" {}
@@ -98,7 +98,7 @@ Shader "Character/PowerPBS"
         _DetailNormalMap("_DetailNormalMap",2d) = "bump"{}
         _DetailNormalMapScale("_DetailNormalMapScale",range(0,5)) = 1
         
-        [Space(10)][Header(IBL)]
+        [Space(10)][Header(Custom IBL)]
         [Toggle]_CustomIBLOn("_CustomIBLOn",float) = 0
         [noscaleoffset]_EnvCube("_EnvCube",cube) = "white"{}
         _EnvIntensity("_EnvIntensity",float) = 1
@@ -132,7 +132,7 @@ Shader "Character/PowerPBS"
         [Space(10)][Header(DepthMode)]
         [Toggle]_ZWriteOn("_ZWriteOn?",int) = 1
 
-        // [Space(10)][Header(CullMode)]
+        [Space(10)][Header(CullMode)]
         [Enum(UnityEngine.Rendering.CullMode)]_CullMode("_CullMode",int) = 2
 
 
@@ -148,7 +148,6 @@ Shader "Character/PowerPBS"
 
         [Space(10)][Header(ParallelOffset)]
         [Toggle]_ParallalOn("_ParallalOn",int) = 0
-
         _Height("_Height",range(0.005,0.08)) = 0
         
         [Space(10)][Header(Hair)]
@@ -215,6 +214,6 @@ Shader "Character/PowerPBS"
             ENDCG
         }
     }
-
+    CustomEditor "PowerPBS.PowerPBSInspector"
     FallBack "Diffuse"
 }
