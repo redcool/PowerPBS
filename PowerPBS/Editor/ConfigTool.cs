@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 
-namespace PowerPBS
+namespace PowerShader
 {
 
     /// <summary>
