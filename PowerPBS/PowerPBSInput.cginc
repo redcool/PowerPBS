@@ -42,22 +42,26 @@ CBUFFER_START(UnityPerMaterial)
     float _Metallic;
     float _Occlusion;
     float _Cutoff;
-
-    float _AnisoOn;
+    int _PBRMode; // standard,aniso,fabric,strand
+// ==================================================
     float _RoughT,_RoughB;
     float _AnisoIntensity;
+    float4 _AnisoColor;
 
     int _AnisoLayer2On;
     float _Layer2RoughT,_Layer2RoughB;
     float _Layer2AnisoIntensity;
-
+    float4 _Layer2AnisoColor;
+// ==================================================
+    float4 _ClothSheenColor;
+    float _ClothDMax,_ClothDMin;
+// ==================================================
     int _ApplyShadowOn;
-
+// ==================================================
     int _ScatteringLUTOn;
     float _ScatteringIntensity;
     float _CurvatureScale;
-    //-------------------------- detail maps
-
+// ================================================== detail maps
     int _DetailMapOn;
     int _DetailMapMode;
     float _DetailMapIntensity;
@@ -87,7 +91,7 @@ CBUFFER_START(UnityPerMaterial)
     float _Detail4_MapIntensity;
     float4 _Detail4_Map_ST;
 
-    //---------------------------- ibl
+// ================================================== ibl
     float _CustomIBLOn;
     float _EnvIntensity;
     float3 _ReflectionOffsetDir;
@@ -100,9 +104,7 @@ CBUFFER_START(UnityPerMaterial)
     int _AlphaTestOn;
     int _AlphaPreMultiply;
 
-    // -------------------------------------- main light
-
-    //---- 当前物体的光照
+// ================================================== custom light
     int _CustomLightOn;
     fixed4 _LightDir;
     fixed4 _LightColor;
@@ -114,21 +116,17 @@ CBUFFER_START(UnityPerMaterial)
     float3 _BackSSSColor,_FrontSSSColor;
     float _FrontSSSIntensity,_BackSSSIntensity;
 
-    // ----------------- parallel
+// ================================================== parallel
     int _ParallalOn;
     float _Height;
 
-    // ----------------- strandSpec parameters
+// ================================================== strandSpec parameters
     float _Shift1,_Shift2;
     float _SpecPower1, _SpecPower2;
     float3 _SpecColor1,_SpecColor2;
     float _SpecIntensity1,_SpecIntensity2;
     float _HairAoIntensity;
-    int _HairOn;
-
 
 CBUFFER_END
-
-
 
 #endif //POWER_PBS_INPUT_CGINC

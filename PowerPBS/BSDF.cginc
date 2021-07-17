@@ -5,6 +5,7 @@
 #define DielectricSpec 0.04
 #define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats
 #define HALF_MIN_SQRT 0.0078125
+#define FLT_MIN  1.175494351e-38
 
 inline float FastSSS(float3 l,float3 v){
     return saturate(dot(l,v));
@@ -22,6 +23,11 @@ inline float Pow5(float a){
 float SafeDiv(float numer, float denom)
 {
     return (numer != denom) ? numer / denom : 1;
+}
+float3 SafeNormalize(float3 inVec)
+{
+    float3 dp3 = max(FLT_MIN, dot(inVec, inVec));
+    return inVec * rsqrt(dp3);
 }
 
 inline float DisneyDiffuse(float nv,float nl,float lh,float roughness){
@@ -98,7 +104,7 @@ float CharlieD(float roughness, float ndoth)
 {
     float invR = 1. / roughness;
     float cos2h = ndoth * ndoth;
-    float sin2h = 1. - cos2h;
+    float sin2h = max(1. - cos2h,0.0078125);
     return (2. + invR) * pow(sin2h, invR * .5) / (2. * PI);
 }
 
@@ -107,5 +113,14 @@ float AshikhminV(float ndotv, float ndotl)
     return 1. / (4. * (ndotl + ndotv - ndotl * ndotv));
 }
 
+float D_Ashikhmin(float roughness, float NoH) {
+    // Ashikhmin 2007, "Distribution-based BRDFs"
+	float a2 = roughness * roughness;
+	float cos2h = NoH * NoH;
+	float sin2h = max(1.0 - cos2h, 0.0078125); // 2^(-14/2), so sin2h^2 > 0 in fp16
+	float sin4h = sin2h * sin2h;
+	float cot2 = -cos2h / (a2 * sin2h);
+	return 1.0 / (PI * (4.0 * a2 + 1.0) * sin4h) * (4.0 * exp(cot2) + sin4h);
+}
 
 #endif //BSDF_CGINC

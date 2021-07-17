@@ -122,9 +122,10 @@ float4 frag (v2f i) : SV_Target
 
     PBSData data = InitPBSData(tangent,binormal,clothMask);
 
-    if(_HairOn){
+    // calc strand specular
+    if(_PBRMode == PBR_MODE_STRAND){
 		float hairAo;
-        data.hairSpecColor = CalcHairSpecColor(i.uv,tangent,n,binormal,light.dir,v, hairAo);
+        data.hairSpecColor = CalcHairSpecColor(i.uv,tangent,n,binormal,light.dir,v, hairAo/**/);
 		albedo *= lerp(1, hairAo, _HairAoIntensity);
     }
 

@@ -142,6 +142,65 @@ float3 CalcEmission(float3 albedo,float2 uv){
     return albedo * tex.rgb * tex.a * _Emission * _EmissionColor;
 }
 
+#define PBR_MODE_STANDARD 0
+#define PBR_MODE_ANISO 1
+#define PBR_MODE_CLOTH 2
+#define PBR_MODE_STRAND 3
+
+inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 h,float nl,float nv,float nh,float lh,float3 specColor,float roughness){
+    float th = 0;
+    float bh = 0;
+    float V = 0;
+    float D = 0;
+    float3 specTerm = 0;
+
+    switch(_PBRMode){
+        case PBR_MODE_STANDARD :
+            V = SmithJointGGXTerm(nl,nv,roughness);
+            D = D_GGXTerm(nh,roughness);
+            specTerm = V * D * PI;
+        break;
+        case PBR_MODE_ANISO:
+            th = dot(t,h);
+            bh = dot(b,h);
+            V = SmithJointGGXTerm(nl,nv,roughness);
+            D = D_GGXAniso(th,bh,nh,_RoughT,_RoughB) * _AnisoIntensity;
+            specTerm = D * _AnisoColor;
+            if(data.isAnisoLayer2On){
+                D = D_GGXAniso(th,bh,nh,_Layer2RoughT,_Layer2RoughB) * _Layer2AnisoIntensity;
+                specTerm += D * _Layer2AnisoColor;
+            }
+            specTerm *= V * PI;
+        break;
+        case PBR_MODE_CLOTH:
+            V = AshikhminV(nv,nl);
+            D = CharlieD(roughness,nh);
+            D = smoothstep(_ClothDMin,_ClothDMax,D);
+            specTerm = V*D * _ClothSheenColor;
+        break;
+        case PBR_MODE_STRAND:
+            specTerm = data.hairSpecColor;
+        break;
+    }
+    specTerm = max(0,specTerm * nl);
+    specTerm *= any(specColor)? 1 : 0;
+// return specTerm;
+    // calc F
+    float3 F =1;
+    if(_PBRMode != PBR_MODE_CLOTH)
+        F = FresnelTerm(specColor,lh);
+        
+    specTerm *= F;
+    return specTerm;
+}
+
+float CalcDiffuseTerm(float nl,float nv,float lh,float a){
+    float diffuseTerm = 0;
+    if(_PBRMode != PBR_MODE_CLOTH)
+        diffuseTerm = DisneyDiffuse(nv,nl,lh,a) * nl;
+    return diffuseTerm;
+}
+
 
 inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float smoothness,
     float3 normal,float3 viewDir,
@@ -151,66 +210,36 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
     float a = max(1- smoothness,HALF_MIN_SQRT);
     float a2 = max(a*a,HALF_MIN);
     
-    float3 l = normalize(light.dir);
-    float3 n = normalize(normal);
-    float3 v = normalize(viewDir);
-    float3 h = normalize(l + v);
-    float3 t = normalize(data.tangent);
-    float3 b = normalize(data.binormal);
+    float3 l = SafeNormalize(light.dir);
+    float3 n = SafeNormalize(normal);
+    float3 v = SafeNormalize(viewDir);
+    float3 h = SafeNormalize(l + v);
+    float3 t = SafeNormalize(data.tangent);
+    float3 b = SafeNormalize(data.binormal);
 
     float nh = saturate(dot(n,h));
     float nl = saturate(dot(n,l));
     float nv = abs(dot(n,v));
     float lv = saturate(dot(l,v));
     float lh = saturate(dot(l,h));
-    float th = 0;
-    float bh = 0;
-    
 
     // set pbsdata for others flow.
     data.nl = nl;
 
     // -------------- diffuse part
-    float diffuseTerm = DisneyDiffuse(nv,nl,lh,a) * nl;
+    float diffuseTerm = CalcDiffuseTerm(nl,nv,lh,a);
     // float diffuseTerm = nl;
     float3 directDiffuse = light.color * diffuseTerm;
     float3 indirectDiffuse = gi.diffuse;
     float3 diffuse = (directDiffuse + indirectDiffuse) * diffColor;
     // -------------- specular part
-    float3 F = FresnelTerm(specColor,lh);
-    float3 specularTerm = (float3)0;
-
-    if(data.isHairOn){
-        specularTerm = data.hairSpecColor *nl;
-    }else{
-        // pbs specularTerm
-        float V = SmithJointGGXTerm(nl,nv,a2);
-        //float D = NDFBlinnPhongTerm(nh,RoughnessToSpecPower(a));
-        float D = 0;
-
-        // calc D
-        if(data.isAnisoOn){
-            th = dot(t,h);
-            bh = dot(b,h);
-            // V = AshikhminV(nv,nl);
-            // D += CharlieD(a,nh);
-            D = D_GGXAniso(th,bh,nh,_RoughT,_RoughB) * _AnisoIntensity;
-            if(data.isAnisoLayer2On){
-                D += D_GGXAniso(th,bh,nh,_Layer2RoughT,_Layer2RoughB) * _Layer2AnisoIntensity;
-            }
-        }else{
-            D = D_GGXTerm(nh,a2);
-        }
-        specularTerm = V * D * PI * nl;
-    }
-    specularTerm = max(0,specularTerm);
-    specularTerm *= any(specColor)? 1 : 0;
-
+    float3 specularTerm = CalcSpeccularTerm(data/**/,t,b,h,nl,nv,nh,lh,specColor,a2);
+return specularTerm.xyzx;
     float surfaceReduction =1 /(a2 * a2+1); // [1,0.5]
     float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity)); //smoothness + metallic
     float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
     
-    float3 directSpecular = specularTerm * light.color * F;
+    float3 directSpecular = specularTerm * light.color;
     float3 specular = directSpecular + indirectSpecular;
     return float4(diffuse + specular,1);
 }
