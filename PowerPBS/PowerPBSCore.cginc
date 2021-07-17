@@ -176,7 +176,8 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 h,fl
             V = AshikhminV(nv,nl);
             D = CharlieD(roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
-            specTerm = V*D * _ClothSheenColor;
+            specTerm = V* D * _ClothSheenColor;//lerp(_ClothSheenColor*.5,_ClothSheenColor,D);
+            return specTerm;
         break;
         case PBR_MODE_STRAND:
             specTerm = data.hairSpecColor;
@@ -234,7 +235,7 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
     float3 diffuse = (directDiffuse + indirectDiffuse) * diffColor;
     // -------------- specular part
     float3 specularTerm = CalcSpeccularTerm(data/**/,t,b,h,nl,nv,nh,lh,specColor,a2);
-return specularTerm.xyzx;
+// return specularTerm.xyzx;
     float surfaceReduction =1 /(a2 * a2+1); // [1,0.5]
     float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity)); //smoothness + metallic
     float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
