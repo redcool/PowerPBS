@@ -147,7 +147,7 @@ float3 CalcEmission(float3 albedo,float2 uv){
 #define PBR_MODE_CLOTH 2
 #define PBR_MODE_STRAND 3
 
-inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 h,float nl,float nv,float nh,float lh,float3 specColor,float roughness){
+inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 n,float3 h,float nl,float nv,float nh,float lh,float3 specColor,float roughness){
     float th = 0;
     float bh = 0;
     float V = 0;
@@ -176,8 +176,8 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 h,fl
             V = AshikhminV(nv,nl);
             D = CharlieD(roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
-            specTerm = V* D * _ClothSheenColor;//lerp(_ClothSheenColor*.5,_ClothSheenColor,D);
-            return specTerm;
+            // D = lerp(V,D,D);
+            specTerm = V * D * 2*PI * _ClothSheenColor;//lerp(_ClothSheenColor*.5,_ClothSheenColor,D);
         break;
         case PBR_MODE_STRAND:
             specTerm = data.hairSpecColor;
@@ -185,7 +185,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 h,fl
     }
     specTerm = max(0,specTerm * nl);
     specTerm *= any(specColor)? 1 : 0;
-// return specTerm;
+    
     // calc F
     float3 F =1;
     if(_PBRMode != PBR_MODE_CLOTH)
@@ -220,7 +220,7 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
 
     float nh = saturate(dot(n,h));
     float nl = saturate(dot(n,l));
-    float nv = abs(dot(n,v));
+    float nv = saturate(dot(n,v));
     float lv = saturate(dot(l,v));
     float lh = saturate(dot(l,h));
 
@@ -234,7 +234,7 @@ inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,fl
     float3 indirectDiffuse = gi.diffuse;
     float3 diffuse = (directDiffuse + indirectDiffuse) * diffColor;
     // -------------- specular part
-    float3 specularTerm = CalcSpeccularTerm(data/**/,t,b,h,nl,nv,nh,lh,specColor,a2);
+    float3 specularTerm = CalcSpeccularTerm(data/**/,t,b,n,h,nl,nv,nh,lh,specColor,a2);
 // return specularTerm.xyzx;
     float surfaceReduction =1 /(a2 * a2+1); // [1,0.5]
     float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity)); //smoothness + metallic
