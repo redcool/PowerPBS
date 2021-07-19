@@ -1,6 +1,7 @@
 #if !defined(BSDF_CGINC)
 #define BSDF_CGINC
 #define PI 3.1415926
+#define PI2 6.283
 #define INV_PI 0.31830988618f
 #define DielectricSpec 0.04
 #define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats

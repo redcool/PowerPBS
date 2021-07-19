@@ -42,7 +42,7 @@ Shader "Character/PowerPBS"
         _Smoothness("Smoothness",range(0,1)) = 0
         _Occlusion("_Occlusion",range(0,1)) = 1
 
-        [Header(NDF Mode)]
+        [Header(PBR Mode)]
         [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
 // ==================================================
         [Header(Anisotropic)]
