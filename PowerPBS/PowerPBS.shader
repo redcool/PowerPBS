@@ -48,15 +48,13 @@ Shader "Character/PowerPBS"
         [Header(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)
         _AnisoIntensity("_AnisoIntensity",float) = 1
-        _RoughT("_RoughT",range(0,1)) = 0.5
-        _RoughB("_RoughB",range(0,1)) = 0.1
+        _AnisoRough("_AnisoRough",range(-1,1)) = 0
         // ---- layer2
         [Header(Aniso2)]
         [Toggle]_AnisoLayer2On("_AnisoLayer2On",int) = 0
         _Layer2AnisoColor("_Layer2AnisoColor",color) = (.5,0,0,0)
         _Layer2AnisoIntensity("_Layer2AnisoIntensity",float) = 1
-        _Layer2RoughT("_Layer2RoughT",range(0,1)) = 0.1
-        _Layer2RoughB("_Layer2RoughB",range(0,1)) = 0.5
+        _Layer2AnisoRough("_Layer2AnisoRough",range(-1,1)) = 0
 // ==================================================
         [Header(ScatterLUT)]
         [Toggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
@@ -118,7 +116,7 @@ Shader "Character/PowerPBS"
         [Toggle]_EmissionOn("_EmissionOn",float) = 0
         [noscaleoffset]_EmissionMap("_EmissionMap(RGB),EmissionMask(A)",2d) = "white"{}
         [hdr]_EmissionColor("_EmissionColor",color) = (1,1,1,1)
-        _Emission("_Emission",float) = 0
+        _Emission("_Emission",float) = 1
 // ==================================================
         [Space(10)][Header(Indirect Diffuse)]
         _IndirectIntensity("_IndirectIntensity",float) = 1

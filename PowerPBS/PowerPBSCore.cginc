@@ -20,7 +20,7 @@ inline UnityLight GetLight(){
     // ---- 改变主光源,方向,颜色.
     dir.xyz += _CustomLightOn > 0 ? _LightDir.xyz : 0;
     color += _CustomLightOn > 0 ?_LightColor : 0;
-    dir = normalize(dir);
+    dir = SafeNormalize(dir);
 
     UnityLight l = {color.rgb,dir.xyz,0};
     return l;
@@ -164,10 +164,12 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 n,fl
             th = dot(t,h);
             bh = dot(b,h);
             V = SmithJointGGXTerm(nl,nv,roughness);
-            D = D_GGXAniso(th,bh,nh,_RoughT,_RoughB) * _AnisoIntensity;
+            float anisoRough = _AnisoRough * 0.5+0.5;
+            D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough) * _AnisoIntensity;
             specTerm = D * _AnisoColor;
             if(data.isAnisoLayer2On){
-                D = D_GGXAniso(th,bh,nh,_Layer2RoughT,_Layer2RoughB) * _Layer2AnisoIntensity;
+                anisoRough = _Layer2AnisoRough * 0.5+0.5;
+                D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough) * _Layer2AnisoIntensity;
                 specTerm += D * _Layer2AnisoColor;
             }
             specTerm *= V * PI;

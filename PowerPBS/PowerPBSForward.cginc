@@ -97,7 +97,7 @@ float4 frag (v2f i) : SV_Target
     ));
     float3 worldPos = float3(i.tSpace0.w,i.tSpace1.w,i.tSpace2.w);
     float3 v = normalize(GetWorldViewDir(worldPos));
-    float3 r = reflect(-v,n) + _ReflectionOffsetDir;
+    float3 r = SafeNormalize(reflect(-v + _ReflectionOffsetDir.xyz,n));
 
     float3 tangent = normalize(float3(i.tSpace0.x,i.tSpace1.x,i.tSpace2.x));
     float3 binormal = normalize(float3(i.tSpace0.y,i.tSpace1.y,i.tSpace2.y));

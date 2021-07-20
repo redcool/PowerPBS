@@ -44,12 +44,12 @@ CBUFFER_START(UnityPerMaterial)
     float _Cutoff;
     int _PBRMode; // standard,aniso,fabric,strand
 // ==================================================
-    float _RoughT,_RoughB;
+    float _AnisoRough;
     float _AnisoIntensity;
     float4 _AnisoColor;
 
     int _AnisoLayer2On;
-    float _Layer2RoughT,_Layer2RoughB;
+    float _Layer2AnisoRough;
     float _Layer2AnisoIntensity;
     float4 _Layer2AnisoColor;
 // ==================================================
