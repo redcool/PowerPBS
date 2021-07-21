@@ -197,7 +197,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
 
 float CalcDiffuseTerm(float nl,float nv,float lh,float a){
     float diffuseTerm = 0;
-    if(_PBRMode != PBR_MODE_CLOTH)
+    // if(_PBRMode != PBR_MODE_CLOTH)
         diffuseTerm = DisneyDiffuse(nv,nl,lh,a) * nl;
     return diffuseTerm;
 }
