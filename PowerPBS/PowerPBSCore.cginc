@@ -87,8 +87,8 @@ inline half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflect
 inline float3 CalcNormal(float2 uv, float detailMask ){
     float3 tn = UnpackScaleNormal(UNITY_SAMPLE_TEX2D(_NormalMap,uv),_NormalMapScale);
 	
-	if (_DetailMapOn) {
-		float3 dtn = UnpackScaleNormal(_DetailNormalMap.Sample(tex_linear_repeat_sampler, uv * _DetailNormalMap_ST.xy + _DetailNormalMap_ST.zw), _DetailNormalMapScale);
+	if (_Detail_MapOn) {
+		float3 dtn = UnpackScaleNormal(_Detail_NormalMap.Sample(tex_linear_repeat_sampler, uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw), _Detail_NormalMapScale);
 		dtn = normalize(float3(tn.xy + dtn.xy, tn.z*dtn.z));
 		tn = lerp(tn, dtn, detailMask);
 	}
@@ -112,14 +112,16 @@ inline float CalcDetailAlbedo(inout float4 mainColor, UNITY_DECLARE_TEX2D_NOSAMP
     return detailMask;
 }
 
+#define CALC_DETAIL_ALBEDO(id) CalcDetailAlbedo(albedo, _Detail##id##_Map,TRANSFORM_TEX(uv,_Detail##id##_Map), _Detail##id##_MapIntensity, _Detail##id##_MapOn,_Detail##id##_MapMode)
+
 inline float4 CalcAlbedo(float2 uv,out float detailMask) 
 {
     float4 albedo = UNITY_SAMPLE_TEX2D(_MainTex,uv) ;
-    detailMask = CalcDetailAlbedo(albedo, _DetailMap,TRANSFORM_TEX(uv,_DetailMap), _DetailMapIntensity, _DetailMapOn,_DetailMapMode);
-    CalcDetailAlbedo(albedo, _Detail1_Map,TRANSFORM_TEX(uv,_Detail1_Map), _Detail1_MapIntensity, _Detail1_MapOn,_Detail1_MapMode);
-    CalcDetailAlbedo(albedo, _Detail2_Map,TRANSFORM_TEX(uv,_Detail2_Map), _Detail2_MapIntensity, _Detail2_MapOn,_Detail2_MapMode);
-	CalcDetailAlbedo(albedo, _Detail3_Map,TRANSFORM_TEX(uv,_Detail3_Map), _Detail3_MapIntensity, _Detail3_MapOn, _Detail3_MapMode);
-	CalcDetailAlbedo(albedo, _Detail4_Map,TRANSFORM_TEX(uv,_Detail4_Map), _Detail4_MapIntensity, _Detail4_MapOn, _Detail4_MapMode);
+    detailMask = CALC_DETAIL_ALBEDO();
+    CALC_DETAIL_ALBEDO(1);
+    CALC_DETAIL_ALBEDO(2);
+    CALC_DETAIL_ALBEDO(3);
+    CALC_DETAIL_ALBEDO(4);
     return albedo * _Color;
 }
 
@@ -220,21 +222,23 @@ float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float3 lig
     return color;
 }
 
-float3 CalcAdditionalLight(PBSData data,float3 diffColor,float3 specColor,Light light,float a,float a2){
-    float3 l = (light.direction);
-    float3 v = (data.viewDir);
-    float3 h = SafeNormalize(l + v);
-    float3 t = (data.tangent);
-    float3 b = (data.binormal);
-    float3 n = (data.normal);
+#define CALC_LIGHT_INFO(lightDir)\
+    float3 l = SafeNormalize(lightDir);\
+    float3 v = (data.viewDir);\
+    float3 h = SafeNormalize(l + v);\
+    float3 t = (data.tangent);\
+    float3 b = (data.binormal);\
+    float3 n = (data.normal);\
+    float nh = saturate(dot(n,h));\
+    float nl = saturate(dot(n,l));\
+    float nv = saturate(dot(n,v));\
+    float lv = saturate(dot(l,v));\
+    float lh = saturate(dot(l,h));\
+    float th = dot(t,h);\
+    float bh = dot(b,h)
 
-    float nh = saturate(dot(n,h));
-    float nl = saturate(dot(n,l));
-    float nv = saturate(dot(n,v));
-    float lv = saturate(dot(l,v));
-    float lh = saturate(dot(l,h));
-    float th = dot(t,h);
-    float bh = dot(b,h);
+inline float3 CalcAdditionalLight(PBSData data,float3 diffColor,float3 specColor,Light light,float a,float a2){
+    CALC_LIGHT_INFO(light.direction);
     // diffColor is 1, not effect diffuse
     float lightAtten = light.distanceAttenuation * light.shadowAttenuation;
     return CalcDirect(data/**/,1,specColor,light.color,nl,nv,nh,lh,th,bh,a,a2) * lightAtten;
@@ -245,20 +249,7 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
     float a = max(1- data.smoothness,HALF_MIN_SQRT);
     float a2 = max(a*a,HALF_MIN);
 
-    float3 l = SafeNormalize(mainLight.dir);
-    float3 v = (data.viewDir);
-    float3 h = SafeNormalize(l + v);
-    float3 t = (data.tangent);
-    float3 b = (data.binormal);
-    float3 n = (data.normal);
-
-    float nh = saturate(dot(n,h));
-    float nl = saturate(dot(n,l));
-    float nv = saturate(dot(n,v));
-    float lv = saturate(dot(l,v));
-    float lh = saturate(dot(l,h));
-    float th = dot(t,h);
-    float bh = dot(b,h);
+    CALC_LIGHT_INFO(mainLight.dir);
 
     // set pbsdata for others flow.
     data.nl = nl;

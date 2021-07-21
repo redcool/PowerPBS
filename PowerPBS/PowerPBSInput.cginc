@@ -15,8 +15,8 @@ UNITY_DECLARE_TEX2D(_HeightClothSSSMask);
 #define DETAIL_MAP_MODE_REPLACE 1
 SamplerState tex_linear_repeat_sampler;
 
-UNITY_DECLARE_TEX2D_NOSAMPLER(_DetailMap);
-UNITY_DECLARE_TEX2D_NOSAMPLER(_DetailNormalMap);
+UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail_Map);
+UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail_NormalMap);
 UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail1_Map);
 UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail2_Map);
 UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail4_Map);
@@ -26,10 +26,13 @@ UNITY_DECLARE_TEXCUBE(_EnvCube);
 UNITY_DECLARE_TEX2D(_EmissionMap);
 UNITY_DECLARE_TEX2D(_ScatteringLUT);
 
-// #define DECLARE_DETAIL(id) int _Detail_MapOn;
-    // int _Detail##id_MapMode;/
-    // float _Detail##id_MapIntensity;/
-    // float4 _Detail##id_Map_ST/
+
+
+#define DECLARE_DETAIL(id)\
+    int _Detail##id##_MapOn;\   //_Detail1_MapOn
+    int _Detail##id##_MapMode;\ //_Detail1_MapMode
+    float _Detail##id##_MapIntensity;\  //_Detail1_MapIntensity
+    float4 _Detail##id##_Map_ST //_Detail1_Map_ST
 
 //------------------------- main texture
 CBUFFER_START(UnityPerMaterial)
@@ -63,35 +66,14 @@ CBUFFER_START(UnityPerMaterial)
     float _ScatteringIntensity;
     float _CurvatureScale;
 // ================================================== detail maps
-    int _DetailMapOn;
-    int _DetailMapMode;
-    float _DetailMapIntensity;
-    float4 _DetailMap_ST;
-    // DECLARE_DETAIL();
     // main detail normalMap
-    float4 _DetailNormalMap_ST;
-    float _DetailNormalMapScale;
-    //Mouth
-    int _Detail1_MapOn;
-    int _Detail1_MapMode;
-    float _Detail1_MapIntensity;
-    float4 _Detail1_Map_ST;
-    //Eye
-    int _Detail2_MapOn;
-    int _Detail2_MapMode;
-    float _Detail2_MapIntensity;
-    float4 _Detail2_Map_ST;
-    //Eyebrow
-    int _Detail3_MapOn;
-    int _Detail3_MapMode;
-    float _Detail3_MapIntensity;
-    float4 _Detail3_Map_ST;
-    //Face
-    int _Detail4_MapOn;
-    int _Detail4_MapMode;
-    float _Detail4_MapIntensity;
-    float4 _Detail4_Map_ST;
-
+    float4 _Detail_NormalMap_ST;
+    float _Detail_NormalMapScale;
+    DECLARE_DETAIL();
+    DECLARE_DETAIL(1);
+    DECLARE_DETAIL(2);
+    DECLARE_DETAIL(3);
+    DECLARE_DETAIL(4);
 // ================================================== ibl
     float _CustomIBLOn;
     float _EnvIntensity;

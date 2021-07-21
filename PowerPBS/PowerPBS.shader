@@ -95,12 +95,12 @@ Shader "Character/PowerPBS"
 		/*_Detail1_NormalMap("_Detail1_NormalMap",2d) = "bump"{}
 		_Detail1_NormalMapScale("_Detail1_NormalMapScale",range(0,5)) = 1*/
         [Space(10)][Header(DetailMap Bottom Layer)]
-        [Toggle]_DetailMapOn("_DetailMapOn",int) = 0
-        [Enum(Multiply,0,Replace,1)]_DetailMapMode("_DetailMapMode",int) = 0
-        _DetailMap("_DetailMap(RGB),DetailMask(A)",2d) = "white"{}
-        _DetailMapIntensity("_DetailMapIntensity",range(0,1)) = 1
-        _DetailNormalMap("_DetailNormalMap",2d) = "bump"{}
-        _DetailNormalMapScale("_DetailNormalMapScale",range(0,5)) = 1
+        [Toggle]_Detail_MapOn("_Detail_MapOn",int) = 0
+        [Enum(Multiply,0,Replace,1)]_Detail_MapMode("_Detail_MapMode",int) = 0
+        _Detail_Map("_Detail_Map(RGB),DetailMask(A)",2d) = "white"{}
+        _Detail_MapIntensity("_Detail_MapIntensity",range(0,1)) = 1
+        _Detail_NormalMap("_Detail_NormalMap",2d) = "bump"{}
+        _Detail_NormalMapScale("_Detail_NormalMapScale",range(0,5)) = 1
  // ==================================================       
         [Space(10)][Header(Custom IBL)]
         [Toggle]_CustomIBLOn("_CustomIBLOn",float) = 0
