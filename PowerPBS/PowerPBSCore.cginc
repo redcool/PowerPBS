@@ -6,7 +6,7 @@
 #include "UnityLightingCommon.cginc"
 #include "PowerPBSData.cginc"
 #include "BSDF.cginc"
-
+#include "URP_Lighting.cginc"
 
 inline UnityLight GetLight(){
     #if !LIGHTMAP_ON
@@ -147,9 +147,7 @@ float3 CalcEmission(float3 albedo,float2 uv){
 #define PBR_MODE_CLOTH 2
 #define PBR_MODE_STRAND 3
 
-inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 n,float3 h,float nl,float nv,float nh,float lh,float3 specColor,float roughness){
-    float th = 0;
-    float bh = 0;
+inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor,float roughness){
     float V = 0;
     float D = 0;
     float3 specTerm = 0;
@@ -161,13 +159,11 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float3 t,float3 b,float3 n,fl
             specTerm = V * D * PI;
         break;
         case PBR_MODE_ANISO:
-            th = dot(t,h);
-            bh = dot(b,h);
             V = SmithJointGGXTerm(nl,nv,roughness);
             float anisoRough = _AnisoRough * 0.5+0.5;
             D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough) * _AnisoIntensity;
             specTerm = D * _AnisoColor;
-            if(data.isAnisoLayer2On){
+            if(_AnisoLayer2On){
                 anisoRough = _Layer2AnisoRough * 0.5+0.5;
                 D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough) * _Layer2AnisoIntensity;
                 specTerm += D * _Layer2AnisoColor;
@@ -204,56 +200,89 @@ float CalcDiffuseTerm(float nl,float nv,float lh,float a){
     return diffuseTerm;
 }
 
+float3 CalcIndirect(UnityIndirect gi,float3 diffColor,float3 specColor,float smoothness,float a2,float oneMinusReflectivity,float nv){
+    float3 indirectDiffuse = gi.diffuse * diffColor;
 
-inline float4 PBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float smoothness,
-    float3 normal,float3 viewDir,
-    UnityLight light,UnityIndirect gi,inout PBSData data){
+    float surfaceReduction =1 /(a2 * a2 + 1); // [1,0.5]
+    float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity)); //smoothness + metallic
+    float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
+    float3 color = indirectDiffuse + indirectSpecular;
+    return color;
+}
 
-    // perceptualRoughness,roughness
-    float a = max(1- smoothness,HALF_MIN_SQRT);
-    float a2 = max(a*a,HALF_MIN);
-    
-    float3 l = SafeNormalize(light.dir);
-    float3 n = SafeNormalize(normal);
-    float3 v = SafeNormalize(viewDir);
+float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float3 lightColor,
+    float nl,float nv,float nh,float lh,float th,float bh,float a,float a2){
+
+    float diffuseTerm = CalcDiffuseTerm(nl,nv,lh,a);
+    float3 specularTerm = CalcSpeccularTerm(data,nl,nv,nh,lh,th,bh,specColor,a2);
+    float3 color = diffuseTerm * diffColor + specularTerm;
+    color *= lightColor;
+    return color;
+}
+
+float3 CalcAdditionalLight(PBSData data,float3 diffColor,float3 specColor,Light light,float a,float a2){
+    float3 l = (light.direction);
+    float3 v = (data.viewDir);
     float3 h = SafeNormalize(l + v);
-    float3 t = SafeNormalize(data.tangent);
-    float3 b = SafeNormalize(data.binormal);
+    float3 t = (data.tangent);
+    float3 b = (data.binormal);
+    float3 n = (data.normal);
 
     float nh = saturate(dot(n,h));
     float nl = saturate(dot(n,l));
     float nv = saturate(dot(n,v));
     float lv = saturate(dot(l,v));
     float lh = saturate(dot(l,h));
+    float th = dot(t,h);
+    float bh = dot(b,h);
+    // diffColor is 1, not effect diffuse
+    float lightAtten = light.distanceAttenuation * light.shadowAttenuation;
+    return CalcDirect(data/**/,1,specColor,light.color,nl,nv,nh,lh,th,bh,a,a2) * lightAtten;
+}
+
+inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,inout PBSData data){
+    // perceptualRoughness,roughness
+    float a = max(1- data.smoothness,HALF_MIN_SQRT);
+    float a2 = max(a*a,HALF_MIN);
+
+    float3 l = SafeNormalize(mainLight.dir);
+    float3 v = (data.viewDir);
+    float3 h = SafeNormalize(l + v);
+    float3 t = (data.tangent);
+    float3 b = (data.binormal);
+    float3 n = (data.normal);
+
+    float nh = saturate(dot(n,h));
+    float nl = saturate(dot(n,l));
+    float nv = saturate(dot(n,v));
+    float lv = saturate(dot(l,v));
+    float lh = saturate(dot(l,h));
+    float th = dot(t,h);
+    float bh = dot(b,h);
 
     // set pbsdata for others flow.
     data.nl = nl;
 
-    // -------------- diffuse part
-    float diffuseTerm = CalcDiffuseTerm(nl,nv,lh,a);
-    // float diffuseTerm = nl;
-    float3 directDiffuse = light.color * diffuseTerm;
-    float3 indirectDiffuse = gi.diffuse;
-    float3 diffuse = (directDiffuse + indirectDiffuse) * diffColor;
-    // -------------- specular part
-    float3 specularTerm = CalcSpeccularTerm(data/**/,t,b,n,h,nl,nv,nh,lh,specColor,a2);
-// return specularTerm.xyzx;
-    float surfaceReduction =1 /(a2 * a2+1); // [1,0.5]
-    float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity)); //smoothness + metallic
-    float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
-    
-    float3 directSpecular = specularTerm * light.color;
-    float3 specular = directSpecular + indirectSpecular;
-    return float4(diffuse + specular,1);
+    float3 color = CalcIndirect(gi,diffColor,specColor,data.smoothness,a2,data.oneMinusReflectivity,nv);
+    color += CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
+
+    if(_ReceiveAdditionalLightsOn){
+        int lightCount = GetAdditionalLightsCount();
+        for(int lightId = 0 ; lightId <lightCount;lightId++){
+            Light light1 = GetAdditionalLight(lightId,data.worldPos);
+            color += CalcAdditionalLight(data/**/,diffColor,specColor,light1,a,a2);
+        }
+    }
+
+    return float4(color,1);
 }
 
 float4 CalcPBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float smoothness,
-    float3 normal,float3 viewDir,
     UnityLight light,UnityIndirect gi,inout PBSData data){
         #if defined(PBS1)
-            return PBS(diffColor,specColor,oneMinusReflectivity,smoothness,normal,viewDir,light,gi,data);
+            return PBS(diffColor,specColor,light,gi,data);
         #else
-            return UNITY_BRDF_PBS(diffColor,specColor,oneMinusReflectivity,smoothness,normal,viewDir,light,gi);
+            return UNITY_BRDF_PBS(diffColor,specColor,data.oneMinusReflectivity,data.smoothness,data.normal,data.viewDir,light,gi);
         #endif
 }
 #endif // end of SIMPLE_PBS_CORE_CGINC

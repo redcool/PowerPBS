@@ -57,6 +57,7 @@ CBUFFER_START(UnityPerMaterial)
     float _ClothDMax,_ClothDMin;
 // ==================================================
     int _ApplyShadowOn;
+    int _ReceiveAdditionalLightsOn;
 // ==================================================
     int _ScatteringLUTOn;
     float _ScatteringIntensity;

@@ -3,14 +3,7 @@
 /**
     pbs渲染流程
     1 简化了gi(diffuse,specular)
-    2 同LightingProcess传递光照信息
-
-    2021/03/11 
-        1 加入阴影
-        2 调整Occlusion的算法
-    
-    2021/06/21
-        PowerPBSInput.cginc中使用cbuffer UnityPerMaterial
+    2 Lighting里baked模式下同LightingProcess传递光照信息
 
     usecase :
     drp 
@@ -44,6 +37,9 @@ Shader "Character/PowerPBS"
 
         [Header(PBR Mode)]
         [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
+
+        [Header(URP Additional Lights)]
+        [Toggle]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
 // ==================================================
         [Header(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)

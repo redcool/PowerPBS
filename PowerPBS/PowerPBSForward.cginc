@@ -82,7 +82,7 @@ float4 frag (v2f i) : SV_Target
     float detailMask=0;
     float4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
     float3 albedo = mainTex.rgb;
-    albedo.rgb *= occlusion;
+    albedo.rgb *= occlusion; // more dark than urp'lit
     float alpha = mainTex.a;
 
     if(_AlphaTestOn)
@@ -120,7 +120,7 @@ float4 frag (v2f i) : SV_Target
     half outputAlpha;
     albedo = AlphaPreMultiply (albedo, alpha, oneMinusReflectivity, /*out*/ outputAlpha);
 
-    PBSData data = InitPBSData(tangent,binormal,clothMask);
+    PBSData data = InitPBSData(tangent,binormal,n,v,oneMinusReflectivity, smoothness,clothMask,worldPos);
 
     // calc strand specular
     if(_PBRMode == PBR_MODE_STRAND){
@@ -129,7 +129,7 @@ float4 frag (v2f i) : SV_Target
 		albedo *= lerp(1, hairAo, _HairAoIntensity);
     }
 
-    half4 c = CalcPBS(albedo, specColor, oneMinusReflectivity, smoothness, n, v, light, indirect,data/**/);
+    half4 c = CalcPBS(albedo, specColor, oneMinusReflectivity, smoothness, light, indirect,data/**/);
     c.a = outputAlpha;
 
     //for preintegrated lut
