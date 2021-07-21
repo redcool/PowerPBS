@@ -164,6 +164,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
             V = SmithJointGGXTerm(nl,nv,roughness);
             float anisoRough = _AnisoRough * 0.5+0.5;
             D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough) * _AnisoIntensity;
+            // D = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough) * _AnisoIntensity;
             specTerm = D * _AnisoColor;
             if(_AnisoLayer2On){
                 anisoRough = _Layer2AnisoRough * 0.5+0.5;

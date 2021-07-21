@@ -12,6 +12,7 @@ inline float FastSSS(float3 l,float3 v){
     return saturate(dot(l,v));
 }
 
+float Pow2(float a){return a*a;}
 inline float Pow4(float a){
     float a2 = a*a;
     return a2*a2;
@@ -92,6 +93,12 @@ float D_GGXAniso(float TdotH, float BdotH, float NdotH, float roughnessT, float 
     return INV_PI * D_GGXAnisoNoPI(TdotH, BdotH, NdotH, roughnessT, roughnessB);
 }
 
+float D_WardAniso(float nl,float nv,float nh,float th,float bh,float roughT,float roughB){
+    float roughTH = th/roughT;
+    float roughBH = bh/roughB;
+    return sqrt(max(0,nl/nv)) * exp(-2 * (roughTH*roughTH+roughBH*roughBH)/(1+nh));
+}
+
 float BankBRDF(float3 l,float3 v,float3 t,float ks,float power){
     float lt = dot(l,t);
     float vt = dot(v,t);
@@ -99,6 +106,7 @@ float BankBRDF(float3 l,float3 v,float3 t,float ks,float power){
     float vt2 = vt*vt;
     return ks * pow(sqrt(1-lt2)*sqrt(1-vt2) - lt*vt,power);
 }
+
 
 
 float CharlieD(float roughness, float ndoth)
