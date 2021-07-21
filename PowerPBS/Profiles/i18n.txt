@@ -1,4 +1,129 @@
-// PowerVFX 中文配置文件
+// PowerPBS 中文配置文件
 
 //Help行,约定 | 为换行字符
 Help=PowerPBS,用于高清角色渲染
+        _MainTex =Main Texture
+        _Color=Color
+        _NormalMap=NormalMap
+        _NormalMapScale=_NormalMapScale
+        _MetallicMap=Metallic(R),Smoothness(G),Occlusion(B)
+        _Metallic=_Metallic
+        _Smoothness=Smoothness
+        _Occlusion=_Occlusion
+        _PBRMode=_PBRMode
+        _ReceiveAdditionalLightsOn=_ReceiveAdditionalLightsOn
+// ==================================================
+        
+        _AnisoColor=_AnisoColor
+        _AnisoIntensity=_AnisoIntensity
+        _AnisoRough=_AnisoRough
+        // ---- layer2
+        
+        _AnisoLayer2On=_AnisoLayer2On
+        _Layer2AnisoColor=_Layer2AnisoColor
+        _Layer2AnisoIntensity=_Layer2AnisoIntensity
+        _Layer2AnisoRough=_Layer2AnisoRough
+// ==================================================
+        
+        _ScatteringLUTOn=_ScatteringLUTOn
+        _ScatteringLUT=_ScatteringLUT
+        _ScatteringIntensity=_ScatteringIntensity
+        _CurvatureScale=_CurvatureScale (MainTex.a)
+// ==================================================
+        
+        _ClothSheenColor=_ClothSheenColor
+        _ClothDMin=_ClothDMin
+        _ClothDMax=_ClothDMax
+// ==================================================
+        
+        _ApplyShadowOn=_ApplyShadowOn
+// ==================================================
+		
+		_Detail4_MapOn=_Detail4_MapOn
+		_Detail4_MapMode=_Detail4_MapMode
+		_Detail4_Map=_Detail4_Map(RGB),Detail4_Mask(A)
+		_Detail4_MapIntensity=_Detail4_MapIntensity
+		/*_Detail4_NormalMap=_Detail4_NormalMap
+		_Detail4_NormalMapScale=_Detail4_NormalMapScale
+		
+		_Detail3_MapOn=_Detail3_MapOn
+		_Detail3_MapMode=_Detail3_MapMode
+		_Detail3_Map=_Detail3_Map(RGB),Detail3_Mask(A)
+		_Detail3_MapIntensity=_Detail3_MapIntensity
+		/*_Detail3_NormalMap=_Detail3_NormalMap
+		_Detail3_NormalMapScale=_Detail3_NormalMapScale
+		
+		_Detail2_MapOn=_Detail2_MapOn
+        _Detail2_MapMode=_Detail2_MapMode
+		_Detail2_Map=_Detail2_Map(RGB),EyeMask(A)
+		_Detail2_MapIntensity=_Detail2_MapIntensity
+		/*_Detail2_NormalMap=_Detail2_NormalMap
+		_Detail2_NormalMapScale=_Detail2_NormalMapScale
+		
+		_Detail1_MapOn=_Detail1_MapOn
+        _Detail1_MapMode=_Detail1_MapMode
+		_Detail1_Map=_Detail1_Map(rgb),MouthMask(A)
+		_Detail1_MapIntensity=_Detail1_MapIntensity
+		/*_Detail1_NormalMap=_Detail1_NormalMap
+		_Detail1_NormalMapScale=_Detail1_NormalMapScale
+        
+        _Detail_MapOn=_Detail_MapOn
+        _Detail_MapMode=_Detail_MapMode
+        _Detail_Map=_Detail_Map(RGB),DetailMask(A)
+        _Detail_MapIntensity=_Detail_MapIntensity
+        _Detail_NormalMap=_Detail_NormalMap
+        _Detail_NormalMapScale=_Detail_NormalMapScale
+ // ==================================================       
+        
+        _CustomIBLOn=_CustomIBLOn
+        _EnvCube=_EnvCube
+        _EnvIntensity=_EnvIntensity
+        _ReflectionOffsetDir=_ReflectionOffsetDir
+// ==================================================
+        
+        _EmissionOn=_EmissionOn
+        _EmissionMap=_EmissionMap(RGB),EmissionMask(A)
+        _EmissionColor=_EmissionColor
+        _Emission=_Emission
+// ==================================================
+        
+        _IndirectIntensity=_IndirectIntensity
+// ==================================================
+        
+        _CustomLightOn=_CustomLightOn
+        _LightDir=_LightDir
+        _LightColor=_LightColor
+// ==================================================   
+        _AlphaTestOn=_AlphaTestOn
+        _Cutoff=_Cutoff
+        _SrcMode=_SrcMode
+        _DstMode=_DstMode 
+        _AlphaPreMultiply=_AlphaPreMultiply
+// ==================================================  
+        _ZWriteOn=_ZWriteOn?
+        _CullMode=_CullMode
+// ==================================================
+        _HeightClothSSSMask=_Height(R) , Cloth(G) , SSSMask(B,A)
+
+        _SSSOn=_SSSOn
+        _FrontSSSIntensity=_FrontSSSIntensity
+        _FrontSSSColor=_FrontSSSColor
+        _BackSSSIntensity=_BackSSSIntensity
+        _BackSSSColor=_BackSSSColor
+
+        _ParallalOn=_ParallalOn
+        _Height=_Height
+// ==================================================
+        _TBMaskMap=_TBMaskMap(R,white:use binormal)
+        _ShiftTex=_ShiftTex(g:shift,b:mask)
+		_HairAoIntensity=HairAoIntensity
+
+        _Shift1=_Shift1
+        _SpecPower1=_SpecPower1
+        _SpecColor1=_SpecColor1
+        _SpecIntensity1=_SpecIntensity1
+        
+        _Shift2=_Shift2
+        _SpecPower2=_SpecPower2
+        _SpecColor2=_SpecColor2
+        _SpecIntensity2=_SpecIntensity2
