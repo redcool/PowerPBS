@@ -241,9 +241,8 @@ float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float3 lig
 
 inline float3 CalcAdditionalLight(PBSData data,float3 diffColor,float3 specColor,Light light,float a,float a2){
     CALC_LIGHT_INFO(light.direction);
-    // diffColor is 1, not effect diffuse
     float lightAtten = light.distanceAttenuation * light.shadowAttenuation;
-    return CalcDirect(data/**/,1,specColor,light.color,nl,nv,nh,lh,th,bh,a,a2) * lightAtten;
+    return CalcDirect(data/**/,diffColor,specColor,light.color,nl,nv,nh,lh,th,bh,a,a2) * lightAtten;
 }
 
 inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,inout PBSData data){
