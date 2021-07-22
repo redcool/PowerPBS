@@ -179,6 +179,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
             D = smoothstep(_ClothDMin,_ClothDMax,D);
             // D = lerp(V,D,D);
             specTerm = V * D * PI2 * _ClothSheenColor;//lerp(_ClothSheenColor*.5,_ClothSheenColor,D);
+            // return specTerm;
         break;
         case PBR_MODE_STRAND:
             specTerm = data.hairSpecColor;
