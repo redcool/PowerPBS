@@ -61,6 +61,7 @@ CBUFFER_START(UnityPerMaterial)
 // ==================================================
     int _ApplyShadowOn;
     int _ReceiveAdditionalLightsOn;
+    int _ReceiveAdditionalLightsShadowOn;
 // ==================================================
     int _ScatteringLUTOn;
     float _ScatteringIntensity;

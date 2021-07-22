@@ -37,9 +37,13 @@ Shader "Character/PowerPBS"
 
         [Header(PBR Mode)]
         [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
+// ==================================================
+        [Space(10)][Header(Shadow)]
+        [Toggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
 
         [Header(URP Additional Lights)]
         [Toggle]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
+        [Toggle]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
 // ==================================================
         [Header(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)
@@ -62,9 +66,7 @@ Shader "Character/PowerPBS"
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)
         _ClothDMin("_ClothDMin",range(0,1)) = 0
         _ClothDMax("_ClothDMax",range(0,1)) = 1
-// ==================================================
-        [Space(10)][Header(Shadow)]
-        [Toggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
+
 // ==================================================
 		[Space(10)][Header(Detail4_Map Top Layer)]
 		[Toggle]_Detail4_MapOn("_Detail4_MapOn",int) = 0

@@ -3,7 +3,6 @@
 
 #include "UnityCG.cginc"
 #include "UnityStandardutils.cginc"
-// #include "UnityPBSLighting.cginc"
 #include "UnityStandardBRDF.cginc"
 #include "PowerPBSCore.cginc"
 #include "PowerPBSHair.cginc"

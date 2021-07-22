@@ -1,6 +1,7 @@
 #if !defined(URP_LIGHTING_CGINC)
 #define URP_LIGHTING_CGINC
 
+
 #if defined(SHADER_API_MOBILE) && (defined(SHADER_API_GLES) || defined(SHADER_API_GLES30))
     #define MAX_VISIBLE_LIGHTS 16
 #elif defined(SHADER_API_MOBILE) || (defined(SHADER_API_GLCORE) && !defined(SHADER_API_SWITCH)) || defined(SHADER_API_GLES) || defined(SHADER_API_GLES3) // Workaround for bug on Nintendo Switch where SHADER_API_GLCORE is mistakenly defined
@@ -8,6 +9,7 @@
 #else
     #define MAX_VISIBLE_LIGHTS 256
 #endif
+#include "URP_Shadows.cginc"
 
 // Input.hlsl
 float4 _MainLightPosition;
@@ -191,12 +193,6 @@ int GetPerObjectLightIndex(uint index)
 Light GetAdditionalLight(uint i, float3 positionWS)
 {
     int perObjectLightIndex = GetPerObjectLightIndex(i);
-    return GetAdditionalPerObjectLight(perObjectLightIndex, positionWS);
-}
-
-Light GetAdditionalLight(uint i, float3 positionWS, half4 shadowMask)
-{
-    int perObjectLightIndex = GetPerObjectLightIndex(i);
     Light light = GetAdditionalPerObjectLight(perObjectLightIndex, positionWS);
 
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
@@ -204,10 +200,14 @@ Light GetAdditionalLight(uint i, float3 positionWS, half4 shadowMask)
 #else
     half4 occlusionProbeChannels = _AdditionalLightsOcclusionProbes[perObjectLightIndex];
 #endif
-    // light.shadowAttenuation = AdditionalLightShadow(perObjectLightIndex, positionWS, shadowMask, occlusionProbeChannels);
+
+    light.shadowAttenuation = !_ReceiveAdditionalLightsShadowOn;
+    if(_ReceiveAdditionalLightsShadowOn)
+        light.shadowAttenuation = AdditionalLightShadow(perObjectLightIndex, positionWS, light.direction);
 
     return light;
 }
+
 
 int GetAdditionalLightsCount()
 {
