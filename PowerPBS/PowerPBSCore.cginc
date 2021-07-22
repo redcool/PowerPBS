@@ -9,13 +9,8 @@
 #include "URP_Lighting.cginc"
 
 inline UnityLight GetLight(){
-    #if !LIGHTMAP_ON
-    float3 dir = _WorldSpaceLightPos0.xyz;
-    float3 color = _LightColor0;
-    #else
-    float3 dir = _MainLightDir;
+    float3 dir = _MainLightPosition;
     float3 color = _MainLightColor;
-    #endif
 
     // ---- 改变主光源,方向,颜色.
     dir.xyz += _CustomLightOn > 0 ? _LightDir.xyz : 0;

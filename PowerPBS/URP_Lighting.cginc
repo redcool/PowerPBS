@@ -9,6 +9,11 @@
     #define MAX_VISIBLE_LIGHTS 256
 #endif
 
+// Input.hlsl
+float4 _MainLightPosition;
+half4 _MainLightColor;
+half4 _MainLightOcclusionProbes;
+
 // UnityInput.hlsl
 // CBUFFER_START(UnityPerDraw)
 half4 unity_LightIndices[2];

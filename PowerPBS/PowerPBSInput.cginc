@@ -92,9 +92,6 @@ CBUFFER_START(UnityPerMaterial)
     fixed4 _LightDir;
     fixed4 _LightColor;
 
-    float3 _MainLightDir;
-    float3 _MainLightColor;
-
     int _SSSOn;
     float3 _BackSSSColor,_FrontSSSColor;
     float _FrontSSSIntensity,_BackSSSIntensity;
