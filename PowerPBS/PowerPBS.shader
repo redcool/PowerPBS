@@ -60,7 +60,8 @@ Shader "Character/PowerPBS"
         [Toggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
         [NoScaleOffset]_ScatteringLUT("_ScatteringLUT",2d) = ""{}
         _ScatteringIntensity("_ScatteringIntensity",range(0,3)) = 1
-        _CurvatureScale("_CurvatureScale (MainTex.a)",range(0.01,1)) = 1
+        _CurvatureScale("_CurvatureScale (MainTex.a)",range(0.01,0.99)) = 1
+        [Toggle]_LightColorNoAtten("_LightColorNoAtten",int) = 1
 // ==================================================
         [Header(Cloth Spec)]
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)

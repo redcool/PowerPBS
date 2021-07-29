@@ -97,7 +97,7 @@ half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS, half3 ligh
     half4 shadowParams = GetAdditionalLightShadowParams(lightIndex);
 
     int shadowSliceIndex = shadowParams.w;
-    // [branch]
+    UNITY_BRANCH
     if (shadowSliceIndex < 0)
         return 1.0;
 

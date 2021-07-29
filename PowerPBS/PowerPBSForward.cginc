@@ -133,7 +133,10 @@ float4 frag (v2f i) : SV_Target
 
     //for preintegrated lut
     if(_ScatteringLUTOn){
-        c.rgb += PreScattering(worldNormal,light,data.nl,mainTex,worldPos,_CurvatureScale,_ScatteringIntensity);
+        float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
+        float3 scatteredColor = PreScattering(worldNormal,light.dir,lightColor,data.nl,mainTex,worldPos,_CurvatureScale,_ScatteringIntensity).xyzx;
+        // return scatteredColor.xyzx;
+        c.rgb += scatteredColor;
     }
 
     //for emission

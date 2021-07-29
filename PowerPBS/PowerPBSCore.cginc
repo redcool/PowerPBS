@@ -36,14 +36,14 @@ inline float3 GetWorldViewDir(float3 worldPos){
     return UnityWorldSpaceViewDir(worldPos);
 }
 
-inline float3 PreScattering(float3 normal,UnityLight light,float nl,float4 mainTex,float3 worldPos,float curveScale,float scatterIntensity){
-    float wrappedNL = dot(normal,light.dir) * 0.5 + 0.5;
-    // float deltaNormal = length(fwidth(normal));
+inline float3 PreScattering(float3 normal,float3 lightDir,float3 lightColor,float nl,float4 mainTex,float3 worldPos,float curveScale,float scatterIntensity){
+    float wnl = dot(normal,(lightDir)) * 0.5 + 0.5;
+    // float deltaNormal = length(fwidth(normal))*10;
     // float deltaPos = length(fwidth(worldPos));
     // float curvature = deltaNormal/1 * curveScale;
-    float atten = smoothstep(0.,0.3,nl) * (1 - wrappedNL);
-    float3 scattering = UNITY_SAMPLE_TEX2D(_ScatteringLUT,float2(wrappedNL,mainTex.a * curveScale));
-    return scattering * light.color * mainTex.xyz * atten * scatterIntensity;
+    float atten = 1-wnl;//smoothstep(0.,0.5,nl);
+    float3 scattering = UNITY_SAMPLE_TEX2D(_ScatteringLUT,float2(wnl,curveScale ));
+    return scattering * lightColor * mainTex.xyz * atten * scatterIntensity * mainTex.w;
 }
 
 inline float3 GetIndirectSpecular(float3 reflectDir,float rough){
