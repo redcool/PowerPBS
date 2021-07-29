@@ -26,13 +26,15 @@ UNITY_DECLARE_TEXCUBE(_EnvCube);
 UNITY_DECLARE_TEX2D(_EmissionMap);
 UNITY_DECLARE_TEX2D(_ScatteringLUT);
 
-
-
+   //_Detail1_MapOn
+ //_Detail1_MapMode
+   //_Detail1_MapIntensity
+    //_Detail1_Map_ST
 #define DECLARE_DETAIL(id)\
-    int _Detail##id##_MapOn;\   //_Detail1_MapOn
-    int _Detail##id##_MapMode;\ //_Detail1_MapMode
-    float _Detail##id##_MapIntensity;\  //_Detail1_MapIntensity
-    float4 _Detail##id##_Map_ST //_Detail1_Map_ST
+    int _Detail##id##_MapOn;\
+    int _Detail##id##_MapMode;\
+    float _Detail##id##_MapIntensity;\
+    float4 _Detail##id##_Map_ST
 
 //------------------------- main texture
 CBUFFER_START(UnityPerMaterial)
