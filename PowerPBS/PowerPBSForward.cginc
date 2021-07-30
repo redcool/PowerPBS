@@ -60,10 +60,10 @@ float4 frag (v2f i) : SV_Target
 
     // heightClothSSSMask
     float4 heightClothSSSMask = UNITY_SAMPLE_TEX2D(_HeightClothSSSMask,i.uv);
-    float height = heightClothSSSMask.r;
-    float clothMask = heightClothSSSMask.g;
-    float frontSSS = heightClothSSSMask.b;
-    float backSSS = heightClothSSSMask.a;
+    float height = heightClothSSSMask.x;
+    float clothMask = heightClothSSSMask.y;
+    // float frontSSS = heightClothSSSMask.z;
+    // float backSSS = heightClothSSSMask.w;
 
     float2 uv = i.uv.xy;
     if(_ParallalOn)
@@ -119,7 +119,7 @@ float4 frag (v2f i) : SV_Target
     half outputAlpha;
     albedo = AlphaPreMultiply (albedo, alpha, oneMinusReflectivity, /*out*/ outputAlpha);
 
-    PBSData data = InitPBSData(tangent,binormal,n,v,oneMinusReflectivity, smoothness,clothMask,worldPos);
+    PBSData data = InitPBSData(tangent,binormal,n,v,oneMinusReflectivity, smoothness,heightClothSSSMask,worldPos);
     data.mainTex = mainTex;
 
     // calc strand specular
@@ -145,7 +145,7 @@ float4 frag (v2f i) : SV_Target
     }
     
     if(_SSSOn){
-        c.rgb += CalcSSS(uv,light.dir,v,frontSSS,backSSS);
+        c.rgb += CalcSSS(light.dir,v,heightClothSSSMask.zw);
     }
     // apply fog
     UNITY_APPLY_FOG(i.fogCoord, c);

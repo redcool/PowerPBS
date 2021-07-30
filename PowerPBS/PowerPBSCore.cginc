@@ -21,11 +21,11 @@ inline UnityLight GetLight(){
     return l;
 }
 
-inline float3 CalcSSS(float2 uv,float3 l,float3 v,float frontSSSMask,float backSSSMask){
+inline float3 CalcSSS(float3 l,float3 v,float2 fastSSSMask){
     float sss1 = FastSSS(l,v);
     float sss2 = FastSSS(-l,v);
-    float3 front = sss1 * _FrontSSSIntensity * frontSSSMask * _FrontSSSColor;
-    float3 back = sss2 * _BackSSSIntensity * backSSSMask * _BackSSSColor;
+    float3 front = sss1 * _FrontSSSIntensity * fastSSSMask.x * _FrontSSSColor;
+    float3 back = sss2 * _BackSSSIntensity * fastSSSMask.y * _BackSSSColor;
     return (front + back);
 }
 
@@ -261,7 +261,10 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
 
             if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
                 float3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity);
-                color.rgb += scatteredColor;
+                color.rgb += scatteredColor ;
+            }
+            if(_SSSOn && _AdditionalLightCalcFastSSS){
+                color.rgb += CalcSSS(light1.direction,data.viewDir,data.heightClothFastSSSMask.zw);
             }
         }
     }

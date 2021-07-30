@@ -100,7 +100,7 @@ CBUFFER_START(UnityPerMaterial)
     int _SSSOn;
     float3 _BackSSSColor,_FrontSSSColor;
     float _FrontSSSIntensity,_BackSSSIntensity;
-
+    int _AdditionalLightCalcFastSSS;
 // ================================================== parallel
     int _ParallalOn;
     float _Height;

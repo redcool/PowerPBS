@@ -147,12 +147,13 @@ Shader "Character/PowerPBS"
         [Header(Height Cloth FrontSSS BackSSS)]
         _HeightClothSSSMask("_Height(R) , Cloth(G) , SSSMask(B,A)",2d) = "white"{} 
 
-        [Space(10)][Header(SSS)]
+        [Space(10)][Header(FastSSS)]
         [Toggle]_SSSOn("_SSSOn",int) = 0
         _FrontSSSIntensity("_FrontSSSIntensity",range(0,1)) = 1
         _FrontSSSColor("_FrontSSSColor",color) = (1,0,0,0)
         _BackSSSIntensity("_BackSSSIntensity",range(0,1)) = 1
         _BackSSSColor("_BackSSSColor",color) = (1,0,0,0)
+        [Toggle]_AdditionalLightCalcFastSSS("_AdditionalLightCalcFastSSS",int) =0
 
         [Space(10)][Header(ParallelOffset)]
         [Toggle]_ParallalOn("_ParallalOn",int) = 0
