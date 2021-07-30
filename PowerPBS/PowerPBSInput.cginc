@@ -69,6 +69,7 @@ CBUFFER_START(UnityPerMaterial)
     float _ScatteringIntensity;
     float _CurvatureScale;
     int _LightColorNoAtten;
+    int _AdditionalLightCalcScatter;
 // ================================================== detail maps
     // main detail normalMap
     float4 _Detail_NormalMap_ST;

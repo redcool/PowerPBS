@@ -62,6 +62,7 @@ Shader "Character/PowerPBS"
         _ScatteringIntensity("_ScatteringIntensity",range(0,3)) = 1
         _CurvatureScale("_CurvatureScale (MainTex.a)",range(0.01,0.99)) = 1
         [Toggle]_LightColorNoAtten("_LightColorNoAtten",int) = 1
+        [Toggle]_AdditionalLightCalcScatter("_AdditionalLightCalcScatter",int) = 0
 // ==================================================
         [Header(Cloth Spec)]
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)

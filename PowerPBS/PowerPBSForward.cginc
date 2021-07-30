@@ -120,6 +120,7 @@ float4 frag (v2f i) : SV_Target
     albedo = AlphaPreMultiply (albedo, alpha, oneMinusReflectivity, /*out*/ outputAlpha);
 
     PBSData data = InitPBSData(tangent,binormal,n,v,oneMinusReflectivity, smoothness,clothMask,worldPos);
+    data.mainTex = mainTex;
 
     // calc strand specular
     if(_PBRMode == PBR_MODE_STRAND){
@@ -134,8 +135,7 @@ float4 frag (v2f i) : SV_Target
     //for preintegrated lut
     if(_ScatteringLUTOn){
         float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
-        float3 scatteredColor = PreScattering(worldNormal,light.dir,lightColor,data.nl,mainTex,worldPos,_CurvatureScale,_ScatteringIntensity).xyzx;
-        // return scatteredColor.xyzx;
+        float3 scatteredColor = PreScattering(worldNormal,light.dir,lightColor,data.nl,mainTex,worldPos,_CurvatureScale,_ScatteringIntensity);
         c.rgb += scatteredColor;
     }
 
