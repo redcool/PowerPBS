@@ -60,6 +60,7 @@ CBUFFER_START(UnityPerMaterial)
 // ==================================================
     float4 _ClothSheenColor;
     float _ClothDMax,_ClothDMin;
+    int _ClothMaskUseMainTexA;
 // ==================================================
     int _ApplyShadowOn;
     int _ReceiveAdditionalLightsOn;

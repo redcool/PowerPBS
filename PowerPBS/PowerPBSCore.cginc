@@ -171,7 +171,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
         case PBR_MODE_CLOTH:
             V = AshikhminV(nv,nl);
             D = CharlieD(roughness,nh);
-            D = smoothstep(_ClothDMin,_ClothDMax,D);
+            D = smoothstep(_ClothDMin,_ClothDMax,D) * lerp(1,data.mainTex.a,_ClothMaskUseMainTexA);
             // D = lerp(V,D,D);
             specTerm = V * D * PI2 * _ClothSheenColor;//lerp(_ClothSheenColor*.5,_ClothSheenColor,D);
             // return specTerm;
