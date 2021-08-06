@@ -173,11 +173,13 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
             D = CharlieD(roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
             float3 sheenColor = _ClothSheenColor;
+            // extra calc ggx
             if(_ClothGGXUseMainTexA){
                 sheenColor = lerp(sheenColor,1,data.mainTex.a);
-                D = lerp(D,D_GGXTerm(nh,roughness),data.mainTex.a);
+                float3 DF = D_GGXTerm(nh,roughness) * FresnelTerm(specColor,lh);
+                D = lerp(D*2,DF,data.mainTex.a);
             }
-            specTerm = V * D * PI2 * sheenColor ;
+            specTerm = V * D * PI * sheenColor ;
         break;
         case PBR_MODE_STRAND:
             specTerm = data.hairSpecColor;
