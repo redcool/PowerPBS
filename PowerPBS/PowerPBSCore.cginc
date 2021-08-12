@@ -190,7 +190,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
     
     // calc F
     float3 F =1;
-    if(_PBRMode != PBR_MODE_CLOTH)
+    if(_PBRMode != PBR_MODE_CLOTH )
         F = FresnelTerm(specColor,lh);
         
     specTerm *= F;
@@ -218,7 +218,10 @@ float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float3 lig
     float nl,float nv,float nh,float lh,float th,float bh,float a,float a2){
 
     float diffuseTerm = CalcDiffuseTerm(nl,nv,lh,a);
-    float3 specularTerm = CalcSpeccularTerm(data,nl,nv,nh,lh,th,bh,specColor,a2);
+    float3 specularTerm = 0;
+    if(_SpecularOn){
+        specularTerm = CalcSpeccularTerm(data,nl,nv,nh,lh,th,bh,specColor,a2);
+    }
     float3 color = diffuseTerm * diffColor + specularTerm;
     color *= lightColor;
     return color;

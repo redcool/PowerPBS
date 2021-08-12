@@ -4,7 +4,7 @@
 tabNames =  Settings, Main,Aniso,Cloth,ScatterLUT,Alpha,Details,Parallal_SSS,Env,Emission,Strand
 
 // Tab's contents
-Settings =_ZWriteOn,_CullMode, _IndirectIntensity,_ApplyShadowOn,_PBRMode,_ReceiveAdditionalLightsOn,_ReceiveAdditionalLightsShadowOn
+Settings =_ZWriteOn,_CullMode, _IndirectIntensity,_ApplyShadowOn,_PBRMode,_SpecularOn,_ReceiveAdditionalLightsOn,_ReceiveAdditionalLightsShadowOn
 Main = _MainTex,_Color,_NormalMap,_NormalMapScale,_MetallicMap,_Metallic,_Smoothness,_Occlusion
 Aniso=_AnisoColor,_AnisoIntensity,_AnisoRough,_AnisoLayer2On,_Layer2AnisoColor,_Layer2AnisoIntensity,_Layer2AnisoRough
 Cloth=_ClothSheenColor,_ClothDMin,_ClothDMax,_ClothGGXUseMainTexA

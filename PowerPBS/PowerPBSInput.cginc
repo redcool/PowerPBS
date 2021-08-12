@@ -48,6 +48,7 @@ CBUFFER_START(UnityPerMaterial)
     float _Occlusion;
     float _Cutoff;
     int _PBRMode; // standard,aniso,fabric,strand
+    float _SpecularOn;
 // ==================================================
     float _AnisoRough;
     float _AnisoIntensity;
