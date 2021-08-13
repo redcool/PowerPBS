@@ -15,6 +15,8 @@ struct PBSData{
     float smoothness;
     float3 worldPos;
     float4 mainTex;
+    float3 lightDir;
+    float3 halfDir;
     // output params
     float nl;
 };

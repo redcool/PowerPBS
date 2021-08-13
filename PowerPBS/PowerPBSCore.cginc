@@ -145,7 +145,7 @@ float3 CalcEmission(float3 albedo,float2 uv){
 #define PBR_MODE_STRAND 3
 
 inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor,float roughness){
-    float V = 0;
+    float V = 1;
     float D = 0;
     float3 specTerm = 0;
 
@@ -156,15 +156,23 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
             specTerm = V * D * PI;
         break;
         case PBR_MODE_ANISO:
-            V = SmithJointGGXTerm(nl,nv,roughness);
+            // float tv = (dot(data.tangent,data.viewDir));
+            // float tl = (dot(data.tangent,data.lightDir));
+            // float bv = (dot(data.binormal,data.viewDir));
+            // float bl = (dot(data.binormal,data.lightDir));
+
             float anisoRough = _AnisoRough * 0.5+0.5;
-            D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough) * _AnisoIntensity;
-            // D = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough) * _AnisoIntensity;
-            specTerm = D * _AnisoColor;
+            // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
+            V = SmithJointGGXTerm(nl,nv,roughness);
+            D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough);
+            // D = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough);
+            specTerm = D * _AnisoIntensity * _AnisoColor;
+            
             if(_AnisoLayer2On){
                 anisoRough = _Layer2AnisoRough * 0.5+0.5;
-                D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough) * _Layer2AnisoIntensity;
-                specTerm += D * _Layer2AnisoColor;
+                D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough);
+                // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
+                specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor;
             }
             specTerm *= V * PI;
         break;
@@ -187,12 +195,11 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
     }
     specTerm = max(0,specTerm * nl);
     specTerm *= any(specColor)? 1 : 0;
-    
     // calc F
     float3 F =1;
     if(_PBRMode != PBR_MODE_CLOTH )
-        F = FresnelTerm(specColor,lh);
-        
+        F = FresnelTerm(specColor,lh) * PI;
+
     specTerm *= F;
     return specTerm;
 }
@@ -257,9 +264,12 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
 
     // set pbsdata for others flow.
     data.nl = nl;
+    data.lightDir = l;
+    data.halfDir = h;
 
     float3 color = CalcIndirect(gi,diffColor,specColor,data.smoothness,a2,data.oneMinusReflectivity,nv);
     color += CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
+// return CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2).xyzx;
 
     if(_ReceiveAdditionalLightsOn){
         int lightCount = GetAdditionalLightsCount();

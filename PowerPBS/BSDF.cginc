@@ -107,7 +107,57 @@ float BankBRDF(float3 l,float3 v,float3 t,float ks,float power){
     return ks * pow(sqrt(1-lt2)*sqrt(1-vt2) - lt*vt,power);
 }
 
+float GetSmithJointGGXAnisoPartLambdaV(float TdotV, float BdotV, float NdotV, float roughnessT, float roughnessB)
+{
+    return length(float3(roughnessT * TdotV, roughnessB * BdotV, NdotV));
+}
 
+// Note: V = G / (4 * NdotL * NdotV)
+// Ref: https://cedec.cesa.or.jp/2015/session/ENG/14698.html The Rendering Materials of Far Cry 4
+float V_SmithJointGGXAniso(float TdotV, float BdotV, float NdotV, float TdotL, float BdotL, float NdotL, float roughnessT, float roughnessB, float partLambdaV)
+{
+    float lambdaV = NdotL * partLambdaV;
+    float lambdaL = NdotV * length(float3(roughnessT * TdotL, roughnessB * BdotL, NdotL));
+
+    return 0.5 / (lambdaV + lambdaL);
+}
+
+float V_SmithJointGGXAniso(float TdotV, float BdotV, float NdotV, float TdotL, float BdotL, float NdotL, float roughnessT, float roughnessB)
+{
+    float partLambdaV = GetSmithJointGGXAnisoPartLambdaV(TdotV, BdotV, NdotV, roughnessT, roughnessB);
+    return V_SmithJointGGXAniso(TdotV, BdotV, NdotV, TdotL, BdotL, NdotL, roughnessT, roughnessB, partLambdaV);
+}
+// Inline D_GGXAniso() * V_SmithJointGGXAniso() together for better code generation.
+float DV_SmithJointGGXAniso(float TdotH, float BdotH, float NdotH, float NdotV,
+                           float TdotL, float BdotL, float NdotL,
+                           float roughnessT, float roughnessB, float partLambdaV)
+{
+    float a2 = roughnessT * roughnessB;
+    float3 v = float3(roughnessB * TdotH, roughnessT * BdotH, a2 * NdotH);
+    float  s = dot(v, v);
+
+    float lambdaV = NdotL * partLambdaV;
+    float lambdaL = NdotV * length(float3(roughnessT * TdotL, roughnessB * BdotL, NdotL));
+
+    float2 D = float2(a2 * a2 * a2, s * s);  // Fraction without the multiplier (1/Pi)
+    float2 G = float2(1, lambdaV + lambdaL); // Fraction without the multiplier (1/2)
+
+    // This function is only used for direct lighting.
+    // If roughness is 0, the probability of hitting a punctual or directional light is also 0.
+    // Therefore, we return 0. The most efficient way to do it is with a max().
+    return (INV_PI * 0.5) * (D.x * G.x) / max(D.y * G.y, FLT_MIN);
+}
+
+float DV_SmithJointGGXAniso(float TdotH, float BdotH, float NdotH,
+                           float TdotV, float BdotV, float NdotV,
+                           float TdotL, float BdotL, float NdotL,
+                           float roughnessT, float roughnessB)
+{
+    float partLambdaV = GetSmithJointGGXAnisoPartLambdaV(TdotV, BdotV, NdotV, roughnessT, roughnessB);
+    return DV_SmithJointGGXAniso(TdotH, BdotH, NdotH, NdotV,
+                                 TdotL, BdotL, NdotL,
+                                 roughnessT, roughnessB, partLambdaV);
+}
 
 float CharlieD(float roughness, float ndoth)
 {
