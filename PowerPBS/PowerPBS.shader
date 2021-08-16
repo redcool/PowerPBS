@@ -39,7 +39,7 @@ Shader "Character/PowerPBS"
         [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
         [Header(Light Options)]
         [Toggle]_SpecularOn("_SpecularOn",float) = 1
-        _FresnelIntensity("_FresnelIntensity",range(0,3)) = 1
+        _FresnelIntensity("_FresnelIntensity",range(1,3)) = 1
 // ==================================================
         [Space(10)][Header(Shadow)]
         [Toggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
