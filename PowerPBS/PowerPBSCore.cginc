@@ -198,7 +198,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
     // calc F
     float3 F =1;
     if(_PBRMode != PBR_MODE_CLOTH )
-        F = FresnelTerm(specColor,lh) * PI;
+        F = FresnelTerm(specColor,lh) * _FresnelIntensity;
 
     specTerm *= F;
     return specTerm;
