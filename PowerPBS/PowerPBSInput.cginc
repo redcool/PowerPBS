@@ -59,6 +59,7 @@ CBUFFER_START(UnityPerMaterial)
     float _Layer2AnisoRough;
     float _Layer2AnisoIntensity;
     float4 _Layer2AnisoColor;
+    float _AnisoMaskUseMainTexA;
 // ==================================================
     float4 _ClothSheenColor;
     float _ClothDMax,_ClothDMin;

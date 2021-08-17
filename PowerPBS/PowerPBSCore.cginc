@@ -175,6 +175,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
                 specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor;
             }
             specTerm *= V * PI;
+            specTerm *= lerp(1,data.mainTex.a,_AnisoMaskUseMainTexA);
         break;
         case PBR_MODE_CLOTH:
             V = AshikhminV(nv,nl);

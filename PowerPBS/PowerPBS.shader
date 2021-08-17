@@ -58,6 +58,8 @@ Shader "Character/PowerPBS"
         _Layer2AnisoColor("_Layer2AnisoColor",color) = (.5,0,0,0)
         _Layer2AnisoIntensity("_Layer2AnisoIntensity",float) = 1
         _Layer2AnisoRough("_Layer2AnisoRough",range(-1,1)) = 0
+        [Header(Mask)]
+        [Toggle]_AnisoMaskUseMainTexA("_AnisoMaskUseMainTexA",float) = 0
 // ==================================================
         [Header(ScatterLUT)]
         [Toggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
