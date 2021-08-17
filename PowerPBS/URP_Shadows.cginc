@@ -88,42 +88,42 @@ half4 GetAdditionalLightShadowParams(int lightIndex)
 #endif
 }
 
+half SampleShadowmapFiltered(ShadowSamplingData samplingData,float4 shadowCoord){
+    float4 atten4 = 0;
+    atten4.x = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset0.xyz);
+    atten4.y = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset1.xyz);
+    atten4.z = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset2.xyz);
+    atten4.w = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset3.xyz);
+    return dot(atten4,0.25);
+}
+
 // returns 0.0 if position is in light's shadow
 // returns 1.0 if position is in light
-half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS, half3 lightDirection)
+half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS,bool isSoftShadow)
 {
-    ShadowSamplingData shadowSamplingData = GetAdditionalLightShadowSamplingData();
+    float4 shadowCoord = mul(_AdditionalLightsWorldToShadow[lightIndex], float4(positionWS, 1.0));
+    // perspective 
+    shadowCoord.xyz /= shadowCoord.w;
 
     half4 shadowParams = GetAdditionalLightShadowParams(lightIndex);
-
-    int shadowSliceIndex = shadowParams.w;
-    // UNITY_BRANCH
-    if (shadowSliceIndex < 0)
-        return 1.0;
-
-#if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
-    float4 shadowCoord = mul(_AdditionalLightsWorldToShadow_SSBO[shadowSliceIndex], float4(positionWS, 1.0));
-#else
-    float4 shadowCoord = mul(_AdditionalLightsWorldToShadow[shadowSliceIndex], float4(positionWS, 1.0));
-#endif
-    // float shadow = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz);
-    // return shadow;
-
-    // Compiler will optimize this branch away as long as isPerspectiveProjection is known at compile time
-     shadowCoord.xyz /= shadowCoord.w;
-
-    float attenuation;
     float shadowStrength = shadowParams.x;
 
+    float attenuation = 1;
+    if(isSoftShadow){
+        ShadowSamplingData samplingData = GetAdditionalLightShadowSamplingData();
+        attenuation = SampleShadowmapFiltered(samplingData,shadowCoord);
+    }else{
     // 1-tap hardware comparison
-    attenuation = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz);
+        attenuation = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz);
+    }
+
     attenuation = LerpWhiteTo(attenuation, shadowStrength);
     return BEYOND_SHADOW_FAR(shadowCoord) ? 1.0 : attenuation;
 }
 
-half AdditionalLightShadow(int lightIndex, float3 positionWS, half3 lightDirection)
+half AdditionalLightShadow(int lightIndex, float3 positionWS, bool isSoftShadow)
 {
-    half realtimeShadow = AdditionalLightRealtimeShadow(lightIndex, positionWS, lightDirection);
+    half realtimeShadow = AdditionalLightRealtimeShadow(lightIndex, positionWS, isSoftShadow);
     return realtimeShadow;
 }
 

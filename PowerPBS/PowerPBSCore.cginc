@@ -271,13 +271,11 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
     float3 color = CalcIndirect(gi,diffColor,specColor,data.smoothness,a2,data.oneMinusReflectivity,nv);
     color += CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
 // return CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2).xyzx;
-
     if(_ReceiveAdditionalLightsOn){
         int lightCount = GetAdditionalLightsCount();
         for(int lightId = 0 ; lightId <lightCount;lightId++){
             Light light1 = GetAdditionalLight(lightId,data.worldPos);
             color += CalcAdditionalLight(data/**/,diffColor,specColor,light1,a,a2);
-
             if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
                 float3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity);
                 color.rgb += scatteredColor ;

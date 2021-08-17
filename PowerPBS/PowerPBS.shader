@@ -47,6 +47,7 @@ Shader "Character/PowerPBS"
         [Header(URP Additional Lights)]
         [Toggle]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
         [Toggle]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
+        [Toggle]_AdditionalLightSoftShadowOn("_AdditionalLightSoftShadowOn",int) = 0
 // ==================================================
         [Header(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)

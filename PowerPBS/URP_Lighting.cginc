@@ -128,7 +128,7 @@ Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
 
     Light light;
     light.direction = lightDirection;
-    light.distanceAttenuation = DistanceAttenuation(distanceSqr, distanceAndSpotAttenuation.xy);
+    light.distanceAttenuation = attenuation;
     light.shadowAttenuation = 1.0;
     light.color = color;
 
@@ -148,6 +148,7 @@ uint GetPerObjectLightIndexOffset()
 // This abstract the underlying data implementation for storing lights/light indices
 int GetPerObjectLightIndex(uint index)
 {
+    
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Structured Buffer Path                                                                   /
 //                                                                                          /
@@ -200,9 +201,9 @@ Light GetAdditionalLight(uint i, float3 positionWS)
     half4 occlusionProbeChannels = _AdditionalLightsOcclusionProbes[perObjectLightIndex];
 #endif
 
-    light.shadowAttenuation = !_ReceiveAdditionalLightsShadowOn;
+    light.shadowAttenuation = 1;
     if(_ReceiveAdditionalLightsShadowOn)
-        light.shadowAttenuation = AdditionalLightShadow(perObjectLightIndex, positionWS, light.direction);
+        light.shadowAttenuation = AdditionalLightShadow(perObjectLightIndex, positionWS,_AdditionalLightSoftShadowOn);
 
     return light;
 }
