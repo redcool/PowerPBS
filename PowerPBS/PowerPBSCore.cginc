@@ -1,7 +1,5 @@
-// Upgrade NOTE: replaced 'defined SIMPLE_PBS_CORE_CGINC' with 'defined (SIMPLE_PBS_CORE_CGINC)'
-
-#if !defined (SIMPLE_PBS_CORE_CGINC)
-#define SIMPLE_PBS_CORE_CGINC
+#if !defined (POWER_PBS_CORE_CGINC)
+#define POWER_PBS_CORE_CGINC
 #include "UnityCG.cginc"
 #include "UnityLightingCommon.cginc"
 #include "PowerPBSData.cginc"
@@ -297,4 +295,4 @@ float4 CalcPBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float
             return UNITY_BRDF_PBS(diffColor,specColor,data.oneMinusReflectivity,data.smoothness,data.normal,data.viewDir,light,gi);
         #endif
 }
-#endif // end of SIMPLE_PBS_CORE_CGINC
+#endif // end of POWER_PBS_CORE_CGINC

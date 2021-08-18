@@ -1,6 +1,4 @@
-﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
-
-/**
+﻿/**
     pbs渲染流程
     1 简化了gi(diffuse,specular)
     2 Lighting里baked模式下同LightingProcess传递光照信息
@@ -209,6 +207,7 @@ Shader "Character/PowerPBS"
             #define PBS1
 
             #define URP_SHADOW // for urp 
+            // #define SRP_BATCHER
             #include "PowerPBSForward.cginc"
            
             ENDCG
@@ -225,6 +224,7 @@ Shader "Character/PowerPBS"
             #pragma fragment frag
 
             #define URP_SHADOW
+            // #define SRP_BATCHER
             #include "PowerPBSShadowCasterPass.cginc"
             ENDCG
         }

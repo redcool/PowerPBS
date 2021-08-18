@@ -10,7 +10,6 @@
     #define MAX_VISIBLE_LIGHTS 256
 #endif
 #include "URP_Shadows.cginc"
-
 // Input.hlsl
 float4 _MainLightPosition;
 half4 _MainLightColor;
@@ -18,8 +17,10 @@ half4 _MainLightOcclusionProbes;
 
 // UnityInput.hlsl
 // CBUFFER_START(UnityPerDraw)
+#if !defined(SRP_BATCHER)
 half4 unity_LightIndices[2];
 half4 unity_LightData;
+#endif //SRP_BATCHER
 // CBUFFER_END
 
 //-------------------- urp Lighting.cginc

@@ -1,5 +1,5 @@
-#if !defined(SIMPLE_PBS_FORWARD_CGINC)
-#define SIMPLE_PBS_FORWARD_CGINC
+#if !defined(POWER_PBS_FORWARD_CGINC)
+#define POWER_PBS_FORWARD_CGINC
 
 #include "UnityCG.cginc"
 #include "UnityStandardutils.cginc"
@@ -152,4 +152,4 @@ float4 frag (v2f i) : SV_Target
     return c;
 }
 
-#endif // SIMPLE_PBS_FORWARD_CGINC
+#endif // POWER_PBS_FORWARD_CGINC
