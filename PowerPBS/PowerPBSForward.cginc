@@ -152,4 +152,25 @@ float4 frag (v2f i) : SV_Target
     return c;
 }
 
+
+//-------------------------------------
+v2f DepthOnlyVertex (appdata v)
+{
+    v2f o = (v2f)0;
+    o.pos = UnityObjectToClipPos(v.vertex);
+    o.uv = float4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
+    return o;
+}
+
+float4 DepthOnlyFragment (v2f i) : SV_Target
+{
+    float detailMask = 0;
+    float4 mainTex = CalcAlbedo(i.uv.xy,detailMask/*out*/);
+
+    if(_AlphaTestOn)
+        clip(mainTex.a - _Cutoff);
+
+    return 0;
+}
+
 #endif // POWER_PBS_FORWARD_CGINC

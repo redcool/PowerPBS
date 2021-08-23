@@ -222,6 +222,25 @@ Shader "Character/PowerPBS"
             ENDCG
         }
 
+        Pass
+        {
+            Name "DepthOnly"
+            Tags{"LightMode" = "DepthOnly"}
+
+            ZWrite On
+            ZTest LEqual
+            ColorMask 0
+
+            CGPROGRAM
+            #pragma exclude_renderers gles gles3 glcore
+
+            #pragma vertex DepthOnlyVertex
+            #pragma fragment DepthOnlyFragment
+
+            #include "PowerPBSForward.cginc"
+            ENDCG
+        }
+
         Pass{
             Tags{"LightMode" = "ShadowCaster"}
 
@@ -237,6 +256,8 @@ Shader "Character/PowerPBS"
             #include "PowerPBSShadowCasterPass.cginc"
             ENDCG
         }
+
+
     }
     CustomEditor "PowerPBS.PowerPBSInspector"
     FallBack "Diffuse"

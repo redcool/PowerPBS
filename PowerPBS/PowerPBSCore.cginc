@@ -289,10 +289,10 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
 
 float4 CalcPBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float smoothness,
     UnityLight light,UnityIndirect gi,inout PBSData data){
-        #if defined(PBS1)
+        // #if defined(PBS1)
             return PBS(diffColor,specColor,light,gi,data);
-        #else
-            return UNITY_BRDF_PBS(diffColor,specColor,data.oneMinusReflectivity,data.smoothness,data.normal,data.viewDir,light,gi);
-        #endif
+        // #else
+        //     return UNITY_BRDF_PBS(diffColor,specColor,data.oneMinusReflectivity,data.smoothness,data.normal,data.viewDir,light,gi);
+        // #endif
 }
 #endif // end of POWER_PBS_CORE_CGINC
