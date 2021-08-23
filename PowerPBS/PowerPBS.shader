@@ -24,17 +24,26 @@ Shader "Character/PowerPBS"
         [Space(20)][Header(MainProp)]
         _MainTex ("Main Texture", 2D) = "white" {}
         _Color("Color",color) = (1,1,1,1)
-        
+
         _NormalMap("NormalMap",2d) = "bump"{}
         _NormalMapScale("_NormalMapScale",range(0,5)) = 1
 
+        [Header(PBR Mask)]
         [noscaleoffset]_MetallicMap("Metallic(R),Smoothness(G),Occlusion(B)",2d) = "white"{}
+
+        [Header(PBR Slider)]
         _Metallic("_Metallic",range(0,1)) = 0.5
         _Smoothness("Smoothness",range(0,1)) = 0
         _Occlusion("_Occlusion",range(0,1)) = 1
-
+        
+        [Header(PBR Mask Channel)]
+        [Enum(R,0,G,1,B,2,A,3)]_MetallicChannel("_MetallicChannel",float) = 0
+        [Enum(R,0,G,1,B,2,A,3)]_SmoothnessChannel("_SmoothnessChannel",float) = 1
+        [Enum(R,0,G,1,B,2,A,3)]_OcclusionChannel("_OcclusionChannel",float) = 2
+// ================================================== Settings
         [Header(PBR Mode)]
         [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
+
         [Header(Light Options)]
         [Toggle]_SpecularOn("_SpecularOn",float) = 1
         _FresnelIntensity("_FresnelIntensity",range(1,3)) = 1

@@ -71,9 +71,9 @@ float4 frag (v2f i) : SV_Target
 
     // metallicSmoothnessOcclusion
     float4 metallicSmoothnessOcclusion = UNITY_SAMPLE_TEX2D(_MetallicMap ,uv);
-    float metallic = metallicSmoothnessOcclusion.r * _Metallic;
-    float smoothness = metallicSmoothnessOcclusion.g * _Smoothness;
-    float occlusion = lerp(1,metallicSmoothnessOcclusion.b , _Occlusion);
+    float metallic = metallicSmoothnessOcclusion[_MetallicChannel] * _Metallic;
+    float smoothness = metallicSmoothnessOcclusion[_SmoothnessChannel] * _Smoothness;
+    float occlusion = lerp(1,metallicSmoothnessOcclusion[_OcclusionChannel] , _Occlusion);
     
     float roughness = 1.0 - smoothness;
     // roughness = roughness * roughness;
