@@ -81,9 +81,10 @@ inline float3 CalcNormal(float2 uv, float detailMask ){
     float3 tn = UnpackScaleNormal(UNITY_SAMPLE_TEX2D(_NormalMap,uv),_NormalMapScale);
 	
 	if (_Detail_MapOn) {
-		float3 dtn = UnpackScaleNormal(_Detail_NormalMap.Sample(tex_linear_repeat_sampler, uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw), _Detail_NormalMapScale);
-		dtn = normalize(float3(tn.xy + dtn.xy, tn.z*dtn.z));
-		tn = lerp(tn, dtn, detailMask);
+        float2 dnUV = uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw;
+		float3 dn = UnpackScaleNormal(UNITY_SAMPLE_TEX2D_SAMPLER(_Detail_NormalMap,_linear_repeat, dnUV), _Detail_NormalMapScale);
+		dn = normalize(float3(tn.xy + dn.xy, tn.z*dn.z));
+		tn = lerp(tn, dn, detailMask);
 	}
     return tn;
 }
@@ -92,7 +93,7 @@ inline float3 CalcNormal(float2 uv, float detailMask ){
 inline float CalcDetailAlbedo(inout float4 mainColor, UNITY_DECLARE_TEX2D_NOSAMPLER(texObj),float2 uv, float detailIntensity,bool isOn,int detailMapMode){
     float detailMask = 0;
     if(isOn){
-        float4 tex = texObj.Sample(tex_linear_repeat_sampler,uv);
+        float4 tex = UNITY_SAMPLE_TEX2D_SAMPLER(texObj,_linear_repeat,uv);
 		float3 detailAlbedo = tex.xyz;
         detailMask = tex.w;
         float mask = detailMask * detailIntensity;
@@ -118,7 +119,7 @@ inline float4 CalcAlbedo(float2 uv,out float detailMask)
     return albedo * _Color;
 }
 
-inline UnityIndirect CalcGI(float3 albedo,float2 uv,float3 reflectDir,float3 normal,float occlusion,float roughness){
+inline UnityIndirect CalcGI(float3 albedo,float2 uv,float3 reflectDir,float3 normal,float3 occlusion,float roughness){
     float3 indirectSpecular = GetIndirectSpecular(reflectDir,roughness) * occlusion * _IndirectIntensity;
     // float3 indirectDiffuse = albedo * occlusion;
     // indirectDiffuse += ShadeSH9(float4(normal,1));

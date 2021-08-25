@@ -35,6 +35,7 @@ Shader "Character/PowerPBS"
         _Metallic("_Metallic",range(0,1)) = 0.5
         _Smoothness("Smoothness",range(0,1)) = 0
         _Occlusion("_Occlusion",range(0,1)) = 1
+        _OcclusionColor("_OcclusionColor",color) = (1,1,1,1)
         
         [Header(PBR Mask Channel)]
         [Enum(R,0,G,1,B,2,A,3)]_MetallicChannel("_MetallicChannel",float) = 0
@@ -69,13 +70,17 @@ Shader "Character/PowerPBS"
         [Header(Mask)]
         [Toggle]_AnisoMaskUseMainTexA("_AnisoMaskUseMainTexA",float) = 0
 // ==================================================
-        [Header(ScatterLUT)]
+        [Header(Pre Integral Scatter)]
         [Toggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
         [NoScaleOffset]_ScatteringLUT("_ScatteringLUT",2d) = ""{}
         _ScatteringIntensity("_ScatteringIntensity",range(0,3)) = 1
         _CurvatureScale("_CurvatureScale (MainTex.a)",range(0.01,0.99)) = 1
         [Toggle]_LightColorNoAtten("_LightColorNoAtten",int) = 1
         [Toggle]_AdditionalLightCalcScatter("_AdditionalLightCalcScatter",int) = 0
+
+        [Header(Diffuse Profile ScreenSpace)]
+        [Toggle]_DiffuseProfileOn("_DiffuseProfileOn",int) = 0
+        _BlurSize("_BlurSize",range(0,20)) = 1
 // ==================================================
         [Header(Cloth Spec)]
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)
@@ -192,6 +197,10 @@ Shader "Character/PowerPBS"
         _SpecPower2("_SpecPower2",range(0.01,1)) = 1
         _SpecColor2("_SpecColor2",color) = (1,1,1,1)
         _SpecIntensity2("_SpecIntensity2",float) = 10
+
+        // [Header(Stencil)]
+        // _StencilRef("_StencilRef",int) = 2
+        // [UnityEngine.Rendering.]_StencilComp("_StencilComp",float) = 0
     }
 
     SubShader
@@ -201,6 +210,12 @@ Shader "Character/PowerPBS"
         Blend [_SrcMode][_DstMode]
         ZWrite [_ZWriteOn]
         Cull[_CullMode]
+
+        // stencil {
+        //     ref [_StencilRef]
+        //     comp [_StencilComp]
+
+        // }
 
         Pass
         {
@@ -217,7 +232,7 @@ Shader "Character/PowerPBS"
 
             #define URP_SHADOW // for urp 
             // #define SRP_BATCHER
-            #include "PowerPBSForward.cginc"
+            #include "Lib/PowerPBSForward.cginc"
            
             ENDCG
         }
@@ -237,7 +252,7 @@ Shader "Character/PowerPBS"
             #pragma vertex DepthOnlyVertex
             #pragma fragment DepthOnlyFragment
 
-            #include "PowerPBSForward.cginc"
+            #include "Lib/PowerPBSForward.cginc"
             ENDCG
         }
 
@@ -253,7 +268,7 @@ Shader "Character/PowerPBS"
 
             #define URP_SHADOW
             // #define SRP_BATCHER
-            #include "PowerPBSShadowCasterPass.cginc"
+            #include "Lib/PowerPBSShadowCasterPass.cginc"
             ENDCG
         }
 

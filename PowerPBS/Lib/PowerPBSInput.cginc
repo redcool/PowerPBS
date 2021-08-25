@@ -1,5 +1,6 @@
 #if !defined(POWER_PBS_INPUT_CGINC)
 #define POWER_PBS_INPUT_CGINC
+#include "Common.hlsl"
 #include "StrandSpecLib.cginc"
 
 #define MAX_SPECULAR 25
@@ -13,7 +14,7 @@ UNITY_DECLARE_TEX2D(_HeightClothSSSMask);
 // detail map mode id
 #define DETAIL_MAP_MODE_MULTIPLY 0
 #define DETAIL_MAP_MODE_REPLACE 1
-SamplerState tex_linear_repeat_sampler;
+SamplerState sampler_linear_repeat;
 
 UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail_Map);
 UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail_NormalMap);
@@ -25,6 +26,8 @@ UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail3_Map);
 UNITY_DECLARE_TEXCUBE(_EnvCube);
 UNITY_DECLARE_TEX2D(_EmissionMap);
 UNITY_DECLARE_TEX2D(_ScatteringLUT);
+
+TEXTURE2D(_CameraOpaqueTexture); SAMPLER(sampler_CameraOpaqueTexture);
 
    //_Detail1_MapOn
  //_Detail1_MapMode
@@ -40,8 +43,10 @@ UNITY_DECLARE_TEX2D(_ScatteringLUT);
 CBUFFER_START(UnityPerMaterial)
     float4 _Color;
     float4 _MainTex_ST;
+    float4 _MainTex_TexelSize;
     float4 _NormalMap_ST;
     float _NormalMapScale;
+    float4 _CameraOpaqueTexture_TexelSize;
 
     float _Smoothness;
     float _Metallic;
@@ -53,6 +58,7 @@ CBUFFER_START(UnityPerMaterial)
     float _MetallicChannel;
     float _SmoothnessChannel;
     float _OcclusionChannel;
+    float4 _OcclusionColor;
 // ==================================================
     float _AnisoRough;
     float _AnisoIntensity;
@@ -78,6 +84,8 @@ CBUFFER_START(UnityPerMaterial)
     float _CurvatureScale;
     int _LightColorNoAtten;
     int _AdditionalLightCalcScatter;
+    int _DiffuseProfileOn;
+    float _BlurSize;
 // ================================================== detail maps
     // main detail normalMap
     float4 _Detail_NormalMap_ST;

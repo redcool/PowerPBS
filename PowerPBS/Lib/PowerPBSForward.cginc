@@ -7,6 +7,7 @@
 #include "PowerPBSCore.cginc"
 #include "PowerPBSHair.cginc"
 #include "PowerPBSUrpShadows.cginc"
+#include "Blur.cginc"
 
 struct appdata
 {
@@ -26,6 +27,7 @@ struct v2f
     float4 tSpace2:TEXCOORD4;
     float3 viewTangentSpace:TEXCOORD5;
     SHADOW_COORDS(6)
+    float4 screenPos:TEXCOORD7;
 };
 
 //-------------------------------------
@@ -52,6 +54,7 @@ v2f vert (appdata v)
     //UNITY_TRANSFER_LIGHTING(o,v.uv.xy);
     TRANSFER_SHADOW(o)
     UNITY_TRANSFER_FOG(o,o.pos);
+    o.screenPos = ComputeScreenPos(o.pos);
     return o;
 }
 
@@ -80,8 +83,9 @@ float4 frag (v2f i) : SV_Target
 
     float detailMask=0;
     float4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
+
     float3 albedo = mainTex.rgb;
-    albedo.rgb *= occlusion; // more dark than urp'lit
+    // albedo.rgb *= occlusion; // more dark than urp'lit
     float alpha = mainTex.a;
 
     if(_AlphaTestOn)
@@ -136,9 +140,18 @@ float4 frag (v2f i) : SV_Target
     if(_ScatteringLUTOn){
         float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
         float3 scatteredColor = PreScattering(worldNormal,light.dir,lightColor,data.nl,mainTex,worldPos,_CurvatureScale,_ScatteringIntensity);
-        c.rgb += scatteredColor;
+        c.rgb += scatteredColor;// * (occlusion * _OcclusionColor);
     }
+    if(_DiffuseProfileOn){
+        // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
+        // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
 
+        float2 screenUV = i.screenPos.xy/i.screenPos.w;
+        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,mainTex.a*3);
+        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,mainTex.a*3);
+        c.rgb /=2;
+        return c;
+    }
     //for emission
     if(_EmissionOn){
         c.rgb += CalcEmission(albedo,uv);
