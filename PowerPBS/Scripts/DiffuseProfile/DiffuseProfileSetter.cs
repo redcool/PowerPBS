@@ -2,24 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-[CustomEditor(typeof(DiffuseProfileSetter))]
-public class DiffuseProfileSetterEditor : Editor
-{
-    public override void OnInspectorGUI()
-    {
-        base.OnInspectorGUI();
-
-        var inst = target as DiffuseProfileSetter;
-        if (GUILayout.Button("send"))
-        {
-            inst.SendKernels();
-        }
-    }
-}
-#endif
-
+[ExecuteInEditMode]
 public class DiffuseProfileSetter : MonoBehaviour
 {
     public Color mainColor = Color.white;
