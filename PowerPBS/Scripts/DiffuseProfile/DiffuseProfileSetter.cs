@@ -31,14 +31,17 @@ public class DiffuseProfileSetter : MonoBehaviour
     public void SendKernels()
     {
         var kernels = new List<Vector4>();
-        var strength = new Vector3(mainColor.r, mainColor.g, mainColor.b).normalized;
-        var fall = new Vector3(fallColor.r, fallColor.g, fallColor.b).normalized;
-        KernelCalculate.CalculateKernel(kernels, 25, strength, fall);
+        var strength = new Vector3(mainColor.r, mainColor.g, mainColor.b);
+        var falloff = new Vector3(fallColor.r, fallColor.g, fallColor.b);
+        SSSSKernel.CalculateKernel(kernels, 25, strength, falloff);
         Shader.SetGlobalVectorArray("_Kernel",kernels);
     }
 
+#if UNITY_EDITOR
     private void Update()
     {
         SendKernels();
     }
+#endif
+
 }
