@@ -147,8 +147,8 @@ float4 frag (v2f i) : SV_Target
         // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
 
         float2 screenUV = i.screenPos.xy/i.screenPos.w;
-        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,mainTex.a*3);
-        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,mainTex.a*3);
+        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,mainTex.a);
+        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,mainTex.a);
         c.rgb /=2;
         return c;
     }
