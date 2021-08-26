@@ -296,4 +296,9 @@ float4 CalcPBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float
         //     return UNITY_BRDF_PBS(diffColor,specColor,data.oneMinusReflectivity,data.smoothness,data.normal,data.viewDir,light,gi);
         // #endif
 }
+
+
+void ApplyVertexWave(inout float4 vertex,float3 normal){
+    vertex.xyz += normal* _VertexScale;
+}
 #endif // end of POWER_PBS_CORE_CGINC

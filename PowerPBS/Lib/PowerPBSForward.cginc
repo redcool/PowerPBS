@@ -34,6 +34,7 @@ struct v2f
 v2f vert (appdata v)
 {
     v2f o = (v2f)0;
+    ApplyVertexWave(v.vertex/**/,v.normal);
     o.pos = UnityObjectToClipPos(v.vertex);
     o.uv = float4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 

@@ -41,6 +41,10 @@ Shader "Character/PowerPBS"
         [Enum(R,0,G,1,B,2,A,3)]_MetallicChannel("_MetallicChannel",float) = 0
         [Enum(R,0,G,1,B,2,A,3)]_SmoothnessChannel("_SmoothnessChannel",float) = 1
         [Enum(R,0,G,1,B,2,A,3)]_OcclusionChannel("_OcclusionChannel",float) = 2
+// ================================================== vertex
+        [Header(Vertex Scale)]
+        _VertexScale("_VertexScale",range(-0.1,0.1)) = 0
+        [Toggle]_VertexColorAttenOn("_VertexColorAttenOn",int) = 1
 // ================================================== Settings
         [Header(PBR Mode)]
         [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0

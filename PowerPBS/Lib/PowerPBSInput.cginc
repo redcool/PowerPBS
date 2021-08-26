@@ -59,6 +59,10 @@ CBUFFER_START(UnityPerMaterial)
     float _SmoothnessChannel;
     float _OcclusionChannel;
     float4 _OcclusionColor;
+    
+// ==================================================
+    float _VertexScale;
+    int _VertexColorAttenOn;
 // ==================================================
     float _AnisoRough;
     float _AnisoIntensity;
