@@ -10,6 +10,7 @@ namespace PowerPBS
         static PowerPBSInspector()
         {
             shaderName = "PowerPBS";
+            AlphaTabId = 6;
         }
     }
 }

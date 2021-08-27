@@ -28,11 +28,10 @@ namespace PowerPBS
         static List<string[]> propNameList = new List<string[]> ();
         public static string shaderName = "PowerPBS";
         public static string materialSelectedId = shaderName + "_SeletectedId";
+        public static int AlphaTabId = 0;  // preset blend mode 显示在 号tab页
 
         int selectedTabId;
         bool showOriginalPage;
-
-        const int SETTING_TAB_ID = 0; // preset blend mode 显示在 0 号tab页
 
         Dictionary<PresetBlendMode, BlendMode[]> blendModeDict;
         Dictionary<string, MaterialProperty> propDict;
@@ -113,7 +112,7 @@ namespace PowerPBS
                 materialEditor.ShaderProperty(prop, ConfigTool.Text(propNameTextDict, prop.name));
             }
 
-            if (selectedTabId == SETTING_TAB_ID && IsTargetShader(mat))
+            if (selectedTabId == AlphaTabId && IsTargetShader(mat))
             {
                 DrawBlendMode(mat);
             }
@@ -175,7 +174,11 @@ namespace PowerPBS
         void DrawBlendMode(Material mat)
         {
             EditorGUI.BeginChangeCheck();
-            presetBlendMode = (PresetBlendMode)EditorGUILayout.EnumPopup(ConfigTool.Text(propNameTextDict,"PresetBlendMode"), presetBlendMode);
+            GUILayout.BeginVertical("");
+            EditorGUILayout.Space(10);
+            EditorGUILayout.LabelField("Alpha Blend",EditorStyles.boldLabel);
+                presetBlendMode = (PresetBlendMode)EditorGUILayout.EnumPopup(ConfigTool.Text(propNameTextDict,"PresetBlendMode"), presetBlendMode);
+            GUILayout.EndVertical();
             if (EditorGUI.EndChangeCheck())
             {
                 var blendModes = blendModeDict[presetBlendMode];
