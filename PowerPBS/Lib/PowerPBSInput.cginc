@@ -4,6 +4,11 @@
 #include "StrandSpecLib.cginc"
 
 #define MAX_SPECULAR 25
+// detail map mode id
+#define DETAIL_MAP_MODE_MULTIPLY 0
+#define DETAIL_MAP_MODE_REPLACE 1
+
+#define ALPHA_FROM_MAIN_TEX 0
 
 UNITY_DECLARE_TEX2D(_MainTex);
 UNITY_DECLARE_TEX2D(_NormalMap);
@@ -11,9 +16,6 @@ UNITY_DECLARE_TEX2D(_NormalMap);
 UNITY_DECLARE_TEX2D(_MetallicMap); //metallicSmoothnessOcclusion,
 UNITY_DECLARE_TEX2D(_HeightClothSSSMask);
 
-// detail map mode id
-#define DETAIL_MAP_MODE_MULTIPLY 0
-#define DETAIL_MAP_MODE_REPLACE 1
 SamplerState sampler_linear_repeat;
 
 UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail_Map);
@@ -42,6 +44,7 @@ TEXTURE2D(_CameraOpaqueTexture); SAMPLER(sampler_CameraOpaqueTexture);
 //------------------------- main texture
 CBUFFER_START(UnityPerMaterial)
     float4 _Color;
+    int _AlphaFrom;
     float4 _MainTex_ST;
     float4 _MainTex_TexelSize;
     float4 _NormalMap_ST;
@@ -59,7 +62,7 @@ CBUFFER_START(UnityPerMaterial)
     float _SmoothnessChannel;
     float _OcclusionChannel;
     float4 _OcclusionColor;
-    
+
 // ==================================================
     float _VertexScale;
     int _VertexColorAttenOn;

@@ -73,11 +73,11 @@ float4 frag (v2f i) : SV_Target
     if(_ParallalOn)
         uv += ParallaxOffset(height,_Height,i.viewTangentSpace);
 
-    // metallicSmoothnessOcclusion
-    float4 metallicSmoothnessOcclusion = UNITY_SAMPLE_TEX2D(_MetallicMap ,uv);
-    float metallic = metallicSmoothnessOcclusion[_MetallicChannel] * _Metallic;
-    float smoothness = metallicSmoothnessOcclusion[_SmoothnessChannel] * _Smoothness;
-    float occlusion = lerp(1,metallicSmoothnessOcclusion[_OcclusionChannel] , _Occlusion);
+    // pbrMask
+    float4 pbrMask = UNITY_SAMPLE_TEX2D(_MetallicMap ,uv);
+    float metallic = pbrMask[_MetallicChannel] * _Metallic;
+    float smoothness = pbrMask[_SmoothnessChannel] * _Smoothness;
+    float occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
     
     float roughness = 1.0 - smoothness;
     // roughness = roughness * roughness;
@@ -87,7 +87,7 @@ float4 frag (v2f i) : SV_Target
 
     float3 albedo = mainTex.rgb;
     // albedo.rgb *= occlusion; // more dark than urp'lit
-    float alpha = mainTex.a;
+    float alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a;
 
     if(_AlphaTestOn)
         clip(alpha - _Cutoff);
