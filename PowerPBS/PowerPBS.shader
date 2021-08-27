@@ -48,7 +48,7 @@ Shader "Character/PowerPBS"
 // ================================================== vertex
         [Header(Vertex Scale)]
         _VertexScale("_VertexScale",range(-0.1,0.1)) = 0
-        [Toggle]_VertexColorAttenOn("_VertexColorAttenOn",int) = 1
+        [Toggle]_VertexColorRAttenOn("_VertexColorRAttenOn(R)",int) = 1
 // ================================================== Settings
         [Header(PBR Mode)]
         [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0

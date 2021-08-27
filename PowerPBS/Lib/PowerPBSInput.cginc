@@ -65,7 +65,7 @@ CBUFFER_START(UnityPerMaterial)
 
 // ==================================================
     float _VertexScale;
-    int _VertexColorAttenOn;
+    int _VertexColorRAttenOn;
 // ==================================================
     float _AnisoRough;
     float _AnisoIntensity;

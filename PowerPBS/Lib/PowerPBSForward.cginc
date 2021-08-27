@@ -12,6 +12,7 @@
 struct appdata
 {
     float4 vertex : POSITION;
+    float4 color:COLOR;
     float2 uv : TEXCOORD0;
     float3 normal:NORMAL;
     float4 tangent:TANGENT;
@@ -34,7 +35,7 @@ struct v2f
 v2f vert (appdata v)
 {
     v2f o = (v2f)0;
-    ApplyVertexWave(v.vertex/**/,v.normal);
+    ApplyVertexWave(v.vertex/**/,v.normal,v.color);
     o.pos = UnityObjectToClipPos(v.vertex);
     o.uv = float4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 

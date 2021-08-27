@@ -298,7 +298,7 @@ float4 CalcPBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float
 }
 
 
-void ApplyVertexWave(inout float4 vertex,float3 normal){
-    vertex.xyz += normal* _VertexScale;
+void ApplyVertexWave(inout float4 vertex,float3 normal,float4 vertexColor){
+    vertex.xyz += _VertexScale * vertexColor.x * normal;
 }
 #endif // end of POWER_PBS_CORE_CGINC
