@@ -116,7 +116,7 @@ inline float4 CalcAlbedo(float2 uv,out float detailMask)
     CALC_DETAIL_ALBEDO(2);
     CALC_DETAIL_ALBEDO(3);
     CALC_DETAIL_ALBEDO(4);
-    return albedo * _Color;
+    return albedo;
 }
 
 inline UnityIndirect CalcGI(float3 albedo,float2 uv,float3 reflectDir,float3 normal,float3 occlusion,float roughness){
@@ -264,6 +264,7 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
 
     // set pbsdata for others flow.
     data.nl = nl;
+    data.nv = nv;
     data.lightDir = l;
     data.halfDir = h;
 

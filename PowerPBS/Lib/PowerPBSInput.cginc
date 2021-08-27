@@ -44,7 +44,6 @@ TEXTURE2D(_CameraOpaqueTexture); SAMPLER(sampler_CameraOpaqueTexture);
 //------------------------- main texture
 CBUFFER_START(UnityPerMaterial)
     float4 _Color;
-    int _AlphaFrom;
     float4 _MainTex_ST;
     float4 _MainTex_TexelSize;
     float4 _NormalMap_ST;
@@ -63,6 +62,9 @@ CBUFFER_START(UnityPerMaterial)
     float _OcclusionChannel;
     float4 _OcclusionColor;
 
+    int _AlphaFrom;
+    int _FresnelAlphaOn;
+    float _FresnelMin,_FresnelMax;
 // ==================================================
     float _VertexScale;
     int _VertexColorRAttenOn;

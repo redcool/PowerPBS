@@ -85,10 +85,11 @@ float4 frag (v2f i) : SV_Target
 
     float detailMask=0;
     float4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
+    mainTex *= _Color;
 
     float3 albedo = mainTex.rgb;
     // albedo.rgb *= occlusion; // more dark than urp'lit
-    float alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a;
+    float alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a * _Color.a;
 
     if(_AlphaTestOn)
         clip(alpha - _Cutoff);
@@ -161,6 +162,9 @@ float4 frag (v2f i) : SV_Target
     
     if(_SSSOn){
         c.rgb += CalcSSS(light.dir,v,heightClothSSSMask.zw);
+    }
+    if(_FresnelAlphaOn){
+        c.a *= smoothstep(_FresnelMin,_FresnelMax,data.nv);
     }
     // apply fog
     UNITY_APPLY_FOG(i.fogCoord, c);

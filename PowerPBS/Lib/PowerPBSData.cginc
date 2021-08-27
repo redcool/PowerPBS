@@ -19,6 +19,7 @@ struct PBSData{
     float3 halfDir;
     // output params
     float nl;
+    float nv;
 };
 
 inline PBSData InitPBSData(float3 tangent,float3 binormal,float3 normal,float3 viewDir,
