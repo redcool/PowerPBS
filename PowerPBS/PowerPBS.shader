@@ -21,11 +21,14 @@ Shader "Character/PowerPBS"
     {
         // [Header(Drp BakedLight LightingProcess Is Required)]
 // ==================================================
-        [Space(20)][Header(MainProp)]
+        [Header(MainProp)]
         _MainTex ("Main Texture", 2D) = "white" {}
         _Color("Color",color) = (1,1,1,1)
+
+        [Space(5)]
         [Enum(MainTex,0,PbrMask,1)]_AlphaFrom("_AlphaFrom(MainTex,PbrMask)",int) = 0
 
+        [Space(5)]
         _NormalMap("NormalMap",2d) = "bump"{}
         _NormalMapScale("_NormalMapScale",range(0,5)) = 1
 
