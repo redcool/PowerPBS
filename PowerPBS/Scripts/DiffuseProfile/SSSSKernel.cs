@@ -27,6 +27,13 @@ public static class SSSSKernel
         return g;
     }
 
+    public static void CalculateKernel(List<Vector4> kernel,int samplers,Color strengthColor,Color falloffColor)
+    {
+        var strength = new Vector3(strengthColor.r, strengthColor.g, strengthColor.b);
+        var falloff = new Vector3(falloffColor.r, falloffColor.g, falloffColor.b);
+        CalculateKernel(kernel, samplers, strength, falloff);
+    }
+
     public static void CalculateKernel(List<Vector4> kernel,int samples,Vector3 strength,Vector3 falloff)
     {
 

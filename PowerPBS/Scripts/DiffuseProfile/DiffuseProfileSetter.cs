@@ -5,8 +5,8 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class DiffuseProfileSetter : MonoBehaviour
 {
-    public Color mainColor = Color.white;
-    public Color fallColor = Color.red;
+    public Color strength = Color.white;
+    public Color falloff = Color.red;
     private void OnEnable()
     {
         SendKernels();
@@ -14,8 +14,6 @@ public class DiffuseProfileSetter : MonoBehaviour
     public void SendKernels()
     {
         var kernels = new List<Vector4>();
-        var strength = new Vector3(mainColor.r, mainColor.g, mainColor.b);
-        var falloff = new Vector3(fallColor.r, fallColor.g, fallColor.b);
         SSSSKernel.CalculateKernel(kernels, 25, strength, falloff);
         Shader.SetGlobalVectorArray("_Kernel",kernels);
     }
