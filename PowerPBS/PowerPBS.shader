@@ -189,7 +189,7 @@ Shader "Character/PowerPBS"
 
         [Space(10)][Header(ParallelOffset)]
         [Toggle]_ParallalOn("_ParallalOn",int) = 0
-        _Height("_Height",range(0.005,0.08)) = 0
+        _HeightScale("_HeightScale",range(0.005,0.08)) = 0
 // ==================================================
         [Space(10)][Header(Hair)]
         [Header(Tangent Binormal Mask Map)]

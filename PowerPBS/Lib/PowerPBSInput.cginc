@@ -128,7 +128,7 @@ CBUFFER_START(UnityPerMaterial)
     int _AdditionalLightCalcFastSSS;
 // ================================================== parallel
     int _ParallalOn;
-    float _Height;
+    float _HeightScale;
 
 // ================================================== strandSpec parameters
     float _Shift1,_Shift2;
