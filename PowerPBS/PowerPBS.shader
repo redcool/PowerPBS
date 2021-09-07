@@ -197,7 +197,7 @@ Shader "Character/PowerPBS"
 
         [Header(Tangent Shift)]
         _ShiftTex("_ShiftTex(g:shift,b:mask)",2d) = ""{}
-		_HairAoIntensity("HairAoIntensity",range(0,1))=1
+	_HairAoIntensity("HairAoIntensity",range(0,1))=1
 
         [Header(Spec Shift1)]
         _Shift1("_Shift1",float) = 0
@@ -213,7 +213,7 @@ Shader "Character/PowerPBS"
 
         // [Header(Stencil)]
         // _StencilRef("_StencilRef",int) = 2
-        // [UnityEngine.Rendering.]_StencilComp("_StencilComp",float) = 0
+        // [UnityEngine.Rendering.CompareFunction]_StencilComp("_StencilComp",float) = 0
     }
 
     SubShader
