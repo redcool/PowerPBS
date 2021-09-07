@@ -72,7 +72,7 @@ float4 frag (v2f i) : SV_Target
 
     float2 uv = i.uv.xy;
     if(_ParallalOn)
-        uv += ParallaxOffset(height,_Height,i.viewTangentSpace);
+        uv += ParallaxOffset1Step(height,_HeightScale,i.viewTangentSpace);
 
     // pbrMask
     float4 pbrMask = UNITY_SAMPLE_TEX2D(_MetallicMap ,uv);
