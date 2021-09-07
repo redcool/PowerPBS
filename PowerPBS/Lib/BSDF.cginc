@@ -182,4 +182,13 @@ float D_Ashikhmin(float roughness, float NoH) {
 	return 1.0 / (PI * (4.0 * a2 + 1.0) * sin4h) * (4.0 * exp(cot2) + sin4h);
 }
 
+float MinimalistCookTorrance(float nh,float lh,float rough){
+    float d = nh * nh * (rough-1) + 1.00001f;
+    float lh2 = lh * lh;
+    float spec = rough/((d*d) * max(0.1,lh2) * (rough*4+2)); // approach sqrt(rough)
+    #if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
+        spec = clamp(spec,0,100);
+    #endif
+    return spec;
+}
 #endif //BSDF_CGINC

@@ -5,7 +5,7 @@ tabNames =  Settings, Main,Vertex,Aniso,Cloth,ScatterLUT,Alpha,Details,Parallal_
 
 // Tab's contents
 Settings =_ZWriteOn,_CullMode, _IndirectIntensity,_ApplyShadowOn,_PBRMode,_SpecularOn,_FresnelIntensity,_ReceiveAdditionalLightsOn,_ReceiveAdditionalLightsShadowOn,_AdditionalLightSoftShadowOn
-Main = _MainTex,_Color,_AlphaFrom,_NormalMap,_NormalMapScale,_MetallicMap,_Metallic,_Smoothness,_Occlusion,_MetallicChannel,_SmoothnessChannel,_OcclusionChannel
+Main = _MainTex,_Color,_AlphaFrom,_NormalMap,_NormalMapScale,_MetallicMap,_Metallic,_Smoothness,_Occlusion,_MetallicChannel,_SmoothnessChannel,_OcclusionChannel,_ClearCoatOn
 Vertex = _VertexScale,_VertexColorRAttenOn
 Aniso=_AnisoColor,_AnisoIntensity,_AnisoRough,_AnisoLayer2On,_Layer2AnisoColor,_Layer2AnisoIntensity,_Layer2AnisoRough,_AnisoMaskUseMainTexA
 Cloth=_ClothSheenColor,_ClothDMin,_ClothDMax,_ClothGGXUseMainTexA
