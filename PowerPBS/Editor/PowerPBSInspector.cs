@@ -7,7 +7,7 @@ namespace PowerPBS
 {
     public class PowerPBSInspector : PowerShaderInspector
     {
-        static PowerPBSInspector()
+        public PowerPBSInspector()
         {
             shaderName = "PowerPBS";
             AlphaTabId = 6;

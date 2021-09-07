@@ -13,7 +13,7 @@ namespace PowerPBS
     {
         Normal,
         AlphaBlend,
-        SoftAdd, 
+        SoftAdd,
         Add,
         PremultiTransparent,
         MultiColor,
@@ -23,12 +23,12 @@ namespace PowerPBS
     public class PowerShaderInspector : ShaderGUI
     {
         const string SRC_MODE = "_SrcMode", DST_MODE = "_DstMode";
+        public string shaderName = "";
+        public int AlphaTabId = 0;  // preset blend mode 显示在 号tab页
 
-        static string[] tabNames;
-        static List<string[]> propNameList = new List<string[]> ();
-        public static string shaderName = "PowerPBS";
-        public static string materialSelectedId = shaderName + "_SeletectedId";
-        public static int AlphaTabId = 0;  // preset blend mode 显示在 号tab页
+        string[] tabNames;
+        List<string[]> propNameList = new List<string[]>();
+        string materialSelectedId => shaderName + "_SeletectedId";
 
         int selectedTabId;
         bool showOriginalPage;
@@ -40,6 +40,7 @@ namespace PowerPBS
         bool isFirstRunOnGUI = true;
         string helpStr;
         string[] tabNamesInConfig;
+
         Shader lastShader;
 
         MaterialEditor materialEditor;
@@ -118,7 +119,7 @@ namespace PowerPBS
             }
         }
 
-        private static bool IsTargetShader(Material mat)
+        private bool IsTargetShader(Material mat)
         {
             return mat.shader.name.Contains(shaderName);
         }
@@ -131,9 +132,9 @@ namespace PowerPBS
             EditorPrefs.SetInt(materialSelectedId, selectedTabId);
         }
 
-        private void OnInit(Material mat,MaterialProperty[] properties)
+        private void OnInit(Material mat, MaterialProperty[] properties)
         {
-            if(IsTargetShader(mat))
+            if (IsTargetShader(mat))
                 presetBlendMode = GetPresetBlendMode(mat);
 
             var shaderFilePath = AssetDatabase.GetAssetPath(mat.shader);
@@ -141,7 +142,7 @@ namespace PowerPBS
 
             propNameTextDict = ConfigTool.ReadI18NConfig(shaderFilePath);
 
-            helpStr = ConfigTool.Text(propNameTextDict,"Help").Replace('|','\n');
+            helpStr = ConfigTool.Text(propNameTextDict, "Help").Replace('|', '\n');
 
             tabNamesInConfig = tabNames.Select(item => ConfigTool.Text(propNameTextDict, item)).ToArray();
         }
@@ -174,10 +175,10 @@ namespace PowerPBS
         void DrawBlendMode(Material mat)
         {
             EditorGUI.BeginChangeCheck();
-            GUILayout.BeginVertical("");
+            GUILayout.BeginVertical();
             EditorGUILayout.Space(10);
-            EditorGUILayout.LabelField("Alpha Blend",EditorStyles.boldLabel);
-                presetBlendMode = (PresetBlendMode)EditorGUILayout.EnumPopup(ConfigTool.Text(propNameTextDict,"PresetBlendMode"), presetBlendMode);
+            GUILayout.Label("Alpha Blend", EditorStyles.boldLabel);
+            presetBlendMode = (PresetBlendMode)EditorGUILayout.EnumPopup(ConfigTool.Text(propNameTextDict, "PresetBlendMode"), presetBlendMode);
             GUILayout.EndVertical();
             if (EditorGUI.EndChangeCheck())
             {
