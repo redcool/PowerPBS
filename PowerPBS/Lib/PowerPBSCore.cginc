@@ -149,7 +149,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
     float3 specTerm = 0;
     switch(_PBRMode){
         case PBR_MODE_STANDARD :
-            return MinimalistCookTorrance(nh,lh,roughness);
+            specTerm = MinimalistCookTorrance(nh,lh,roughness);
             // V = SmithJointGGXTerm(nl,nv,roughness);
             // D = D_GGXTerm(nh,roughness);
             // specTerm = V * D * PI;
@@ -271,9 +271,10 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
     float3 color = CalcIndirect(gi,diffColor,specColor,data.smoothness,a2,data.oneMinusReflectivity,nv);
     color += CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
     
-    // if(_ClearCoatOn){
-    //     color += CalcDirect(data/**/,0,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
-    // }
+    if(_ClearCoatOn){
+        color += CalcDirect(data/**/,0,_ClearCoatSpecColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
+        // return CalcDirect(data/**/,0,_ClearCoatSpecColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2).xyzx;
+    }
 // return CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2).xyzx;
     if(_ReceiveAdditionalLightsOn){
         int lightCount = GetAdditionalLightsCount();

@@ -61,7 +61,9 @@ CBUFFER_START(UnityPerMaterial)
     float _SmoothnessChannel;
     float _OcclusionChannel;
     float4 _OcclusionColor;
+
     int _ClearCoatOn;
+    float4 _ClearCoatSpecColor;
 
     int _AlphaFrom;
     int _FresnelAlphaOn;
