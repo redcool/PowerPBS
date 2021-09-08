@@ -211,12 +211,12 @@ float CalcDiffuseTerm(float nl,float nv,float lh,float a){
     return diffuseTerm;
 }
 
-float3 CalcIndirect(UnityIndirect gi,float3 diffColor,float3 specColor,float smoothness,float a2,float oneMinusReflectivity,float nv){
+float3 CalcIndirect(PBSData data,UnityIndirect gi,float3 diffColor,float3 specColor,float freenelTerm){
     float3 indirectDiffuse = gi.diffuse * diffColor;
 
-    float surfaceReduction =1 /(a2 * a2 + 1); // [1,0.5]z
-    float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity)); //smoothness + metallic
-    float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
+    float surfaceReduction =1 /(data.roughness2 * data.roughness2 + 1); // [1,0.5]z
+    float grazingTerm = saturate(data.smoothness + (1 - data.oneMinusReflectivity)); //smoothness + metallic
+    float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,freenelTerm);
     float3 color = indirectDiffuse + indirectSpecular;
     return color;
 }
@@ -267,8 +267,9 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
     data.nv = nv;
     data.lightDir = l;
     data.halfDir = h;
+    float fresnelTerm = Pow4(1-nv);
 
-    float3 color = CalcIndirect(gi,diffColor,specColor,data.smoothness,a2,data.oneMinusReflectivity,nv);
+    float3 color = CalcIndirect(data,gi,diffColor,specColor,fresnelTerm);
 return color.xyzx;    
     color += CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
     

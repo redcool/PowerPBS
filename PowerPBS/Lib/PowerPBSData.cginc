@@ -20,6 +20,7 @@ struct PBSData{
     // output params
     float nl;
     float nv;
+    float perceptualRoughness,roughness,roughness2;
 };
 
 inline PBSData InitPBSData(float3 tangent,float3 binormal,float3 normal,float3 viewDir,
@@ -32,6 +33,9 @@ float oneMinusReflectivity,float smoothness,float4 heightClothFastSSSMask,float3
     data.viewDir = viewDir;
     data.oneMinusReflectivity = oneMinusReflectivity;
     data.smoothness = smoothness;
+    data.perceptualRoughness = 1-smoothness;
+    data.roughness = data.perceptualRoughness * data.perceptualRoughness;
+    data.roughness2 = data.roughness * data.roughness;
     
     data.heightClothFastSSSMask = heightClothFastSSSMask;
     data.worldPos = worldPos;
