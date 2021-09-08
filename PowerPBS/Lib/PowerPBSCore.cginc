@@ -82,7 +82,7 @@ inline float3 CalcNormal(float2 uv, float detailMask ){
 	
 	if (_Detail_MapOn) {
         float2 dnUV = uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw;
-		float3 dn = UnpackScaleNormal(UNITY_SAMPLE_TEX2D_SAMPLER(_Detail_NormalMap,_linear_repeat, dnUV), _Detail_NormalMapScale);
+		float3 dn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_Detail_NormalMap,sampler_Detail_NormalMap, dnUV), _Detail_NormalMapScale);
 		dn = normalize(float3(tn.xy + dn.xy, tn.z*dn.z));
 		tn = lerp(tn, dn, detailMask);
 	}
@@ -90,10 +90,10 @@ inline float3 CalcNormal(float2 uv, float detailMask ){
 }
 
 
-inline float CalcDetailAlbedo(inout float4 mainColor, UNITY_DECLARE_TEX2D_NOSAMPLER(texObj),float2 uv, float detailIntensity,bool isOn,int detailMapMode){
+inline float CalcDetailAlbedo(inout float4 mainColor, TEXTURE2D(texObj),float2 uv, float detailIntensity,bool isOn,int detailMapMode){
     float detailMask = 0;
     if(isOn){
-        float4 tex = UNITY_SAMPLE_TEX2D_SAMPLER(texObj,_linear_repeat,uv);
+        float4 tex = SAMPLE_TEXTURE2D(texObj,sampler_linear_repeat,uv);
 		float3 detailAlbedo = tex.xyz;
         detailMask = tex.w;
         float mask = detailMask * detailIntensity;
@@ -214,7 +214,7 @@ float CalcDiffuseTerm(float nl,float nv,float lh,float a){
 float3 CalcIndirect(UnityIndirect gi,float3 diffColor,float3 specColor,float smoothness,float a2,float oneMinusReflectivity,float nv){
     float3 indirectDiffuse = gi.diffuse * diffColor;
 
-    float surfaceReduction =1 /(a2 * a2 + 1); // [1,0.5]
+    float surfaceReduction =1 /(a2 * a2 + 1); // [1,0.5]z
     float grazingTerm = saturate(smoothness + (1 - oneMinusReflectivity)); //smoothness + metallic
     float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,nv);
     float3 color = indirectDiffuse + indirectSpecular;
@@ -269,6 +269,7 @@ inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityInd
     data.halfDir = h;
 
     float3 color = CalcIndirect(gi,diffColor,specColor,data.smoothness,a2,data.oneMinusReflectivity,nv);
+return color.xyzx;    
     color += CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
     
     if(_ClearCoatOn){

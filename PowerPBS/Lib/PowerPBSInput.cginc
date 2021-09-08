@@ -9,26 +9,23 @@
 #define DETAIL_MAP_MODE_REPLACE 1
 
 #define ALPHA_FROM_MAIN_TEX 0
-
-UNITY_DECLARE_TEX2D(_MainTex);
-UNITY_DECLARE_TEX2D(_NormalMap);
-
-UNITY_DECLARE_TEX2D(_MetallicMap); //metallicSmoothnessOcclusion,
-UNITY_DECLARE_TEX2D(_HeightClothSSSMask);
-
 SamplerState sampler_linear_repeat;
 
-UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail_Map);
-UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail_NormalMap);
-UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail1_Map);
-UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail2_Map);
-UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail4_Map);
-UNITY_DECLARE_TEX2D_NOSAMPLER(_Detail3_Map);
+TEXTURE2D(_MainTex);SAMPLER(sampler_MainTex);
+TEXTURE2D(_NormalMap);SAMPLER(sampler_NormalMap);
+TEXTURE2D(_MetallicMap); SAMPLER(sampler_MetallicMap);//metallicSmoothnessOcclusion,
+TEXTURE2D(_HeightClothSSSMask);SAMPLER(sampler_HeightClothSSSMask);
+TEXTURE2D(_Detail_Map);SAMPLER(sampler_Detail_Map);
 
-UNITY_DECLARE_TEXCUBE(_EnvCube);
-UNITY_DECLARE_TEX2D(_EmissionMap);
-UNITY_DECLARE_TEX2D(_ScatteringLUT);
+TEXTURE2D(_Detail_NormalMap);SAMPLER(sampler_Detail_NormalMap);
+TEXTURE2D(_Detail1_Map);SAMPLER(sampler_Detail1_Map);
+TEXTURE2D(_Detail2_Map);SAMPLER(sampler_Detail2_Map);
+TEXTURE2D(_Detail3_Map);SAMPLER(sampler_Detail3_Map);
+TEXTURE2D(_Detail4_Map);SAMPLER(sampler_Detail4_Map);
 
+TEXTURECUBE(_EnvCube);SAMPLER(sampler_EnvCube);
+TEXTURE2D(_EmissionMap);SAMPLER(sampler_EmissionMap);
+TEXTURE2D(_ScatteringLUT);SAMPLER(sampler_ScatteringLUT);
 TEXTURE2D(_CameraOpaqueTexture); SAMPLER(sampler_CameraOpaqueTexture);
 
    //_Detail1_MapOn
