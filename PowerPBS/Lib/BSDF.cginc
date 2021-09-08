@@ -1,18 +1,12 @@
 #if !defined(BSDF_CGINC)
 #define BSDF_CGINC
-#define PI 3.1415926
-#define PI2 6.283
-#define INV_PI 0.31830988618f
-#define DielectricSpec 0.04
-#define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats
-#define HALF_MIN_SQRT 0.0078125
-#define FLT_MIN  1.175494351e-38
+#include "Common.hlsl"
 
 inline float FastSSS(float3 l,float3 v){
     return saturate(dot(l,v));
 }
 
-float Pow2(float a){return a*a;}
+inline float Pow2(float a){return a*a;}
 inline float Pow4(float a){
     float a2 = a*a;
     return a2*a2;
@@ -182,10 +176,11 @@ float D_Ashikhmin(float roughness, float NoH) {
 	return 1.0 / (PI * (4.0 * a2 + 1.0) * sin4h) * (4.0 * exp(cot2) + sin4h);
 }
 
-float MinimalistCookTorrance(float nh,float lh,float rough){
-    float d = nh * nh * (rough-1) + 1.00001f;
+float MinimalistCookTorrance(float nh,float lh,float rough,float rough2){
+    float d = nh * nh * (rough2-1) + 1.00001f;
     float lh2 = lh * lh;
-    float spec = rough/((d*d) * max(0.1,lh2) * (rough*4+2)); // approach sqrt(rough)
+    float spec = rough2/((d*d) * max(0.1,lh2) * (rough*4+2)); // approach sqrt(rough2)
+    
     #if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
         spec = clamp(spec,0,100);
     #endif

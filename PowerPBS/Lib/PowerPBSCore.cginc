@@ -75,8 +75,6 @@ inline half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflect
     return diffColor;
 }
 
-
-
 inline float3 CalcNormal(float2 uv, float detailMask ){
     float3 tn = UnpackScaleNormal(UNITY_SAMPLE_TEX2D(_NormalMap,uv),_NormalMapScale);
 	
@@ -88,7 +86,6 @@ inline float3 CalcNormal(float2 uv, float detailMask ){
 	}
     return tn;
 }
-
 
 inline float CalcDetailAlbedo(inout float4 mainColor, TEXTURE2D(texObj),float2 uv, float detailIntensity,bool isOn,int detailMapMode){
     float detailMask = 0;
@@ -143,13 +140,14 @@ float3 CalcEmission(float3 albedo,float2 uv){
 #define PBR_MODE_CLOTH 2
 #define PBR_MODE_STRAND 3
 
-inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor,float roughness){
+inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor){
     float V = 1;
     float D = 0;
     float3 specTerm = 0;
     switch(_PBRMode){
         case PBR_MODE_STANDARD :
-            specTerm = MinimalistCookTorrance(nh,lh,roughness);
+            specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+            return specTerm * specColor;
             // V = SmithJointGGXTerm(nl,nv,roughness);
             // D = D_GGXTerm(nh,roughness);
             // specTerm = V * D * PI;
@@ -162,7 +160,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
 
             float anisoRough = _AnisoRough * 0.5+0.5;
             // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
-            V = SmithJointGGXTerm(nl,nv,roughness);
+            V = SmithJointGGXTerm(nl,nv,data.roughness);
             D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough);
             // D = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough);
             specTerm = D * _AnisoIntensity * _AnisoColor;
@@ -178,13 +176,13 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
         break;
         case PBR_MODE_CLOTH:
             V = AshikhminV(nv,nl);
-            D = CharlieD(roughness,nh);
+            D = CharlieD(data.roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
             float3 sheenColor = _ClothSheenColor;
             // extra calc ggx
             if(_ClothGGXUseMainTexA){
                 sheenColor = lerp(sheenColor,1,data.mainTex.a);
-                float3 DF = D_GGXTerm(nh,roughness) * FresnelTerm(specColor,lh);
+                float3 DF = D_GGXTerm(nh,data.roughness) * FresnelTerm(specColor,lh);
                 D = lerp(D*2,DF,data.mainTex.a);
             }
             specTerm = V * D * PI * sheenColor ;
@@ -193,45 +191,55 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
             specTerm = data.hairSpecColor;
         break;
     }
-    specTerm = max(0,specTerm * nl);
+    // specTerm = max(0,specTerm * nl);
     specTerm *= any(specColor)? 1 : 0;
     // calc F
     float3 F =1;
     if(_PBRMode != PBR_MODE_CLOTH )
-        F = FresnelTerm(specColor,lh) * _FresnelIntensity;
+        F = FresnelTerm(specColor,lh);
 
-    specTerm *= F;
+    specTerm *= F * _FresnelIntensity;
     return specTerm;
 }
 
-float CalcDiffuseTerm(float nl,float nv,float lh,float a){
-    float diffuseTerm = 0;
-    // if(_PBRMode != PBR_MODE_CLOTH)
-        diffuseTerm = DisneyDiffuse(nv,nl,lh,a) * nl;
-    return diffuseTerm;
+float3 CalcIndirect(float smoothness,float roughness2,float oneMinusReflectivity,float3 giDiffColor,float3 giSpecColor,float3 diffColor,float3 specColor,float fresnelTerm){
+    float3 indirectDiffuse = giDiffColor * diffColor;
+    float surfaceReduction =1 /(roughness2 + 1); // [1,0.5]z
+    float grazingTerm = saturate(smoothness + 1 - oneMinusReflectivity); //smoothness + metallic
+    float3 indirectSpecular = surfaceReduction * giSpecColor * lerp(specColor,grazingTerm,fresnelTerm);
+    return indirectDiffuse + indirectSpecular;
 }
 
-float3 CalcIndirect(PBSData data,UnityIndirect gi,float3 diffColor,float3 specColor,float freenelTerm){
-    float3 indirectDiffuse = gi.diffuse * diffColor;
-
-    float surfaceReduction =1 /(data.roughness2 * data.roughness2 + 1); // [1,0.5]z
-    float grazingTerm = saturate(data.smoothness + (1 - data.oneMinusReflectivity)); //smoothness + metallic
-    float3 indirectSpecular = surfaceReduction * gi.specular * FresnelLerpFast(specColor,grazingTerm,freenelTerm);
-    float3 color = indirectDiffuse + indirectSpecular;
-    return color;
+float3 CalcIndirect(PBSData data,float3 giDiffColor,float3 giSpecColor,float3 diffColor,float3 specColor,float fresnelTerm){
+    return CalcIndirect(data.smoothness,data.roughness2,data.oneMinusReflectivity,giDiffColor,giSpecColor,diffColor,specColor,fresnelTerm);
 }
 
-float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float3 lightColor,
-    float nl,float nv,float nh,float lh,float th,float bh,float a,float a2){
+float3 CalcIndirectApplyClearCoat(float3 indirectColor,ClearCoatData data,float fresnelTerm){
+    float3 coatSpecGI = GetIndirectSpecular(data.reflectDir,data.perceptualRoughness) * data.occlusion * _IndirectIntensity;
+    float3 coatColor = CalcIndirect(data.smoothness,data.roughness2,1-data.oneMinusReflectivity,0,coatSpecGI,0,data.specColor,fresnelTerm); // 1-data.oneMinusReflectivity approach unity_ColorSpaceDielectricSpec.x(0.04) 
+    float coatFresnel = unity_ColorSpaceDielectricSpec.x + unity_ColorSpaceDielectricSpec.w * fresnelTerm;
+    return indirectColor * (1 - coatFresnel) + coatColor;
+}
 
-    float diffuseTerm = CalcDiffuseTerm(nl,nv,lh,a);
+float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,
+    float nl,float nv,float nh,float lh,float th,float bh){
+    // float3 diffuseTerm = DisneyDiffuse(nl,nv,lh,data.roughness2) * diffColor;
+    float3 diffuseTerm = diffColor;
     float3 specularTerm = 0;
     if(_SpecularOn){
-        specularTerm = CalcSpeccularTerm(data,nl,nv,nh,lh,th,bh,specColor,a2);
+        specularTerm = CalcSpeccularTerm(data,nl,nv,nh,lh,th,bh,specColor);
     }
-    float3 color = diffuseTerm * diffColor + specularTerm;
-    color *= lightColor;
-    return color;
+    return diffuseTerm + specularTerm;
+}
+
+float3 CalcDirectApplyClearCoat(float3 directColor,ClearCoatData data,float fresnelTerm,float nl,float nh,float lh){
+    if(_SpecularOn){
+        float3 coatSpec = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * data.specColor;
+        float coatFresnel = kDielectricSpec.x + kDielectricSpec.a * fresnelTerm;
+        // return directColor * 1;
+        return directColor * (1-coatFresnel) + coatSpec;
+    }
+    return 0;
 }
 
 #define CALC_LIGHT_INFO(lightDir)\
@@ -249,40 +257,21 @@ float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float3 lig
     float th = dot(t,h);\
     float bh = dot(b,h)
 
-inline float3 CalcAdditionalLight(PBSData data,float3 diffColor,float3 specColor,Light light,float a,float a2){
+inline float3 CalcDirectAdditionalLight(PBSData data,float3 diffColor,float3 specColor,Light light){
     CALC_LIGHT_INFO(light.direction);
     float lightAtten = light.distanceAttenuation * light.shadowAttenuation;
-    return CalcDirect(data/**/,diffColor,specColor,light.color,nl,nv,nh,lh,th,bh,a,a2) * lightAtten;
+    float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
+    return lightAtten *nl * light.color * directColor;
 }
 
-inline float4 PBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,inout PBSData data){
-    // perceptualRoughness,roughness
-    float a = max(1- data.smoothness,HALF_MIN_SQRT);
-    float a2 = max(a*a,HALF_MIN);
-
-    CALC_LIGHT_INFO(mainLight.dir);
-
-    // set pbsdata for others flow.
-    data.nl = nl;
-    data.nv = nv;
-    data.lightDir = l;
-    data.halfDir = h;
-    float fresnelTerm = Pow4(1-nv);
-
-    float3 color = CalcIndirect(data,gi,diffColor,specColor,fresnelTerm);
-return color.xyzx;    
-    color += CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
-    
-    if(_ClearCoatOn){
-        color += CalcDirect(data/**/,0,_ClearCoatSpecColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2);
-        // return CalcDirect(data/**/,0,_ClearCoatSpecColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2).xyzx;
-    }
-// return CalcDirect(data/**/,diffColor,specColor,mainLight.color,nl,nv,nh,lh,th,bh,a,a2).xyzx;
+float3 CalcPBSAdditionalLight(inout PBSData data,float3 diffColor,float3 specColor){
+    float3 color = 0;
     if(_ReceiveAdditionalLightsOn){
         int lightCount = GetAdditionalLightsCount();
         for(int lightId = 0 ; lightId <lightCount;lightId++){
             Light light1 = GetAdditionalLight(lightId,data.worldPos);
-            color += CalcAdditionalLight(data/**/,diffColor,specColor,light1,a,a2);
+            
+            color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
             if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
                 float3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity);
                 color.rgb += scatteredColor ;
@@ -292,19 +281,37 @@ return color.xyzx;
             }
         }
     }
+    return color;
+}
+
+float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,inout PBSData data,ClearCoatData coatData){
+    CALC_LIGHT_INFO(mainLight.dir);
+
+    // set pbsdata for others flow.
+    data.nl = nl;
+    data.nv = nv;
+    data.lightDir = l;
+    data.halfDir = h;
+    float fresnelTerm = Pow4(1-nv);
+    // indirect
+    float3 color = CalcIndirect(data,gi.diffuse,gi.specular,diffColor,specColor,fresnelTerm);
+    if(_ClearCoatOn){
+        color = CalcIndirectApplyClearCoat(color,coatData,fresnelTerm);
+    }
+    // direct
+    float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
+    if(_ClearCoatOn){
+        directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,fresnelTerm,nl,nh,lh).xyzx;
+    }
+    // apply main light atten 
+    directColor *= mainLight.color * nl;
+    color += directColor;
+
+    // additional lights
+    color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
 
     return float4(color,1);
 }
-
-float4 CalcPBS(float3 diffColor,half3 specColor,float oneMinusReflectivity,float smoothness,
-    UnityLight light,UnityIndirect gi,inout PBSData data){
-        // #if defined(PBS1)
-            return PBS(diffColor,specColor,light,gi,data);
-        // #else
-        //     return UNITY_BRDF_PBS(diffColor,specColor,data.oneMinusReflectivity,data.smoothness,data.normal,data.viewDir,light,gi);
-        // #endif
-}
-
 
 void ApplyVertexWave(inout float4 vertex,float3 normal,float4 vertexColor){
     vertex.xyz += _VertexScale * vertexColor.x * normal;

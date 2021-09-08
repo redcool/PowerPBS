@@ -80,23 +80,9 @@ float4 frag (v2f i) : SV_Target
     float smoothness = pbrMask[_SmoothnessChannel] * _Smoothness;
     float occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
     
-    float roughness = 1.0 - smoothness;
-    // roughness = roughness * roughness;
-
     float detailMask=0;
     float4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
     mainTex *= _Color;
-
-    // if(_DiffuseProfileOn){
-    //     // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
-    //     // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
-    //     float4 c = mainTex;
-    //     float2 screenUV = i.screenPos.xy/i.screenPos.w;
-    //     c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,mainTex.a);
-    //     c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,mainTex.a);
-    //     c.rgb /=2;
-    //     return c;
-    // }
 
     float3 albedo = mainTex.rgb;
     // albedo.rgb *= occlusion; // more dark than urp'lit
@@ -129,7 +115,6 @@ float4 frag (v2f i) : SV_Target
         light.color *= atten;
     }
 
-    UnityIndirect indirect = CalcGI(albedo,uv,r,n,occlusion,roughness);    
     half oneMinusReflectivity;
     half3 specColor;
     albedo = DiffuseAndSpecularFromMetallic (albedo, metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
@@ -147,7 +132,12 @@ float4 frag (v2f i) : SV_Target
 		albedo *= lerp(1, hairAo, _HairAoIntensity);
     }
 
-    half4 c = CalcPBS(albedo, specColor, oneMinusReflectivity, smoothness, light, indirect,data/**/);
+    UnityIndirect indirect = CalcGI(albedo,uv,r,n,occlusion,data.perceptualRoughness);
+    ClearCoatData coatData = InitCoatData(_CoatSmoothness,_ClearCoatSpecColor,unity_ColorSpaceDielectricSpec.x);
+    coatData.reflectDir = r;
+    coatData.occlusion = occlusion;
+
+    half4 c = CalcPBS(albedo, specColor, light, indirect,data/**/,coatData);
     c.a = outputAlpha;
 
     //for preintegrated lut
