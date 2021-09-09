@@ -17,10 +17,11 @@ struct PBSData{
     float4 mainTex;
     float3 lightDir;
     float3 halfDir;
+    float perceptualRoughness,roughness,roughness2;
     // output params
     float nl;
     float nv;
-    float perceptualRoughness,roughness,roughness2;
+    float fresnelTerm;
 };
 
 inline PBSData InitPBSData(float3 tangent,float3 binormal,float3 normal,float3 viewDir,

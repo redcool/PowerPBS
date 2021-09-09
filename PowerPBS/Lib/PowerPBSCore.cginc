@@ -222,8 +222,7 @@ float3 CalcIndirectApplyClearCoat(float3 indirectColor,ClearCoatData data,float 
     return indirectColor * (1 - coatFresnel) + coatColor;
 }
 
-float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,
-    float nl,float nv,float nh,float lh,float th,float bh){
+float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float nl,float nv,float nh,float lh,float th,float bh){
     // float3 diffuseTerm = DisneyDiffuse(nl,nv,lh,data.roughness2) * diffColor;
     float3 diffuseTerm = diffColor;
     float3 specularTerm = 0;
@@ -304,12 +303,12 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     data.lightDir = l;
     data.halfDir = h;
 
-    float fresnelTerm = Pow4(1-nv);
-
+    data.fresnelTerm = Pow4(1-nv);
+return mainLight.color.xyzx;
     // indirect
-    float3 color = CalcIndirect(data,gi.diffuse,gi.specular,diffColor,specColor,fresnelTerm);
+    float3 color = CalcIndirect(data,gi.diffuse,gi.specular,diffColor,specColor,data.fresnelTerm );
     if(_ClearCoatOn){
-        color = CalcIndirectApplyClearCoat(color,coatData,fresnelTerm);
+        color = CalcIndirectApplyClearCoat(color,coatData,data.fresnelTerm );
     }
     // apply sh dir light
     color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
@@ -317,7 +316,7 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     // direct
     float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     if(_ClearCoatOn){
-        directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,fresnelTerm,nl,nh,lh).xyzx;
+        directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,data.fresnelTerm ,nl,nh,lh).xyzx;
     }
     // apply main light atten 
     directColor *= mainLight.color * nl;

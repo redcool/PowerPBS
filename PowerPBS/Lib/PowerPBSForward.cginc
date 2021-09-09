@@ -164,7 +164,7 @@ float4 frag (v2f i) : SV_Target
         c.rgb += CalcSSS(light.dir,v,heightClothSSSMask.zw);
     }
     if(_FresnelAlphaOn){
-        c.a *= smoothstep(_FresnelMin,_FresnelMax,data.nv);
+        c.a *= saturate(smoothstep(_FresnelMin,_FresnelMax,data.nv));
     }
     // apply fog
     UNITY_APPLY_FOG(i.fogCoord, c);

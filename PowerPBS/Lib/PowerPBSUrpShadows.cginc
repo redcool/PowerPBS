@@ -27,6 +27,7 @@
     float4       _MainLightShadowParams;  // (x: shadowStrength, y: 1.0 if soft shadows, 0.0 otherwise, z: oneOverFadeDist, w: minusStartFade)
 // CBUFFER_END
     float4 _ShadowBias; // x: depth bias, y: normal bias
+    float _MainLightShadowOn; //send  from PowerUrpLitFeature
 
     float3 ApplyShadowBias(float3 positionWS, float3 normalWS, float3 lightDirection)
     {
@@ -55,6 +56,9 @@
     inline float CalcShadow (unityShadowCoord4 shadowCoord,float3 worldPos)
     {
         #if defined(SHADOWS_NATIVE)
+            if(!_MainLightShadowOn)
+                return 1;
+            
             float shadow = UNITY_SAMPLE_SHADOW(_MainLightShadowmapTexture, shadowCoord.xyz);
                 //float shadow = _MainLightShadowmapTexture.SampleCmpLevelZero(sampler_MainLightShadowmapTexture,shadowCoord.xy,shadowCoord.z);
             shadow = lerp(1,shadow,_MainLightShadowParams.x);
