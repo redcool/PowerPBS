@@ -72,6 +72,7 @@ Shader "Character/PowerPBS"
 
         [Header(Spherical Harmonics)]
         [Toggle]_DirectionalLightFromSHOn("_DirectionalLightFromSHOn",int) = 0
+        _AmbientSHIntensity("_AmbientSHIntensity",range(0,1)) = 0.5
 // ==================================================
         [Header(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)

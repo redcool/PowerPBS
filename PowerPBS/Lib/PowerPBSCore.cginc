@@ -205,7 +205,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
 
 float3 CalcIndirect(float smoothness,float roughness2,float oneMinusReflectivity,float3 giDiffColor,float3 giSpecColor,float3 diffColor,float3 specColor,float fresnelTerm){
     float3 indirectDiffuse = giDiffColor * diffColor;
-    float surfaceReduction =1 /(roughness2 + 1); // [1,0.5]z
+    float surfaceReduction =1 /(roughness2 + 1); // [1,0.5]
     float grazingTerm = saturate(smoothness + 1 - oneMinusReflectivity); //smoothness + metallic
     float3 indirectSpecular = surfaceReduction * giSpecColor * lerp(specColor,grazingTerm,fresnelTerm);
     return indirectDiffuse + indirectSpecular;
@@ -285,13 +285,14 @@ float3 CalcPBSAdditionalLight(inout PBSData data,float3 diffColor,float3 specCol
     return color;
 }
 
-void CalcSHDirLight(inout float3 color,PBSData data,float3 diffColor,float3 specColor){
+float3 CalcIndirectApplySHDirLight(float3 indirectColor,PBSData data,float3 diffColor,float3 specColor){
     if (_DirectionalLightFromSHOn)
     {
         Light light = GetDirLightFromUnityLightProbe();
-        float3 shColor = CalcDirectAdditionalLight(data, diffColor, specColor, light);
-        color = color * 0.5 + shColor; // orignal sh lighting as ambient
+        float3 lightColor = CalcDirectAdditionalLight(data, diffColor, specColor, light);
+        return indirectColor * rcp(1 + _AmbientSHIntensity)  + lightColor; // orignal sh lighting as ambient
     }
+    return indirectColor;
 }
 
 float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,inout PBSData data,ClearCoatData coatData){
@@ -310,9 +311,9 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     if(_ClearCoatOn){
         color = CalcIndirectApplyClearCoat(color,coatData,fresnelTerm);
     }
-
     // apply sh dir light
-    CalcSHDirLight(color/**/,data,diffColor,specColor);
+    color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
+return color.xyzx;
 
     // direct
     float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
