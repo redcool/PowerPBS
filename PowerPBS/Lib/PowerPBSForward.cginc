@@ -144,14 +144,15 @@ float4 frag (v2f i) : SV_Target
     if(_ScatteringLUTOn){
         float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
         float3 scatteredColor = PreScattering(worldNormal,light.dir,lightColor,data.nl,mainTex,worldPos,_CurvatureScale,_ScatteringIntensity);
-        c.rgb += scatteredColor;// * (occlusion * _OcclusionColor);
+        c.rgb += scatteredColor;
     }
     if(_DiffuseProfileOn){
         // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
         // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
         float2 screenUV = i.screenPos.xy/i.screenPos.w;
-        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,mainTex.a);
-        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,mainTex.a);
+        float profileMask = _DiffuseProfileMaskUserMainTexA ? mainTex.a : 1;
+        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,profileMask);
+        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,profileMask);
         // c = originalColor + horizontalGasussianColor + verticalGausssianColor
         c.rgb /=3;
     }

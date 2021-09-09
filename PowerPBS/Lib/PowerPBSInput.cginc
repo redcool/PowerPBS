@@ -57,7 +57,6 @@ CBUFFER_START(UnityPerMaterial)
     float _MetallicChannel;
     float _SmoothnessChannel;
     float _OcclusionChannel;
-    float4 _OcclusionColor;
 
     int _ClearCoatOn;
     float4 _ClearCoatSpecColor;
@@ -98,6 +97,7 @@ CBUFFER_START(UnityPerMaterial)
     int _AdditionalLightCalcScatter;
     int _DiffuseProfileOn;
     float _BlurSize;
+    int _DiffuseProfileMaskUserMainTexA;
 // ================================================== detail maps
     // main detail normalMap
     float4 _Detail_NormalMap_ST;

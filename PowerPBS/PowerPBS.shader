@@ -39,7 +39,6 @@ Shader "Character/PowerPBS"
         _Metallic("_Metallic",range(0,1)) = 0.5
         _Smoothness("Smoothness",range(0,1)) = 0
         _Occlusion("_Occlusion",range(0,1)) = 1
-        _OcclusionColor("_OcclusionColor",color) = (1,1,1,1)
         
         [Header(PBR Mask Channel)]
         [Enum(R,0,G,1,B,2,A,3)]_MetallicChannel("_MetallicChannel",float) = 0
@@ -98,6 +97,7 @@ Shader "Character/PowerPBS"
         [Header(Diffuse Profile ScreenSpace)]
         [Toggle]_DiffuseProfileOn("_DiffuseProfileOn",int) = 0
         _BlurSize("_BlurSize",range(0,20)) = 1
+        [Toggle]_DiffuseProfileMaskUserMainTexA("_DiffuseProfileMaskUserMainTexA",int) = 1
 // ==================================================
         [Header(Cloth Spec)]
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)
@@ -180,6 +180,7 @@ Shader "Character/PowerPBS"
 // ==================================================
         [Space(10)][Header(DepthMode)]
         [Toggle]_ZWriteOn("_ZWriteOn?",int) = 1
+        [Enum(UnityEngine.Rendering.CompareFunction)]_ZTestMode("_ZTestMode",int) = 4
 
         [Space(10)][Header(CullMode)]
         [Enum(UnityEngine.Rendering.CullMode)]_CullMode("_CullMode",int) = 2
@@ -231,6 +232,7 @@ Shader "Character/PowerPBS"
         LOD 431
         Blend [_SrcMode][_DstMode]
         ZWrite [_ZWriteOn]
+        ZTest[_ZTestMode]
         Cull[_CullMode]
 
         // stencil {
