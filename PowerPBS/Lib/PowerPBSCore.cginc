@@ -313,7 +313,6 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     }
     // apply sh dir light
     color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
-return color.xyzx;
 
     // direct
     float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
