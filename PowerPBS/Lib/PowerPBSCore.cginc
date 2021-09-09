@@ -304,7 +304,6 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     data.halfDir = h;
 
     data.fresnelTerm = Pow4(1-nv);
-return mainLight.color.xyzx;
     // indirect
     float3 color = CalcIndirect(data,gi.diffuse,gi.specular,diffColor,specColor,data.fresnelTerm );
     if(_ClearCoatOn){
