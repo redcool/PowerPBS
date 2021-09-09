@@ -5,6 +5,7 @@
 #include "PowerPBSData.cginc"
 #include "BSDF.cginc"
 #include "URP_Lighting.cginc"
+#include "ExtractLightFromSH.cginc"
 
 inline UnityLight GetLight(){
     float3 dir = _MainLightPosition;
@@ -284,6 +285,15 @@ float3 CalcPBSAdditionalLight(inout PBSData data,float3 diffColor,float3 specCol
     return color;
 }
 
+void CalcSHDirLight(inout float3 color,PBSData data,float3 diffColor,float3 specColor){
+    if (_DirectionalLightFromSHOn)
+    {
+        Light light = GetDirLightFromUnityLightProbe();
+        float3 shColor = CalcDirectAdditionalLight(data, diffColor, specColor, light);
+        color = color * 0.5 + shColor; // orignal sh lighting as ambient
+    }
+}
+
 float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,inout PBSData data,ClearCoatData coatData){
     CALC_LIGHT_INFO(mainLight.dir);
 
@@ -292,12 +302,18 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     data.nv = nv;
     data.lightDir = l;
     data.halfDir = h;
+
     float fresnelTerm = Pow4(1-nv);
+
     // indirect
     float3 color = CalcIndirect(data,gi.diffuse,gi.specular,diffColor,specColor,fresnelTerm);
     if(_ClearCoatOn){
         color = CalcIndirectApplyClearCoat(color,coatData,fresnelTerm);
     }
+
+    // apply sh dir light
+    CalcSHDirLight(color/**/,data,diffColor,specColor);
+
     // direct
     float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     if(_ClearCoatOn){
