@@ -3,18 +3,18 @@
 //Help行,约定 | 为换行字符
 Help=PowerPBS,用于高清角色渲染
 // ==================================================
-Settings=设置
-Main=基础
-Vertex=顶点
-Aniso=异性
-Cloth=布
-Scatter=散射
-Alpha=透明
-Details=细节
-Parallal_SSS=视差_散射
-Env=环境
-Emission=发光
-Strand=发丝
+//Settings=设置
+//Main=基础
+//Vertex=顶点
+//Aniso=异性
+//Cloth=布
+//Scatter=散射
+//Alpha=透明
+//Details=细节
+//Parallal_SSS=视差_散射
+//Env=环境
+//Emission=发光
+//Strand=发丝
 // ==================================================
 _MainTex =Main Texture
 _Color=Color
@@ -44,9 +44,9 @@ _ScatteringLUTOn=_ScatteringLUTOn
 _ScatteringLUT=_ScatteringLUT
 _ScatteringIntensity=_ScatteringIntensity
 _CurvatureScale=_CurvatureScale (MainTex.a)
-_LightColorNoAtten = MainLightColor 无阴影?
+_LightColorNoAtten = _LightColorNoAtten?
 _AdditionalLightCalcScatter=_AdditionalLightCalcScatter
-_DiffuseProfileOn=_DiffuseProfileOn? 需要DiffuseProfileSetter
+_DiffuseProfileOn=_DiffuseProfileOn ?需要DiffuseProfileSetter
 _BlurSize=_BlurSize
 _DiffuseProfileMaskUserMainTexA=_DiffuseProfileMaskUserMainTexA?
 // ==================================================
