@@ -148,7 +148,8 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
     switch(_PBRMode){
         case PBR_MODE_STANDARD :
             specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
-            return specTerm * specColor;
+            specTerm *= specColor;
+            return specTerm;
             // V = SmithJointGGXTerm(nl,nv,roughness);
             // D = D_GGXTerm(nh,roughness);
             // specTerm = V * D * PI;
@@ -289,7 +290,7 @@ float3 CalcIndirectApplySHDirLight(float3 indirectColor,PBSData data,float3 diff
     {
         Light light = GetDirLightFromUnityLightProbe();
         float3 lightColor = CalcDirectAdditionalLight(data, diffColor, specColor, light);
-        return indirectColor * rcp(1 + _AmbientSHIntensity)  + lightColor; // orignal sh lighting as ambient
+        indirectColor = indirectColor * rcp(1 + _AmbientSHIntensity)  + lightColor; // orignal sh lighting as ambient
     }
     return indirectColor;
 }
@@ -311,7 +312,6 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     }
     // apply sh dir light
     color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
-
     // direct
     float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     if(_ClearCoatOn){
@@ -320,6 +320,8 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     // apply main light atten 
     directColor *= mainLight.color * nl;
     color += directColor;
+    // back face gi compensate.
+    color += gi.diffuse * (1-nl) * _BackFaceGIDiffuse;
 
     // additional lights
     color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);

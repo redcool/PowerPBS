@@ -116,6 +116,7 @@ CBUFFER_START(UnityPerMaterial)
     float4 _EmissionColor;
     float _Emission;
     float _IndirectIntensity;
+    float _BackFaceGIDiffuse;
 
     int _AlphaTestOn;
     int _AlphaPreMultiply;

@@ -154,8 +154,9 @@ Shader "Character/PowerPBS"
         [hdr]_EmissionColor("_EmissionColor",color) = (1,1,1,1)
         _Emission("_Emission",float) = 1
 // ==================================================
-        [Space(10)][Header(Indirect Diffuse)]
+        [Space(10)][Header(GI )]
         _IndirectIntensity("_IndirectIntensity",float) = 1
+        _BackFaceGIDiffuse("_BackFaceGIDiffuse",range(0,1)) = 0
 // ==================================================
         [Space(10)][Header(CustomLight)]
         [Toggle]_CustomLightOn("_CustomLightOn",int) = 0

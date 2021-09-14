@@ -107,7 +107,7 @@ _EmissionColor=_EmissionColor
 _Emission=_Emission
 // ==================================================
 
-_IndirectIntensity=_IndirectIntensity
+_IndirectIntensity=_Indirect Specular Intensity
 // ==================================================
 
 _CustomLightOn=_CustomLightOn
