@@ -149,7 +149,6 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
         case PBR_MODE_STANDARD :
             specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
             specTerm *= specColor;
-            return specTerm;
             // V = SmithJointGGXTerm(nl,nv,roughness);
             // D = D_GGXTerm(nh,roughness);
             // specTerm = V * D * PI;
@@ -197,7 +196,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
     specTerm *= any(specColor)? 1 : 0;
     // calc F
     float3 F =1;
-    if(_PBRMode != PBR_MODE_CLOTH )
+    if(_PBRMode != PBR_MODE_CLOTH && _PBRMode != PBR_MODE_STANDARD)
         F = FresnelTerm(specColor,lh);
 
     specTerm *= F * _FresnelIntensity;
