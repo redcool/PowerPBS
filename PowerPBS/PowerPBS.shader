@@ -45,10 +45,15 @@ Shader "Character/PowerPBS"
         [Enum(R,0,G,1,B,2,A,3)]_SmoothnessChannel("_SmoothnessChannel",float) = 1
         [Enum(R,0,G,1,B,2,A,3)]_OcclusionChannel("_OcclusionChannel",float) = 2
 
+        [Header(Custom Specular)]
+        [Toggle]_CustomSpecularMapOn("_CustomSpecularMapOn",int) = 0
+        _CustomSpecularMap("_CustomSpecularMap(a:Mask(0:DielectricSpec,1:CustomSpecColor))",2d) ="white"{}
+        
         [Header(Clear Coat)]
         [Toggle]_ClearCoatOn("_ClearCoatOn",int) = 0
         _ClearCoatSpecColor("_ClearCoatSpecColor",color) = (1,1,1,1)
         _CoatSmoothness("_CoatSmoothness",range(0,1)) = 0.5
+
 // ================================================== vertex
         [Header(Vertex Scale)]
         _VertexScale("_VertexScale",range(-0.1,0.1)) = 0

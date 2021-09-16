@@ -197,7 +197,7 @@ Material:
     - _GlossyReflections: 0
     - _HairAoIntensity: 1
     - _Height: 0
-    - _IndirectIntensity: 0.13
+    - _IndirectSpecIntensity: 0.13
     - _Layer2AnisoIntensity: 1
     - _Layer2AnisoRough: 0
     - _LightColorNoAtten: 1

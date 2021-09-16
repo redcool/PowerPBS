@@ -14,19 +14,20 @@ SamplerState sampler_linear_repeat;
 TEXTURE2D(_MainTex);SAMPLER(sampler_MainTex);
 TEXTURE2D(_NormalMap);SAMPLER(sampler_NormalMap);
 TEXTURE2D(_MetallicMap); SAMPLER(sampler_MetallicMap);//metallicSmoothnessOcclusion,
-TEXTURE2D(_HeightClothSSSMask);SAMPLER(sampler_HeightClothSSSMask);
-TEXTURE2D(_Detail_Map);SAMPLER(sampler_Detail_Map);
+TEXTURE2D(_HeightClothSSSMask);//SAMPLER(sampler_HeightClothSSSMask);
+TEXTURE2D(_Detail_Map);//SAMPLER(sampler_Detail_Map);
 
-TEXTURE2D(_Detail_NormalMap);SAMPLER(sampler_Detail_NormalMap);
-TEXTURE2D(_Detail1_Map);SAMPLER(sampler_Detail1_Map);
-TEXTURE2D(_Detail2_Map);SAMPLER(sampler_Detail2_Map);
-TEXTURE2D(_Detail3_Map);SAMPLER(sampler_Detail3_Map);
-TEXTURE2D(_Detail4_Map);SAMPLER(sampler_Detail4_Map);
+TEXTURE2D(_Detail_NormalMap);//SAMPLER(sampler_Detail_NormalMap);
+TEXTURE2D(_Detail1_Map);//SAMPLER(sampler_Detail1_Map);
+TEXTURE2D(_Detail2_Map);//SAMPLER(sampler_Detail2_Map);
+TEXTURE2D(_Detail3_Map);//SAMPLER(sampler_Detail3_Map);
+TEXTURE2D(_Detail4_Map);//SAMPLER(sampler_Detail4_Map);
 
-TEXTURECUBE(_EnvCube);SAMPLER(sampler_EnvCube);
-TEXTURE2D(_EmissionMap);SAMPLER(sampler_EmissionMap);
-TEXTURE2D(_ScatteringLUT);SAMPLER(sampler_ScatteringLUT);
-TEXTURE2D(_CameraOpaqueTexture); SAMPLER(sampler_CameraOpaqueTexture);
+TEXTURECUBE(_EnvCube);//SAMPLER(sampler_EnvCube);
+TEXTURE2D(_EmissionMap);//SAMPLER(sampler_EmissionMap);
+TEXTURE2D(_ScatteringLUT);//SAMPLER(sampler_ScatteringLUT);
+TEXTURE2D(_CameraOpaqueTexture); //SAMPLER(sampler_CameraOpaqueTexture);
+TEXTURE2D(_CustomSpecularMap);
 
    //_Detail1_MapOn
  //_Detail1_MapMode
@@ -61,6 +62,9 @@ CBUFFER_START(UnityPerMaterial)
     int _ClearCoatOn;
     float4 _ClearCoatSpecColor;
     float _CoatSmoothness;
+
+    int _CustomSpecularMapOn;
+    float4 _CustomSpecularMap_ST;
 
     int _AlphaFrom;
     int _FresnelAlphaOn;

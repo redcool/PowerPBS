@@ -64,7 +64,7 @@ float4 frag (v2f i) : SV_Target
 {
 
     // heightClothSSSMask
-    float4 heightClothSSSMask = UNITY_SAMPLE_TEX2D(_HeightClothSSSMask,i.uv);
+    float4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
     float height = heightClothSSSMask.x;
     float clothMask = heightClothSSSMask.y;
     // float frontSSS = heightClothSSSMask.z;
@@ -116,8 +116,14 @@ float4 frag (v2f i) : SV_Target
     }
 
     half oneMinusReflectivity;
-    half3 specColor;
-    albedo = DiffuseAndSpecularFromMetallic (albedo, metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
+    half3 specColor = 0;
+    albedo = DiffuseAndSpecularFromMetallic (albedo, metallic, /*inout*/ specColor, /*out*/ oneMinusReflectivity);
+    // --- specular map 
+    if(_CustomSpecularMapOn){
+        float2 specUV = TRANSFORM_TEX(i.uv.zw,_CustomSpecularMap);
+        float4 customSpecColor = SAMPLE_TEXTURE2D(_CustomSpecularMap,sampler_linear_repeat,specUV);
+        specColor = lerp(unity_ColorSpaceDielectricSpec.xyz,customSpecColor.xyz,_Metallic) * customSpecColor.w;
+    }
 
     half outputAlpha;
     albedo = AlphaPreMultiply (albedo, alpha, oneMinusReflectivity, /*out*/ outputAlpha);
@@ -133,7 +139,8 @@ float4 frag (v2f i) : SV_Target
     }
 
     UnityIndirect indirect = CalcGI(albedo,uv,r,n,occlusion,data.perceptualRoughness);
-    ClearCoatData coatData = InitCoatData(_CoatSmoothness,_ClearCoatSpecColor,unity_ColorSpaceDielectricSpec.x);
+    ClearCoatData coatData = InitCoatData(_CoatSmoothness,_ClearCoatSpecColor * specColor,unity_ColorSpaceDielectricSpec.x);
+
     coatData.reflectDir = r;
     coatData.occlusion = occlusion;
 
@@ -151,8 +158,8 @@ float4 frag (v2f i) : SV_Target
         // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
         float2 screenUV = i.screenPos.xy/i.screenPos.w;
         float profileMask = _DiffuseProfileMaskUserMainTexA ? mainTex.a : 1;
-        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,profileMask);
-        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_CameraOpaqueTexture),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,profileMask);
+        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,profileMask);
+        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,profileMask);
         // c = originalColor + horizontalGasussianColor + verticalGausssianColor
         c.rgb /=3;
     }

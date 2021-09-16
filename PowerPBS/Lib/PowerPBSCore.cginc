@@ -41,7 +41,7 @@ inline float3 PreScattering(float3 normal,float3 lightDir,float3 lightColor,floa
     // float deltaPos = length(fwidth(worldPos));
     // float curvature = deltaNormal/1 * curveScale;
     float atten = 1-wnl;//smoothstep(0.,0.5,nl);
-    float3 scattering = UNITY_SAMPLE_TEX2D(_ScatteringLUT,float2(wnl,curveScale ));
+    float3 scattering = SAMPLE_TEXTURE2D(_ScatteringLUT,sampler_linear_repeat,float2(wnl,curveScale ));
     return scattering * lightColor * mainTex.xyz * atten * scatterIntensity * mainTex.w;
 }
 
@@ -51,7 +51,7 @@ inline float3 GetIndirectSpecular(float3 reflectDir,float rough){
 
     float4 encodeIrradiance = 0;
     if(_CustomIBLOn){
-        encodeIrradiance = UNITY_SAMPLE_TEXCUBE_LOD(_EnvCube,reflectDir,mip);
+        encodeIrradiance = SAMPLE_TEXTURECUBE_LOD(_EnvCube,sampler_linear_repeat,reflectDir,mip);
         encodeIrradiance *= _EnvIntensity;
     }else{
         encodeIrradiance = UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, reflectDir, mip);
@@ -81,7 +81,7 @@ inline float3 CalcNormal(float2 uv, float detailMask ){
 	
 	if (_Detail_MapOn) {
         float2 dnUV = uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw;
-		float3 dn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_Detail_NormalMap,sampler_Detail_NormalMap, dnUV), _Detail_NormalMapScale);
+		float3 dn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_Detail_NormalMap,sampler_linear_repeat, dnUV), _Detail_NormalMapScale);
 		dn = normalize(float3(tn.xy + dn.xy, tn.z*dn.z));
 		tn = lerp(tn, dn, detailMask);
 	}
@@ -108,7 +108,7 @@ inline float CalcDetailAlbedo(inout float4 mainColor, TEXTURE2D(texObj),float2 u
 
 inline float4 CalcAlbedo(float2 uv,out float detailMask) 
 {
-    float4 albedo = UNITY_SAMPLE_TEX2D(_MainTex,uv) ;
+    float4 albedo = SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,uv) ;
     detailMask = CALC_DETAIL_ALBEDO();
     CALC_DETAIL_ALBEDO(1);
     CALC_DETAIL_ALBEDO(2);
@@ -132,7 +132,7 @@ inline UnityIndirect CalcGI(float3 albedo,float2 uv,float3 reflectDir,float3 nor
     emission Mask : a
 */
 float3 CalcEmission(float3 albedo,float2 uv){
-    float4 tex = UNITY_SAMPLE_TEX2D(_EmissionMap,uv);
+    float4 tex = SAMPLE_TEXTURE2D(_EmissionMap,sampler_linear_repeat,uv);
     return albedo * tex.rgb * tex.a * _Emission * _EmissionColor;
 }
 
@@ -331,4 +331,5 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
 void ApplyVertexWave(inout float4 vertex,float3 normal,float4 vertexColor){
     vertex.xyz += _VertexScale * vertexColor.x * normal;
 }
+
 #endif // end of POWER_PBS_CORE_CGINC

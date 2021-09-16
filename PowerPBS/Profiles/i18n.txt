@@ -27,6 +27,9 @@ _Occlusion=_Occlusion
 _PBRMode=_PBRMode
 _ReceiveAdditionalLightsOn=_ReceiveAdditionalLightsOn
 _DirectionalLightFromSHOn=_DirectionalLightFromSHOn
+
+_CustomSpecularMapOn=_CustomSpecularMapOn
+_CustomSpecularMap=_CustomSpecularMap(a is Mask (0:DielectricSpec,1:CustomSpecColor) )
 // ==================================================
 
 _AnisoColor=_AnisoColor
