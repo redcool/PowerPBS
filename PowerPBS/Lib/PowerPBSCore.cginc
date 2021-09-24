@@ -332,4 +332,10 @@ void ApplyVertexWave(inout float4 vertex,float3 normal,float4 vertexColor){
     vertex.xyz += _VertexScale * vertexColor.x * normal;
 }
 
+float3 CalcDiffuseAndSpecularFromMetallic(float3 albedo,float metallic,inout float3 specColor,out float oneMinusReflectivity){
+    specColor = lerp(unity_ColorSpaceDielectricSpec.rgb,albedo,metallic);
+    oneMinusReflectivity = OneMinusReflectivityFromMetallic(metallic);
+    return albedo * oneMinusReflectivity;
+}
+
 #endif // end of POWER_PBS_CORE_CGINC

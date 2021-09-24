@@ -8,6 +8,7 @@
 #include "PowerPBSHair.cginc"
 #include "PowerPBSUrpShadows.cginc"
 #include "Blur.cginc"
+#include "ParallaxMapping.hlsl"
 
 struct appdata
 {
@@ -71,8 +72,9 @@ float4 frag (v2f i) : SV_Target
     // float backSSS = heightClothSSSMask.w;
 
     float2 uv = i.uv.xy;
-    if(_ParallalOn)
-        uv += ParallaxOffset1Step(height,_HeightScale,i.viewTangentSpace);
+    if(_ParallalOn){
+        uv += ParallaxMapOffset(_HeightScale,i.viewTangentSpace,height);
+    }
 
     // pbrMask
     float4 pbrMask = UNITY_SAMPLE_TEX2D(_MetallicMap ,uv);
@@ -91,7 +93,7 @@ float4 frag (v2f i) : SV_Target
     if(_AlphaTestOn)
         clip(alpha - _Cutoff);
 
-    float2 normalMapUV = TRANSFORM_TEX(i.uv.zw , _NormalMap);
+    float2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
     float3 tn = CalcNormal(normalMapUV,detailMask);
     float3 n = normalize(float3(
         dot(i.tSpace0.xyz,tn),
