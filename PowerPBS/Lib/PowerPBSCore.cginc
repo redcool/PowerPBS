@@ -77,7 +77,7 @@ inline half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflect
 }
 
 inline float3 CalcNormal(float2 uv, float detailMask ){
-    float3 tn = UnpackScaleNormal(UNITY_SAMPLE_TEX2D(_NormalMap,uv),_NormalMapScale);
+    float3 tn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,uv),_NormalMapScale);
 	
 	if (_Detail_MapOn) {
         float2 dnUV = uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw;
@@ -112,8 +112,8 @@ inline float4 CalcAlbedo(float2 uv,out float detailMask)
     detailMask = CALC_DETAIL_ALBEDO();
     CALC_DETAIL_ALBEDO(1);
     CALC_DETAIL_ALBEDO(2);
-    CALC_DETAIL_ALBEDO(3);
-    CALC_DETAIL_ALBEDO(4);
+    // CALC_DETAIL_ALBEDO(3);
+    // CALC_DETAIL_ALBEDO(4);
     return albedo;
 }
 

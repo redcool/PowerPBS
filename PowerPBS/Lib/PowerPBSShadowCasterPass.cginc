@@ -46,7 +46,7 @@ v2f vert(appdata_full input){
 
 float4 frag(v2f input):SV_Target{
     if(_AlphaTestOn){
-        float4 tex = UNITY_SAMPLE_TEX2D(_MainTex,input.uv);
+        float4 tex = SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,input.uv);
         clip(tex.a - _Cutoff);
     }
     return 0;

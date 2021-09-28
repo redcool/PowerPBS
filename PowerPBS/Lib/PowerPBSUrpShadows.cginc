@@ -49,7 +49,7 @@
         return fade * fade;
     }
 
-    UNITY_DECLARE_SHADOWMAP(_MainLightShadowmapTexture);
+    
 
     #undef TRANSFER_SHADOW
     #define TRANSFER_SHADOW(a) a._ShadowCoord = mul( _MainLightWorldToShadow[0], mul( unity_ObjectToWorld, v.vertex ) );
@@ -59,7 +59,7 @@
             if(!_MainLightShadowOn)
                 return 1;
             
-            float shadow = UNITY_SAMPLE_SHADOW(_MainLightShadowmapTexture, shadowCoord.xyz);
+            float shadow = SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture, shadowCoord.xyz);
                 //float shadow = _MainLightShadowmapTexture.SampleCmpLevelZero(sampler_MainLightShadowmapTexture,shadowCoord.xy,shadowCoord.z);
             shadow = lerp(1,shadow,_MainLightShadowParams.x);
             float shadowFade = GetShadowFade(worldPos);

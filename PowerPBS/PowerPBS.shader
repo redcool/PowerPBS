@@ -111,34 +111,29 @@ Shader "Character/PowerPBS"
         [Toggle]_ClothGGXUseMainTexA("_ClothGGXUseMainTexA",int) = 0
 
 // ==================================================
-        [Space(10)][Header(Detail4_Map Top Layer)]
-        [Toggle]_Detail4_MapOn("_Detail4_MapOn",int) = 0
-        [Enum(Multiply,0,Replace,1)]_Detail4_MapMode("_Detail4_MapMode",int) = 0
-        _Detail4_Map("_Detail4_Map(RGB),Detail4_Mask(A)",2d) = "white"{}
-        _Detail4_MapIntensity("_Detail4_MapIntensity",range(0,1)) = 1
-        /*_Detail4_NormalMap("_Detail4_NormalMap",2d) = "bump"{}
-        _Detail4_NormalMapScale("_Detail4_NormalMapScale",range(0,5)) = 1*/
-        [Space(10)][Header(Detail3_Map)]
-        [Toggle]_Detail3_MapOn("_Detail3_MapOn",int) = 0
-        [Enum(Multiply,0,Replace,1)]_Detail3_MapMode("_Detail3_MapMode",int) = 0
-        _Detail3_Map("_Detail3_Map(RGB),Detail3_Mask(A)",2d) = "white"{}
-        _Detail3_MapIntensity("_Detail3_MapIntensity",range(0,1)) = 1
-        /*_Detail3_NormalMap("_Detail3_NormalMap",2d) = "bump"{}
-        _Detail3_NormalMapScale("_Detail3_NormalMapScale",range(0,5)) = 1*/
+        // [Toggle]_Detail4_MapOn("_Detail4_MapOn",int) = 0
+        // [Enum(Multiply,0,Replace,1)]_Detail4_MapMode("_Detail4_MapMode",int) = 0
+        // _Detail4_Map("_Detail4_Map(RGB),Detail4_Mask(A)",2d) = "white"{}
+        // _Detail4_MapIntensity("_Detail4_MapIntensity",range(0,1)) = 1
+
+        // [Space(10)][Header(Detail3_Map)]
+        // [Toggle]_Detail3_MapOn("_Detail3_MapOn",int) = 0
+        // [Enum(Multiply,0,Replace,1)]_Detail3_MapMode("_Detail3_MapMode",int) = 0
+        // _Detail3_Map("_Detail3_Map(RGB),Detail3_Mask(A)",2d) = "white"{}
+        // _Detail3_MapIntensity("_Detail3_MapIntensity",range(0,1)) = 1
+
         [Space(10)][Header(Detail2_Map)]
         [Toggle]_Detail2_MapOn("_Detail2_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail2_MapMode("_Detail2_MapMode",int) = 0
         _Detail2_Map("_Detail2_Map(RGB),EyeMask(A)",2d) = "white"{}
         _Detail2_MapIntensity("_Detail2_MapIntensity",range(0,1)) = 1
-        /*_Detail2_NormalMap("_Detail2_NormalMap",2d) = "bump"{}
-        _Detail2_NormalMapScale("_Detail2_NormalMapScale",range(0,5)) = 1*/
+
         [Space(10)][Header(Detail1_Map)]
         [Toggle]_Detail1_MapOn("_Detail1_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail1_MapMode("_Detail1_MapMode",int) = 0
         _Detail1_Map("_Detail1_Map(rgb),MouthMask(A)",2d) = "white"{}
         _Detail1_MapIntensity("_Detail1_MapIntensity",range(0,1)) = 1
-        /*_Detail1_NormalMap("_Detail1_NormalMap",2d) = "bump"{}
-        _Detail1_NormalMapScale("_Detail1_NormalMapScale",range(0,5)) = 1*/
+
         [Space(10)][Header(DetailMap Bottom Layer)]
         [Toggle]_Detail_MapOn("_Detail_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail_MapMode("_Detail_MapMode",int) = 0
@@ -208,11 +203,8 @@ Shader "Character/PowerPBS"
         _HeightScale("_HeightScale",range(0.005,0.08)) = 0
 // ==================================================
         [Space(10)][Header(Hair)]
-        [Header(Tangent Binormal Mask Map)]
-        _TBMaskMap("_TBMaskMap(R,white:use binormal)",2d) = "white"{}
-
-        [Header(Tangent Shift)]
-        _ShiftTex("_ShiftTex(g:shift,b:mask)",2d) = ""{}
+        [Header(Strand Spec Mask)]
+        _StrandMaskTex("_StrandMaskTex(ao_shift_specMask_tbMask)",2d) = ""{}
 	_HairAoIntensity("HairAoIntensity",range(0,1))=1
 
         [Header(Spec Shift1)]

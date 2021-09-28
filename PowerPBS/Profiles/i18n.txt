@@ -139,7 +139,7 @@ _ParallalOn=_ParallalOn
 _Height=_Height
 // ==================================================
 _TBMaskMap=_TBMaskMap(R,white:use binormal)
-_ShiftTex=_ShiftTex(g:shift,b:mask)
+_StrandMaskTex=_StrandMaskTex(ao_shift_specMask_tbMask)
 _HairAoIntensity=HairAoIntensity
 
 _Shift1=_Shift1

@@ -20,14 +20,18 @@ TEXTURE2D(_Detail_Map);//SAMPLER(sampler_Detail_Map);
 TEXTURE2D(_Detail_NormalMap);//SAMPLER(sampler_Detail_NormalMap);
 TEXTURE2D(_Detail1_Map);//SAMPLER(sampler_Detail1_Map);
 TEXTURE2D(_Detail2_Map);//SAMPLER(sampler_Detail2_Map);
-TEXTURE2D(_Detail3_Map);//SAMPLER(sampler_Detail3_Map);
-TEXTURE2D(_Detail4_Map);//SAMPLER(sampler_Detail4_Map);
+// TEXTURE2D(_Detail3_Map);//SAMPLER(sampler_Detail3_Map);
+// TEXTURE2D(_Detail4_Map);//SAMPLER(sampler_Detail4_Map);
 
 TEXTURECUBE(_EnvCube);//SAMPLER(sampler_EnvCube);
 TEXTURE2D(_EmissionMap);//SAMPLER(sampler_EmissionMap);
 TEXTURE2D(_ScatteringLUT);//SAMPLER(sampler_ScatteringLUT);
 TEXTURE2D(_CameraOpaqueTexture); //SAMPLER(sampler_CameraOpaqueTexture);
 TEXTURE2D(_CustomSpecularMap);
+
+TEXTURE2D_SHADOW(_MainLightShadowmapTexture);SAMPLER_CMP(sampler_MainLightShadowmapTexture);
+TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture);SAMPLER_CMP(sampler_AdditionalLightsShadowmapTexture);
+TEXTURE2D(_StrandMaskTex); // xyzw  = shift_specMask_ao_tbMask
 
    //_Detail1_MapOn
  //_Detail1_MapMode
@@ -109,8 +113,8 @@ CBUFFER_START(UnityPerMaterial)
     DECLARE_DETAIL();
     DECLARE_DETAIL(1);
     DECLARE_DETAIL(2);
-    DECLARE_DETAIL(3);
-    DECLARE_DETAIL(4);
+    // DECLARE_DETAIL(3);
+    // DECLARE_DETAIL(4);
 // ================================================== ibl
     float _CustomIBLOn;
     float _EnvIntensity;

@@ -77,7 +77,7 @@ float4 frag (v2f i) : SV_Target
     }
 
     // pbrMask
-    float4 pbrMask = UNITY_SAMPLE_TEX2D(_MetallicMap ,uv);
+    float4 pbrMask = SAMPLE_TEXTURE2D(_MetallicMap,sampler_MetallicMap ,uv);
     float metallic = pbrMask[_MetallicChannel] * _Metallic;
     float smoothness = pbrMask[_SmoothnessChannel] * _Smoothness;
     float occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
@@ -135,8 +135,9 @@ float4 frag (v2f i) : SV_Target
 
     // calc strand specular
     if(_PBRMode == PBR_MODE_STRAND){
-		float hairAo;
-        data.hairSpecColor = CalcHairSpecColor(i.uv,tangent,n,binormal,light.dir,v, hairAo/**/);
+        float4 ao_shift_specMask_tbMask = SAMPLE_TEXTURE2D(_StrandMaskTex,sampler_linear_repeat,i.uv);
+		float hairAo = ao_shift_specMask_tbMask.x;
+        data.hairSpecColor = CalcHairSpecColor(tangent,n,binormal,light.dir,v,ao_shift_specMask_tbMask.yzw);
 		albedo *= lerp(1, hairAo, _HairAoIntensity);
     }
 

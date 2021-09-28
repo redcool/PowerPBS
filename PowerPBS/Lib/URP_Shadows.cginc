@@ -3,8 +3,7 @@
 
 #define MAX_SHADOW_CASCADES 4
 
-UNITY_DECLARE_SHADOWMAP(_AdditionalLightsShadowmapTexture);
-// SAMPLER_CMP(sampler_AdditionalLightsShadowmapTexture);
+
 
 
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
@@ -90,10 +89,10 @@ half4 GetAdditionalLightShadowParams(int lightIndex)
 
 half SampleShadowmapFiltered(ShadowSamplingData samplingData,float4 shadowCoord){
     float4 atten4 = 0;
-    atten4.x = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset0.xyz);
-    atten4.y = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset1.xyz);
-    atten4.z = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset2.xyz);
-    atten4.w = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset3.xyz);
+    atten4.x = SAMPLE_TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture,sampler_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset0.xyz);
+    atten4.y = SAMPLE_TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture,sampler_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset1.xyz);
+    atten4.z = SAMPLE_TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture,sampler_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset2.xyz);
+    atten4.w = SAMPLE_TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture,sampler_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset3.xyz);
     return dot(atten4,0.25);
 }
 
@@ -114,7 +113,7 @@ half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS,bool isSoft
         attenuation = SampleShadowmapFiltered(samplingData,shadowCoord);
     }else{
     // 1-tap hardware comparison
-        attenuation = UNITY_SAMPLE_SHADOW(_AdditionalLightsShadowmapTexture, shadowCoord.xyz);
+        attenuation = SAMPLE_TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture,sampler_AdditionalLightsShadowmapTexture, shadowCoord.xyz);
     }
 
     attenuation = LerpWhiteTo(attenuation, shadowStrength);

@@ -7,17 +7,41 @@ inline float FastSSS(float3 l,float3 v){
 }
 
 inline float Pow2(float a){return a*a;}
-/* in common.hlsl
+/* 
 inline float Pow4(float a){
     float a2 = a*a;
     return a2*a2;
 }
-*/
+
 inline float Pow5(float a){
     float a2 = a*a;
     return a2*a2*a;
 }
-
+inline float DisneyDiffuse(float nv,float nl,float lh,float roughness){
+    float fd90 = 0.5 + 2*roughness*lh*lh;
+    float lightScatter = 1 - (fd90 - 1) * Pow5(1 - nl);
+    float viewScatter = 1 - (fd90 - 1 ) * Pow5(1 - nv);
+    return lightScatter * viewScatter;
+}
+inline float RoughnessToSpecPower(float a){
+    float a2 = a * a;
+    float sq = max(1e-4f,a2 * a2);
+    float n = 2.0/sq - 2;
+    n = max(n,1e-4f);
+    return n;
+}
+inline float3 FresnelTerm(float3 F0,float lh){
+    return F0 + (1-F0) * Pow5(1 - lh);
+}
+inline float3 FresnelLerp(float3 f0,float3 f90,float lh){
+    float t = Pow5(1-lh);
+    return lerp(f0,f90,t);
+}
+inline float3 FresnelLerpFast(float3 F0,float3 F90,float lh){
+    float t = Pow4(1 - lh);
+    return lerp(F0,F90,t);
+}
+*/
 float SafeDiv(float numer, float denom)
 {
     return (numer != denom) ? numer / denom : 1;
@@ -28,20 +52,8 @@ float3 SafeNormalize(float3 inVec)
     return inVec * rsqrt(dp3);
 }
 
-inline float DisneyDiffuse(float nv,float nl,float lh,float roughness){
-    float fd90 = 0.5 + 2*roughness*lh*lh;
-    float lightScatter = 1 - (fd90 - 1) * Pow5(1 - nl);
-    float viewScatter = 1 - (fd90 - 1 ) * Pow5(1 - nv);
-    return lightScatter * viewScatter;
-}
 
-inline float RoughnessToSpecPower(float a){
-    float a2 = a * a;
-    float sq = max(1e-4f,a2 * a2);
-    float n = 2.0/sq - 2;
-    n = max(n,1e-4f);
-    return n;
-}
+
 
 inline float SmithJointGGXTerm(float nl,float nv,float a2){
     float v = nv * (nv * (1-a2)+a2);
@@ -61,17 +73,8 @@ inline float D_GGXTerm(float nh,float a){
     return INV_PI * a2 / (d*d + 1e-7f);
 }
 
-inline float3 FresnelTerm(float3 F0,float lh){
-    return F0 + (1-F0) * Pow5(1 - lh);
-}
-inline float3 FresnelLerp(float3 f0,float3 f90,float lh){
-    float t = Pow5(1-lh);
-    return lerp(f0,f90,t);
-}
-inline float3 FresnelLerpFast(float3 F0,float3 F90,float lh){
-    float t = Pow4(1 - lh);
-    return lerp(F0,F90,t);
-}
+
+
 
 inline float D_GGXAnisoNoPI(float TdotH, float BdotH, float NdotH, float roughnessT, float roughnessB)
 {
