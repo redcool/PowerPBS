@@ -7,10 +7,12 @@ inline float FastSSS(float3 l,float3 v){
 }
 
 inline float Pow2(float a){return a*a;}
+/* in common.hlsl
 inline float Pow4(float a){
     float a2 = a*a;
     return a2*a2;
 }
+*/
 inline float Pow5(float a){
     float a2 = a*a;
     return a2*a2*a;
