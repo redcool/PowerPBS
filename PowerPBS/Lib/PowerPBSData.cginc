@@ -24,10 +24,10 @@ struct PBSData{
     float fresnelTerm;
 };
 
-inline PBSData InitPBSData(float3 tangent,float3 binormal,float3 normal,float3 viewDir,
-float oneMinusReflectivity,float smoothness,float4 heightClothFastSSSMask,float3 worldPos
+void InitPBSData(float3 tangent,float3 binormal,float3 normal,float3 viewDir,
+float oneMinusReflectivity,float smoothness,float4 heightClothFastSSSMask,float3 worldPos,out PBSData data
 ){
-    PBSData data = (PBSData)0;
+    data = (PBSData)0;
     data.tangent = tangent;
     data.binormal = binormal;
     data.normal = normal;
@@ -40,7 +40,6 @@ float oneMinusReflectivity,float smoothness,float4 heightClothFastSSSMask,float3
     
     data.heightClothFastSSSMask = heightClothFastSSSMask;
     data.worldPos = worldPos;
-    return data;
 }
 
 struct ClearCoatData{
@@ -52,14 +51,25 @@ struct ClearCoatData{
     // float3 diffColor;
     float3 reflectDir;
 };
-ClearCoatData InitCoatData(float smoothness,float3 specColor,float oneMinusReflectivity){
-    ClearCoatData data = (ClearCoatData)0;
+void InitCoatData(float smoothness,float3 specColor,float oneMinusReflectivity,out ClearCoatData data){
+    data = (ClearCoatData)0;
     data.smoothness = smoothness;
     data.perceptualRoughness = max(1-smoothness,HALF_MIN_SQRT);
     data.roughness  = max(data.perceptualRoughness * data.perceptualRoughness,HALF_MIN_SQRT);
     data.roughness2 = data.roughness * data.roughness;
     data.specColor  = specColor;
     data.oneMinusReflectivity = oneMinusReflectivity;
-    return data;
 }
+
+
+struct SurfaceData{
+    float3 diffColor,specColor;
+    float oneMinusReflectivity,finalAlpha;
+};
+
+struct WorldData{
+    float3 pos,view,reflect,tangent,binormal,normal,vertexNormal;
+};
+
+
 #endif //POWER_PBS_DATA_CGINC

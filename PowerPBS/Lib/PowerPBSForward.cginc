@@ -40,7 +40,7 @@ v2f vert (appdata v)
     o.pos = UnityObjectToClipPos(v.vertex);
     o.uv = float4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
-    float3 worldPos = mul(unity_ObjectToWorld,v.vertex);
+    float4 worldPos = mul(unity_ObjectToWorld,v.vertex);
     float3 n = UnityObjectToWorldNormal(v.normal);
     float3 t = UnityObjectToWorldDir(v.tangent.xyz);
     float tangentSign = v.tangent.w * unity_WorldTransformParams.w;
@@ -63,7 +63,6 @@ v2f vert (appdata v)
 
 float4 frag (v2f i) : SV_Target
 {
-
     // heightClothSSSMask
     float4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
     float height = heightClothSSSMask.x;
@@ -93,93 +92,74 @@ float4 frag (v2f i) : SV_Target
     if(_AlphaTestOn)
         clip(alpha - _Cutoff);
 
-    float2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
-    float3 tn = CalcNormal(normalMapUV,detailMask);
-    float3 n = normalize(float3(
-        dot(i.tSpace0.xyz,tn),
-        dot(i.tSpace1.xyz,tn),
-        dot(i.tSpace2.xyz,tn)
-    ));
-    float3 worldPos = float3(i.tSpace0.w,i.tSpace1.w,i.tSpace2.w);
-    float3 v = normalize(GetWorldViewDir(worldPos));
-    float3 r = SafeNormalize(reflect(-v + _ReflectionOffsetDir.xyz,n));
-
-    float3 tangent = normalize(float3(i.tSpace0.x,i.tSpace1.x,i.tSpace2.x));
-    float3 binormal = normalize(float3(i.tSpace0.y,i.tSpace1.y,i.tSpace2.y));
-    float3 worldNormal = normalize(float3(i.tSpace0.z,i.tSpace1.z,i.tSpace2.z));
+    WorldData worldData;
+    InitWorldData(uv,detailMask,i.tSpace0,i.tSpace1,i.tSpace2,worldData/**/);
 
     UnityLight light = GetLight();
     float3 lightColorNoAtten = light.color;
 
     if(_ApplyShadowOn){
         // UNITY_LIGHT_ATTENUATION(atten, i, worldPos)
-        half atten = URP_SHADOW_ATTENUATION(i,worldPos);
+        half atten = URP_SHADOW_ATTENUATION(i,worldData.pos);
         light.color *= atten;
     }
+    SurfaceData surfaceData;
+    InitSurfaceData(i.uv.zw,albedo,alpha,metallic,surfaceData/**/);
 
-    half oneMinusReflectivity;
-    half3 specColor = 0;
-    albedo = DiffuseAndSpecularFromMetallic (albedo, metallic, /*inout*/ specColor, /*out*/ oneMinusReflectivity);
-    // --- specular map 
-    if(_CustomSpecularMapOn){
-        float2 specUV = TRANSFORM_TEX(i.uv.zw,_CustomSpecularMap);
-        float4 customSpecColor = SAMPLE_TEXTURE2D(_CustomSpecularMap,sampler_linear_repeat,specUV);
-        specColor = lerp(unity_ColorSpaceDielectricSpec.xyz,customSpecColor.xyz,_Metallic) * customSpecColor.w;
-    }
-
-    half outputAlpha;
-    albedo = AlphaPreMultiply (albedo, alpha, oneMinusReflectivity, /*out*/ outputAlpha);
-
-    PBSData data = InitPBSData(tangent,binormal,n,v,oneMinusReflectivity, smoothness,heightClothSSSMask,worldPos);
-    data.mainTex = mainTex;
+    PBSData pbsData;
+    InitPBSData(worldData.tangent,worldData.binormal,worldData.normal,worldData.view,surfaceData.oneMinusReflectivity, smoothness,heightClothSSSMask,worldData.pos,pbsData/**/);
+    pbsData.mainTex = mainTex;
 
     // calc strand specular
     if(_PBRMode == PBR_MODE_STRAND){
         float4 ao_shift_specMask_tbMask = SAMPLE_TEXTURE2D(_StrandMaskTex,sampler_linear_repeat,i.uv);
 		float hairAo = ao_shift_specMask_tbMask.x;
-        data.hairSpecColor = CalcHairSpecColor(tangent,n,binormal,light.dir,v,ao_shift_specMask_tbMask.yzw);
-		albedo *= lerp(1, hairAo, _HairAoIntensity);
+        pbsData.hairSpecColor = CalcHairSpecColor(worldData.tangent,worldData.normal,worldData.binormal,light.dir,worldData.view,ao_shift_specMask_tbMask.yzw);
+		surfaceData.diffColor *= lerp(1, hairAo, _HairAoIntensity);
     }
 
-    UnityIndirect indirect = CalcGI(albedo,uv,r,n,occlusion,data.perceptualRoughness);
-    ClearCoatData coatData = InitCoatData(_CoatSmoothness,_ClearCoatSpecColor * specColor,unity_ColorSpaceDielectricSpec.x);
+    UnityIndirect indirect = CalcGI(surfaceData.diffColor,uv,worldData.reflect,worldData.normal,occlusion,pbsData.perceptualRoughness);
 
-    coatData.reflectDir = r;
+    // calc coat data
+    ClearCoatData coatData;
+    InitCoatData(_CoatSmoothness,_ClearCoatSpecColor * surfaceData.specColor,unity_ColorSpaceDielectricSpec.x,coatData/**/);
+
+    coatData.reflectDir = worldData.reflect;
     coatData.occlusion = occlusion;
 
-    half4 c = CalcPBS(albedo, specColor, light, indirect,data/**/,coatData);
-    c.a = outputAlpha;
+    half4 col = CalcPBS(surfaceData.diffColor, surfaceData.specColor, light, indirect,pbsData/**/,coatData);
+    col.a = surfaceData.finalAlpha;
 
     //for preintegrated lut
     if(_ScatteringLUTOn){
         float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
-        float3 scatteredColor = PreScattering(worldNormal,light.dir,lightColor,data.nl,mainTex,worldPos,_CurvatureScale,_ScatteringIntensity);
-        c.rgb += scatteredColor;
+        float3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity);
+        col.rgb += scatteredColor;
     }
     if(_DiffuseProfileOn){
-        // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
-        // c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
+        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
+        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
         float2 screenUV = i.screenPos.xy/i.screenPos.w;
         float profileMask = _DiffuseProfileMaskUserMainTexA ? mainTex.a : 1;
-        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,profileMask);
-        c.rgb += DiffuseProfile(c,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,profileMask);
-        // c = originalColor + horizontalGasussianColor + verticalGausssianColor
-        c.rgb /=3;
+        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,profileMask);
+        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,profileMask);
+        // col = originalColor + horizontalGasussianColor + verticalGausssianColor
+        col.rgb /=3;
     }
     //for emission
     if(_EmissionOn){
-        c.rgb += CalcEmission(albedo,uv);
+        col.rgb += CalcEmission(surfaceData.diffColor,uv);
     }
     
     if(_SSSOn){
-        c.rgb += CalcSSS(light.dir,v,heightClothSSSMask.zw);
+        col.rgb += CalcSSS(light.dir,worldData.view,heightClothSSSMask.zw);
     }
     if(_FresnelAlphaOn){
-        c.a *= saturate(smoothstep(_FresnelMin,_FresnelMax,data.nv));
+        col.a *= saturate(smoothstep(_FresnelMin,_FresnelMax,pbsData.nv));
     }
     // apply fog
-    UNITY_APPLY_FOG(i.fogCoord, c);
-    return c;
+    UNITY_APPLY_FOG(i.fogCoord, col);
+    return col;
 }
 
 

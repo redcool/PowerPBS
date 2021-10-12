@@ -21,7 +21,7 @@ _Color=Color
 _NormalMap=NormalMap
 _NormalMapScale=_NormalMapScale
 _MetallicMap=Metallic(R),Smoothness(G),Occlusion(B)
-_Metallic=_Metallic
+_Metallic=_Metallic(0:DielectricSpec,1:CustomSpecColor)
 _Smoothness=Smoothness
 _Occlusion=_Occlusion
 _PBRMode=_PBRMode
@@ -29,7 +29,7 @@ _ReceiveAdditionalLightsOn=_ReceiveAdditionalLightsOn
 _DirectionalLightFromSHOn=_DirectionalLightFromSHOn
 
 _CustomSpecularMapOn=_CustomSpecularMapOn
-_CustomSpecularMap=_CustomSpecularMap(a is Mask (0:DielectricSpec,1:CustomSpecColor) )
+_CustomSpecularMap=_CustomSpecularMap(a : specIntensity)
 _MaxSpecularIntensity=_MaxSpecularIntensity(limit value in HDR)
 // ==================================================
 

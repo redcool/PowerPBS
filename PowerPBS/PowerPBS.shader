@@ -65,7 +65,7 @@ Shader "Character/PowerPBS"
 
         [Header(Specular Options)]
         [Toggle]_SpecularOn("_SpecularOn",float) = 1
-        _FresnelIntensity("_FresnelIntensity",range(1,3)) = 1
+        _FresnelIntensity("_FresnelIntensity",range(1,3)) = 0
         _MaxSpecularIntensity("_MaxSpecularIntensity", range(0, 10)) = 5
 // ==================================================
         [Space(10)][Header(Shadow)]

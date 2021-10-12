@@ -199,7 +199,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
     if(_PBRMode != PBR_MODE_CLOTH && _PBRMode != PBR_MODE_STANDARD)
         F = FresnelTerm(specColor,lh);
 
-    specTerm *= F * _FresnelIntensity;
+    specTerm *= F;
 
     specTerm = min(specTerm, _MaxSpecularIntensity); // eliminate large value in HDR
     return specTerm;
@@ -208,7 +208,7 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
 float3 CalcIndirect(float smoothness,float roughness2,float oneMinusReflectivity,float3 giDiffColor,float3 giSpecColor,float3 diffColor,float3 specColor,float fresnelTerm){
     float3 indirectDiffuse = giDiffColor * diffColor;
     float surfaceReduction =1 /(roughness2 + 1); // [1,0.5]
-    float grazingTerm = saturate(smoothness + 1 - oneMinusReflectivity); //smoothness + metallic
+    float grazingTerm = saturate(smoothness + 1 - oneMinusReflectivity) * _FresnelIntensity; //smoothness + metallic
     float3 indirectSpecular = surfaceReduction * giSpecColor * lerp(specColor,grazingTerm,fresnelTerm);
     return indirectDiffuse + indirectSpecular;
 }
@@ -340,6 +340,43 @@ float3 CalcDiffuseAndSpecularFromMetallic(float3 albedo,float metallic,inout flo
     specColor = lerp(unity_ColorSpaceDielectricSpec.rgb,albedo,metallic);
     oneMinusReflectivity = OneMinusReflectivityFromMetallic(metallic);
     return albedo * oneMinusReflectivity;
+}
+
+float ReflectivitySpecular(float3 specColor){
+    return max(max(specColor.x,specColor.y),specColor.z);
+}
+
+void InitSurfaceData(float2 uv,float3 albedo,float alpha,float metallic,out SurfaceData data){
+    // --- specular map flow
+    if(_CustomSpecularMapOn){
+        float2 specUV = TRANSFORM_TEX(uv,_CustomSpecularMap);
+        float4 customSpecColor = SAMPLE_TEXTURE2D(_CustomSpecularMap,sampler_linear_repeat,specUV);
+        data.specColor = lerp(unity_ColorSpaceDielectricSpec.xyz,customSpecColor.xyz,_Metallic) * customSpecColor.w;
+        data.oneMinusReflectivity = 1.0 - ReflectivitySpecular(data.specColor);
+        data.diffColor = albedo * (1 - data.specColor);
+    }else{
+        // metallic flow
+        data.diffColor = DiffuseAndSpecularFromMetallic (albedo, metallic, /*inout*/ data.specColor, /*out*/ data.oneMinusReflectivity);
+    }
+    
+    data.diffColor = AlphaPreMultiply (data.diffColor, alpha, data.oneMinusReflectivity, /*out*/ data.finalAlpha);
+}
+
+void InitWorldData(float2 uv,float detailMask,float4 tSpace0,float4 tSpace1,float4 tSpace2,out WorldData data ){
+    float2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
+    float3 tn = CalcNormal(normalMapUV,detailMask);
+    data.normal = normalize(float3(
+        dot(tSpace0.xyz,tn),
+        dot(tSpace1.xyz,tn),
+        dot(tSpace2.xyz,tn)
+    ));
+    data.pos = float3(tSpace0.w,tSpace1.w,tSpace2.w);
+    data.view = normalize(GetWorldViewDir(data.pos));
+    data.reflect = SafeNormalize(reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
+
+    data.tangent = normalize(float3(tSpace0.x,tSpace1.x,tSpace2.x));
+    data.binormal = normalize(float3(tSpace0.y,tSpace1.y,tSpace2.y));
+    data.vertexNormal = normalize(float3(tSpace0.z,tSpace1.z,tSpace2.z));
 }
 
 #endif // end of POWER_PBS_CORE_CGINC
