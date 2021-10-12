@@ -48,7 +48,7 @@ Shader "Character/PowerPBS"
         [Header(Custom Specular)]
         [Toggle]_CustomSpecularMapOn("_CustomSpecularMapOn",int) = 0
         _CustomSpecularMap("_CustomSpecularMap(a:Mask(0:DielectricSpec,1:CustomSpecColor))",2d) ="white"{}
-
+        _CustomSpecularIntensity("_CustomSpecularIntensity",float) = 1
         
         [Header(Clear Coat)]
         [Toggle]_ClearCoatOn("_ClearCoatOn",int) = 0
@@ -65,7 +65,7 @@ Shader "Character/PowerPBS"
 
         [Header(Specular Options)]
         [Toggle]_SpecularOn("_SpecularOn",float) = 1
-        _FresnelIntensity("_FresnelIntensity",range(1,3)) = 0
+        _FresnelIntensity("_FresnelIntensity",range(0,3)) = 1
         _MaxSpecularIntensity("_MaxSpecularIntensity", range(0, 10)) = 5
 // ==================================================
         [Space(10)][Header(Shadow)]

@@ -69,6 +69,7 @@ CBUFFER_START(UnityPerMaterial)
 
     int _CustomSpecularMapOn;
     float4 _CustomSpecularMap_ST;
+    float _CustomSpecularIntensity;
 
     int _AlphaFrom;
     int _FresnelAlphaOn;

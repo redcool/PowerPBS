@@ -30,6 +30,7 @@ _DirectionalLightFromSHOn=_DirectionalLightFromSHOn
 
 _CustomSpecularMapOn=_CustomSpecularMapOn
 _CustomSpecularMap=_CustomSpecularMap(a : specIntensity)
+_CustomSpecularIntensity = _CustomSpecularIntensity
 _MaxSpecularIntensity=_MaxSpecularIntensity(limit value in HDR)
 // ==================================================
 
