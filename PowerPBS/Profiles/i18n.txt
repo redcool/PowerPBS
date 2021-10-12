@@ -30,6 +30,7 @@ _DirectionalLightFromSHOn=_DirectionalLightFromSHOn
 
 _CustomSpecularMapOn=_CustomSpecularMapOn
 _CustomSpecularMap=_CustomSpecularMap(a is Mask (0:DielectricSpec,1:CustomSpecColor) )
+_MaxSpecularIntensity=_MaxSpecularIntensity(limit value in HDR)
 // ==================================================
 
 _AnisoColor=_AnisoColor
@@ -110,7 +111,7 @@ _EmissionColor=_EmissionColor
 _Emission=_Emission
 // ==================================================
 
-_IndirectIntensity=_Indirect Specular Intensity
+_IndirectSpecularIntensity=_Indirect Specular Intensity
 // ==================================================
 
 _CustomLightOn=_CustomLightOn

@@ -118,7 +118,7 @@ inline float4 CalcAlbedo(float2 uv,out float detailMask)
 }
 
 inline UnityIndirect CalcGI(float3 albedo,float2 uv,float3 reflectDir,float3 normal,float3 occlusion,float roughness){
-    float3 indirectSpecular = GetIndirectSpecular(reflectDir,roughness) * occlusion * _IndirectIntensity;
+    float3 indirectSpecular = GetIndirectSpecular(reflectDir,roughness) * occlusion * _IndirectSpecularIntensity;
     // float3 indirectDiffuse = albedo * occlusion;
     // indirectDiffuse += ShadeSH9(float4(normal,1));
     float3 indirectDiffuse = ShadeSH9(float4(normal,1)) * occlusion;
@@ -200,6 +200,8 @@ inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,fl
         F = FresnelTerm(specColor,lh);
 
     specTerm *= F * _FresnelIntensity;
+
+    specTerm = min(specTerm, _MaxSpecularIntensity); // eliminate large value in HDR
     return specTerm;
 }
 
@@ -216,7 +218,7 @@ float3 CalcIndirect(PBSData data,float3 giDiffColor,float3 giSpecColor,float3 di
 }
 
 float3 CalcIndirectApplyClearCoat(float3 indirectColor,ClearCoatData data,float fresnelTerm){
-    float3 coatSpecGI = GetIndirectSpecular(data.reflectDir,data.perceptualRoughness) * data.occlusion * _IndirectIntensity;
+    float3 coatSpecGI = GetIndirectSpecular(data.reflectDir,data.perceptualRoughness) * data.occlusion * _IndirectSpecularIntensity;
     float3 coatColor = CalcIndirect(data.smoothness,data.roughness2,1-data.oneMinusReflectivity,0,coatSpecGI,0,data.specColor,fresnelTerm); // 1-data.oneMinusReflectivity approach unity_ColorSpaceDielectricSpec.x(0.04) 
     float coatFresnel = unity_ColorSpaceDielectricSpec.x + unity_ColorSpaceDielectricSpec.w * fresnelTerm;
     return indirectColor * (1 - coatFresnel) + coatColor;
@@ -289,7 +291,7 @@ float3 CalcIndirectApplySHDirLight(float3 indirectColor,PBSData data,float3 diff
     {
         Light light = GetDirLightFromUnityLightProbe();
         float3 lightColor = CalcDirectAdditionalLight(data, diffColor, specColor, light);
-        indirectColor = indirectColor * rcp(1 + _AmbientSHIntensity)  + lightColor; // orignal sh lighting as ambient
+        indirectColor = indirectColor * rcp(1 + _AmbientSHIntensity)  + _DirectionalSHIntensity*lightColor; // orignal sh lighting as ambient
     }
     return indirectColor;
 }
@@ -311,6 +313,10 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     }
     // apply sh dir light
     color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
+
+    // back face gi compensate.
+    color += (1-nl) * _BackFaceGIDiffuse * diffColor;
+
     // direct
     float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     if(_ClearCoatOn){
@@ -319,8 +325,6 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     // apply main light atten 
     directColor *= mainLight.color * nl;
     color += directColor;
-    // back face gi compensate.
-    color += gi.diffuse * (1-nl) * _BackFaceGIDiffuse;
 
     // additional lights
     color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);

@@ -97,6 +97,7 @@ CBUFFER_START(UnityPerMaterial)
     int _AdditionalLightSoftShadowOn;
     int _DirectionalLightFromSHOn;
     float _AmbientSHIntensity;
+    float _DirectionalSHIntensity;
 // ==================================================
     int _ScatteringLUTOn;
     float _ScatteringIntensity;
@@ -123,7 +124,7 @@ CBUFFER_START(UnityPerMaterial)
     float _EmissionOn;
     float4 _EmissionColor;
     float _Emission;
-    float _IndirectIntensity;
+    float _IndirectSpecularIntensity;
     float _BackFaceGIDiffuse;
 
     int _AlphaTestOn;
@@ -133,6 +134,7 @@ CBUFFER_START(UnityPerMaterial)
     int _CustomLightOn;
     fixed4 _LightDir;
     fixed4 _LightColor;
+    float _MaxSpecularIntensity;
 
     int _SSSOn;
     float3 _BackSSSColor,_FrontSSSColor;

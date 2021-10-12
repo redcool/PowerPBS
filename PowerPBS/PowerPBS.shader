@@ -48,6 +48,7 @@ Shader "Character/PowerPBS"
         [Header(Custom Specular)]
         [Toggle]_CustomSpecularMapOn("_CustomSpecularMapOn",int) = 0
         _CustomSpecularMap("_CustomSpecularMap(a:Mask(0:DielectricSpec,1:CustomSpecColor))",2d) ="white"{}
+
         
         [Header(Clear Coat)]
         [Toggle]_ClearCoatOn("_ClearCoatOn",int) = 0
@@ -62,9 +63,10 @@ Shader "Character/PowerPBS"
         [Header(PBR Mode)]
         [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
 
-        [Header(Light Options)]
+        [Header(Specular Options)]
         [Toggle]_SpecularOn("_SpecularOn",float) = 1
         _FresnelIntensity("_FresnelIntensity",range(1,3)) = 1
+        _MaxSpecularIntensity("_MaxSpecularIntensity", range(0, 10)) = 5
 // ==================================================
         [Space(10)][Header(Shadow)]
         [Toggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
@@ -77,6 +79,7 @@ Shader "Character/PowerPBS"
         [Header(Spherical Harmonics)]
         [Toggle]_DirectionalLightFromSHOn("_DirectionalLightFromSHOn",int) = 0
         _AmbientSHIntensity("_AmbientSHIntensity",range(0,1)) = 0.5
+        _DirectionalSHIntensity("_DirectionalSHIntensity", range(0, 1)) = 0.5
 // ==================================================
         [Header(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)
@@ -155,7 +158,7 @@ Shader "Character/PowerPBS"
         _Emission("_Emission",float) = 1
 // ==================================================
         [Space(10)][Header(GI )]
-        _IndirectIntensity("_IndirectIntensity",float) = 1
+        _IndirectSpecularIntensity("_IndirectSpecularIntensity",float) = 1
         _BackFaceGIDiffuse("_BackFaceGIDiffuse",range(0,1)) = 0
 // ==================================================
         [Space(10)][Header(CustomLight)]
