@@ -351,7 +351,7 @@ void InitSurfaceData(float2 uv,float3 albedo,float alpha,float metallic,out Surf
     if(_CustomSpecularMapOn){
         float2 specUV = TRANSFORM_TEX(uv,_CustomSpecularMap);
         float4 customSpecColor = SAMPLE_TEXTURE2D(_CustomSpecularMap,sampler_linear_repeat,specUV);
-        data.specColor = lerp(unity_ColorSpaceDielectricSpec.xyz,customSpecColor.xyz,_Metallic) * customSpecColor.w * _CustomSpecularIntensity;
+        data.specColor = lerp(unity_ColorSpaceDielectricSpec.xyz,customSpecColor.xyz,customSpecColor.w) * _CustomSpecularIntensity;
         data.oneMinusReflectivity = 1.0 - ReflectivitySpecular(data.specColor);
         data.diffColor = albedo * (1 - data.specColor);
     }else{
