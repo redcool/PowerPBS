@@ -190,8 +190,8 @@ Shader "Character/PowerPBS"
         [Enum(UnityEngine.Rendering.CullMode)]_CullMode("_CullMode",int) = 2
 // ==================================================
 
-        [Header(Height Cloth FrontSSS BackSSS)]
-        _HeightClothSSSMask("_Height(R) , Cloth(G) , SSSMask(B,A)",2d) = "white"{} 
+        [Header(Height FastSSS Mask)]
+        _HeightClothSSSMask("_Height(R) , unused(G) , SSSMask(B,A)",2d) = "white"{} 
 
         [Space(10)][Header(FastSSS)]
         [Toggle]_SSSOn("_SSSOn",int) = 0
