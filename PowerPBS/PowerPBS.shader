@@ -99,6 +99,7 @@ Shader "Character/PowerPBS"
         [NoScaleOffset]_ScatteringLUT("_ScatteringLUT",2d) = ""{}
         _ScatteringIntensity("_ScatteringIntensity",range(0,3)) = 1
         _CurvatureScale("_CurvatureScale (MainTex.a)",range(0.01,0.99)) = 1
+        [Toggle]_PreScatterMaskUseMainTexA("_PreScatterMaskUseMainTexA",int) = 1
         [Toggle]_LightColorNoAtten("_LightColorNoAtten",int) = 1
         [Toggle]_AdditionalLightCalcScatter("_AdditionalLightCalcScatter",int) = 0
 
@@ -190,8 +191,8 @@ Shader "Character/PowerPBS"
         [Enum(UnityEngine.Rendering.CullMode)]_CullMode("_CullMode",int) = 2
 // ==================================================
 
-        [Header(Height FastSSS Mask)]
-        _HeightClothSSSMask("_Height(R) , unused(G) , SSSMask(B,A)",2d) = "white"{} 
+        [Header(Height Cloth FrontSSS BackSSS)]
+        _HeightClothSSSMask("_Height(R) , Cloth(G) , SSSMask(B,A)",2d) = "white"{} 
 
         [Space(10)][Header(FastSSS)]
         [Toggle]_SSSOn("_SSSOn",int) = 0

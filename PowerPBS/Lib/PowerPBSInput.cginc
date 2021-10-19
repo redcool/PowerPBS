@@ -103,6 +103,7 @@ CBUFFER_START(UnityPerMaterial)
     int _ScatteringLUTOn;
     float _ScatteringIntensity;
     float _CurvatureScale;
+    int _PreScatterMaskUseMainTexA;
     int _LightColorNoAtten;
     int _AdditionalLightCalcScatter;
     int _DiffuseProfileOn;

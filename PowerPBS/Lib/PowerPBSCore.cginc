@@ -42,7 +42,8 @@ inline float3 PreScattering(float3 normal,float3 lightDir,float3 lightColor,floa
     // float curvature = deltaNormal/1 * curveScale;
     float atten = 1-wnl;//smoothstep(0.,0.5,nl);
     float3 scattering = SAMPLE_TEXTURE2D(_ScatteringLUT,sampler_linear_repeat,float2(wnl,curveScale ));
-    return scattering * lightColor * mainTex.xyz * atten * scatterIntensity * mainTex.w;
+    float scatterMask = lerp(1,mainTex.w,_PreScatterMaskUseMainTexA);
+    return scattering * lightColor * mainTex.xyz * atten * scatterIntensity * scatterMask;
 }
 
 inline float3 GetIndirectSpecular(float3 reflectDir,float rough){
@@ -351,7 +352,7 @@ void InitSurfaceData(float2 uv,float3 albedo,float alpha,float metallic,out Surf
     if(_CustomSpecularMapOn){
         float2 specUV = TRANSFORM_TEX(uv,_CustomSpecularMap);
         float4 customSpecColor = SAMPLE_TEXTURE2D(_CustomSpecularMap,sampler_linear_repeat,specUV);
-        data.specColor = lerp(unity_ColorSpaceDielectricSpec.xyz,customSpecColor.xyz,customSpecColor.w) * _CustomSpecularIntensity;
+        data.specColor = lerp(unity_ColorSpaceDielectricSpec.xyz,customSpecColor.xyz,_Metallic) * customSpecColor.w * _CustomSpecularIntensity;
         data.oneMinusReflectivity = 1.0 - ReflectivitySpecular(data.specColor);
         data.diffColor = albedo * (1 - data.specColor);
     }else{
