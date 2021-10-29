@@ -16,6 +16,7 @@ Help=PowerPBS,用于高清角色渲染
 //Emission=发光
 //Strand=发丝
 // ==================================================
+RenderQueue=RenderQueue
 _MainTex =Main Texture
 _Color=Color
 _NormalMap=NormalMap
