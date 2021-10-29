@@ -54,6 +54,7 @@ Shader "Character/PowerPBS"
         [Toggle]_ClearCoatOn("_ClearCoatOn",int) = 0
         _ClearCoatSpecColor("_ClearCoatSpecColor",color) = (1,1,1,1)
         _CoatSmoothness("_CoatSmoothness",range(0,1)) = 0.5
+        _CoatIndirectSpecularIntensity("_CoatIndirectSpecularIntensity",float) = 1
 
 // ================================================== vertex
         [Header(Vertex Scale)]

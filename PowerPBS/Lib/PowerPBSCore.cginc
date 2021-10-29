@@ -219,7 +219,7 @@ float3 CalcIndirect(PBSData data,float3 giDiffColor,float3 giSpecColor,float3 di
 }
 
 float3 CalcIndirectApplyClearCoat(float3 indirectColor,ClearCoatData data,float fresnelTerm){
-    float3 coatSpecGI = GetIndirectSpecular(data.reflectDir,data.perceptualRoughness) * data.occlusion * _IndirectSpecularIntensity;
+    float3 coatSpecGI = GetIndirectSpecular(data.reflectDir,data.perceptualRoughness) * data.occlusion * _CoatIndirectSpecularIntensity;
     float3 coatColor = CalcIndirect(data.smoothness,data.roughness2,1-data.oneMinusReflectivity,0,coatSpecGI,0,data.specColor,fresnelTerm); // 1-data.oneMinusReflectivity approach unity_ColorSpaceDielectricSpec.x(0.04) 
     float coatFresnel = unity_ColorSpaceDielectricSpec.x + unity_ColorSpaceDielectricSpec.w * fresnelTerm;
     return indirectColor * (1 - coatFresnel) + coatColor;
