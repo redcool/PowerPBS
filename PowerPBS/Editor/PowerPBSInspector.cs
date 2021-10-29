@@ -11,6 +11,7 @@ namespace PowerPBS
         {
             shaderName = "PowerPBS";
             AlphaTabId = 6;
+            RenderQueueTabId = 0;
         }
     }
 }
