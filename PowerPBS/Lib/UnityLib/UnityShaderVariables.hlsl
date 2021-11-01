@@ -166,8 +166,8 @@ CBUFFER_START(UnityPerDraw)
     float4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
     float4 unity_RenderingLayer;
     // UnityInput.hlsl
-    half4 unity_LightIndices[2];
     half4 unity_LightData;
+    half4 unity_LightIndices[2];
 
     // SH lighting environment
     half4 unity_SHAr;
