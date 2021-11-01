@@ -1,7 +1,6 @@
 ﻿/**
     pbs渲染流程
-    1 简化了gi(diffuse,specular)
-    2 Lighting里baked模式下同LightingProcess传递光照信息
+    1 URP asset add PowerUrpLitFeature
 
     usecase :
     drp 
@@ -127,19 +126,19 @@ Shader "Character/PowerPBS"
         // _Detail3_Map("_Detail3_Map(RGB),Detail3_Mask(A)",2d) = "white"{}
         // _Detail3_MapIntensity("_Detail3_MapIntensity",range(0,1)) = 1
 
-        [Space(10)][Header(Detail2_Map)]
-        [Toggle]_Detail2_MapOn("_Detail2_MapOn",int) = 0
-        [Enum(Multiply,0,Replace,1)]_Detail2_MapMode("_Detail2_MapMode",int) = 0
-        _Detail2_Map("_Detail2_Map(RGB),EyeMask(A)",2d) = "white"{}
-        _Detail2_MapIntensity("_Detail2_MapIntensity",range(0,1)) = 1
+        // [Space(10)][Header(Detail2_Map)]
+        // [Toggle]_Detail2_MapOn("_Detail2_MapOn",int) = 0
+        // [Enum(Multiply,0,Replace,1)]_Detail2_MapMode("_Detail2_MapMode",int) = 0
+        // _Detail2_Map("_Detail2_Map(RGB),EyeMask(A)",2d) = "white"{}
+        // _Detail2_MapIntensity("_Detail2_MapIntensity",range(0,1)) = 1
 
         [Space(10)][Header(Detail1_Map)]
         [Toggle]_Detail1_MapOn("_Detail1_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail1_MapMode("_Detail1_MapMode",int) = 0
-        _Detail1_Map("_Detail1_Map(rgb),MouthMask(A)",2d) = "white"{}
+        _Detail1_Map("_Detail1_Map(rgb),Mask(A)",2d) = "white"{}
         _Detail1_MapIntensity("_Detail1_MapIntensity",range(0,1)) = 1
 
-        [Space(10)][Header(DetailMap Bottom Layer)]
+        [Space(10)][Header(DetailMap)]
         [Toggle]_Detail_MapOn("_Detail_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail_MapMode("_Detail_MapMode",int) = 0
         _Detail_Map("_Detail_Map(RGB),DetailMask(A)",2d) = "white"{}
@@ -232,7 +231,7 @@ Shader "Character/PowerPBS"
     SubShader
     {
         Tags { "RenderType"="Opaque" }
-        LOD 431
+        LOD 100
         Blend [_SrcMode][_DstMode]
         ZWrite [_ZWriteOn]
         ZTest[_ZTestMode]
@@ -247,21 +246,18 @@ Shader "Character/PowerPBS"
         Pass
         {
             // Tags{"LightMode"="ForwardBase" } // drp need this, otherwise shadow out
-            CGPROGRAM
+            HLSLPROGRAM
+            // #pragma multi_compile_fwdbase
             #pragma vertex vert
             #pragma fragment frag
             // make fog work
             #pragma multi_compile_fog
-            // #pragma multi_compile_fwdbase
             #pragma target 3.0
-            #define UNITY_BRDF_PBS BRDF1_Unity_PBS
-            #define PBS1
 
-            #define URP_SHADOW // for urp 
-            // #define SRP_BATCHER
-            #include "Lib/PowerPBSForward.cginc"
+            #define URP_SHADOW
+            #include "Lib/PowerPBSForward.hlsl"
            
-            ENDCG
+            ENDHLSL
         }
 
         Pass
@@ -273,14 +269,14 @@ Shader "Character/PowerPBS"
             ZTest LEqual
             ColorMask 0
 
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma exclude_renderers gles gles3 glcore
 
             #pragma vertex DepthOnlyVertex
             #pragma fragment DepthOnlyFragment
 
-            #include "Lib/PowerPBSForward.cginc"
-            ENDCG
+            #include "Lib/PowerPBSForward.hlsl"
+            ENDHLSL
         }
 
         Pass{
@@ -289,14 +285,13 @@ Shader "Character/PowerPBS"
             ZWrite On
             ZTest LEqual
             ColorMask 0
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
 
             #define URP_SHADOW
-            // #define SRP_BATCHER
-            #include "Lib/PowerPBSShadowCasterPass.cginc"
-            ENDCG
+            #include "Lib/PowerPBSShadowCasterPass.hlsl"
+            ENDHLSL
         }
 
 
