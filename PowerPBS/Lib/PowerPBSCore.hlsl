@@ -288,7 +288,7 @@ float3 CalcPBSAdditionalLight(inout PBSData data,float3 diffColor,float3 specCol
 }
 
 float3 CalcIndirectApplySHDirLight(float3 indirectColor,PBSData data,float3 diffColor,float3 specColor){
-    if (_DirectionalLightFromSHOn)
+    if (_DirectionalLightFromSHOn  && HasLightProbe() > 0)
     {
         Light light = GetDirLightFromUnityLightProbe();
         float3 lightColor = CalcDirectAdditionalLight(data, diffColor, specColor, light);
