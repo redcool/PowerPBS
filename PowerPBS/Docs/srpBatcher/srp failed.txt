@@ -1,0 +1,14 @@
+SRP:Node Use different shader keywords
+    powerpbs是非keyword设计,可以去掉所有的keywords
+        Inspector面板title上点右键,选debug,
+        查看material的Shader Keywords都删除
+
+SRP: Node material requires device state change
+    depth,stencil,cull, blend changed
+    材质的这些值不同,srp不能合并
+
+RenderQueue
+    可以使用queue控制物体渲染的顺序
+    值小的先渲染.
+    不良的queue设置会打断srp的合并
+    queue>2500会被作为透明物体渲染

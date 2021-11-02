@@ -164,14 +164,16 @@ CBUFFER_START(UnityPerDraw)
     float4x4 unity_WorldToObject;
     float4 unity_LODFade; // x is the fade value ranging within [0,1]. y is x quantized into 16 levels
     float4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
-    // float4 unity_RenderingLayer;
+    float4 unity_RenderingLayer;
    
     half4 unity_LightData;
     half4 unity_LightIndices[2];
-
+        
     float4 unity_ProbesOcclusion;
 
     half4  unity_SpecCube0_HDR;
+
+    half4  unity_SpecCube1_HDR;
 
     float4 unity_LightmapST;
     float4 unity_LightmapIndex;
@@ -186,6 +188,16 @@ CBUFFER_START(UnityPerDraw)
     half4 unity_SHBb;
     half4 unity_SHC;
 
+    #if UNITY_LIGHT_PROBE_PROXY_VOLUME
+        // x = Disabled(0)/Enabled(1)
+        // y = Computation are done in global space(0) or local space(1)
+        // z = Texel size on U texture coordinate
+        float4 unity_ProbeVolumeParams;
+
+        float4x4 unity_ProbeVolumeWorldToObject;
+        float3 unity_ProbeVolumeSizeInv;
+        float3 unity_ProbeVolumeMin;
+    #endif   
 
 CBUFFER_END
 
@@ -300,7 +312,7 @@ CBUFFER_START(UnityReflectionProbes)
     float4 unity_SpecCube1_BoxMax;
     float4 unity_SpecCube1_BoxMin;
     float4 unity_SpecCube1_ProbePosition;
-    half4  unity_SpecCube1_HDR;
+
 CBUFFER_END
 
 
@@ -321,19 +333,12 @@ CBUFFER_END
 #else
     #define UNITY_LIGHT_PROBE_PROXY_VOLUME 0
 #endif
-
+     
 #if UNITY_LIGHT_PROBE_PROXY_VOLUME
     UNITY_DECLARE_TEX3D_FLOAT(unity_ProbeVolumeSH);
 
     CBUFFER_START(UnityProbeVolume)
-        // x = Disabled(0)/Enabled(1)
-        // y = Computation are done in global space(0) or local space(1)
-        // z = Texel size on U texture coordinate
-        float4 unity_ProbeVolumeParams;
 
-        float4x4 unity_ProbeVolumeWorldToObject;
-        float3 unity_ProbeVolumeSizeInv;
-        float3 unity_ProbeVolumeMin;
     CBUFFER_END
 #endif
 
