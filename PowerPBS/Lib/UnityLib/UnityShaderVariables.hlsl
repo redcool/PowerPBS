@@ -136,7 +136,7 @@ CBUFFER_START(UnityLighting)
 
     // part of Light because it can be used outside of shadow distance
     half4 unity_OcclusionMaskSelector;
-    half4 unity_ProbesOcclusion;
+    // half4 unity_ProbesOcclusion;
 CBUFFER_END
 
 CBUFFER_START(UnityLightingOld)
@@ -158,16 +158,24 @@ CBUFFER_START(UnityShadows)
 CBUFFER_END
 
 // ----------------------------------------------------------------------------
-
+ // UnityInput.hlsl
 CBUFFER_START(UnityPerDraw)
     float4x4 unity_ObjectToWorld;
     float4x4 unity_WorldToObject;
     float4 unity_LODFade; // x is the fade value ranging within [0,1]. y is x quantized into 16 levels
     float4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
-    float4 unity_RenderingLayer;
-    // UnityInput.hlsl
+    // float4 unity_RenderingLayer;
+   
     half4 unity_LightData;
     half4 unity_LightIndices[2];
+
+    float4 unity_ProbesOcclusion;
+
+    half4  unity_SpecCube0_HDR;
+
+    float4 unity_LightmapST;
+    float4 unity_LightmapIndex;
+    float4 unity_DynamicLightmapST;
 
     // SH lighting environment
     half4 unity_SHAr;
@@ -178,7 +186,6 @@ CBUFFER_START(UnityPerDraw)
     half4 unity_SHBb;
     half4 unity_SHC;
 
-    half4  unity_SpecCube0_HDR;
 
 CBUFFER_END
 
