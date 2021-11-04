@@ -15,7 +15,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2000
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -130,10 +130,10 @@ Material:
     - _AlphaPreMultiply: 0
     - _AlphaTestOn: 0
     - _AmbientSHIntensity: 0.5
-    - _AnisoIntensity: 2.3
+    - _AnisoIntensity: 2.2
     - _AnisoLayer2On: 1
     - _AnisoMaskUseMainTexA: 0
-    - _AnisoRough: -0.86
+    - _AnisoRough: -0.79
     - _ApplyShadowOn: 1
     - _BackFaceGIDiffuse: 0
     - _BackSSSIntensity: 1
@@ -146,6 +146,7 @@ Material:
     - _ClothDMax: 0.866
     - _ClothDMin: 0.109
     - _ClothGGXUseMainTexA: 0
+    - _CoatIndirectSpecularIntensity: 1
     - _CoatSmoothness: 0.5
     - _Cull: 2
     - _CullMode: 2
@@ -188,13 +189,13 @@ Material:
     - _HairAoIntensity: 1
     - _HeightScale: 0
     - _IndirectSpecularIntensity: 1
-    - _Layer2AnisoIntensity: 16.56
-    - _Layer2AnisoRough: -0.73
+    - _Layer2AnisoIntensity: 2.4
+    - _Layer2AnisoRough: -0.95
     - _LightColorNoAtten: 1
     - _MaxSpecularIntensity: 5
     - _Metallic: 0.071
     - _MetallicChannel: 0
-    - _NormalMapScale: 1
+    - _NormalMapScale: 0.31
     - _Occlusion: 1
     - _OcclusionChannel: 2
     - _OcclusionStrength: 1
