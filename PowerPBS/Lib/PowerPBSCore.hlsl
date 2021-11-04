@@ -375,9 +375,11 @@ void InitWorldData(float2 uv,float detailMask,float4 tSpace0,float4 tSpace1,floa
     data.view = normalize(GetWorldViewDir(data.pos));
     data.reflect = SafeNormalize(reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
 
-    data.tangent = normalize(float3(tSpace0.x,tSpace1.x,tSpace2.x));
-    data.binormal = normalize(float3(tSpace0.y,tSpace1.y,tSpace2.y));
     data.vertexNormal = normalize(float3(tSpace0.z,tSpace1.z,tSpace2.z));
+    data.tangent = cross(data.normal,float3(0,1,0));
+    data.binormal = cross(data.tangent,data.normal);
+    // data.tangent = normalize(float3(tSpace0.x,tSpace1.x,tSpace2.x));
+    // data.binormal = normalize(float3(tSpace0.y,tSpace1.y,tSpace2.y));
 }
 
 #endif // end of POWER_PBS_CORE_HLSL
