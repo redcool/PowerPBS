@@ -151,7 +151,7 @@ inline float3 CalcSpecularTermOnlyStandard(inout PBSData data,float nl,float nv,
     return specTerm;
 }
 
-inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor){
+inline float3 CalcSpecularTerm(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor){
     float V = 1;
     float D = 0;
     float3 specTerm = 0;
@@ -239,7 +239,7 @@ float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float nl,f
     float3 diffuseTerm = diffColor;
     float3 specularTerm = 0;
     if(_SpecularOn){
-        specularTerm = CalcSpeccularTerm(data,nl,nv,nh,lh,th,bh,specColor);
+        specularTerm = CalcSpecularTerm(data,nl,nv,nh,lh,th,bh,specColor);
     }
     return diffuseTerm + specularTerm;
 }
