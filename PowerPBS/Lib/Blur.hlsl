@@ -5,7 +5,7 @@
 const static float gaussWeights[4]={0.00038771,0.01330373,0.11098164,0.22508352};
 
 float3 GaussBlur(TEXTURE2D_PARAM(tex,sampler_tex),float2 uv,float2 offset,bool samplerCenter){
-    float3 c = 0;
+    float4 c = 0;
     if(samplerCenter){
         c += SAMPLE_TEXTURE2D(tex,sampler_tex,uv) * gaussWeights[3];
     }
@@ -17,7 +17,7 @@ float3 GaussBlur(TEXTURE2D_PARAM(tex,sampler_tex),float2 uv,float2 offset,bool s
 
     c += SAMPLE_TEXTURE2D(tex,sampler_tex,uv + offset * 3) * gaussWeights[0];
     c += SAMPLE_TEXTURE2D(tex,sampler_tex,uv - offset * 3) * gaussWeights[0];
-    return c;
+    return c.xyz;
 }
 
 

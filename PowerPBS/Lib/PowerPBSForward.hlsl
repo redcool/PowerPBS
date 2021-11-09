@@ -25,7 +25,7 @@ struct v2f
     float4 tSpace1:TEXCOORD3;
     float4 tSpace2:TEXCOORD4;
     float3 viewTangentSpace:TEXCOORD5;
-    SHADOW_COORDS(6)
+    float4 _ShadowCoord:TEXCOORD6;
     float4 screenPos:TEXCOORD7;
 };
 
@@ -51,9 +51,7 @@ v2f vert (appdata v)
         float3x3 tSpace = float3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
         o.viewTangentSpace = mul(viewWorldSpace,tSpace);
     }
-    //UNITY_TRANSFER_LIGHTING(o,v.uv.xy);
     TRANSFER_SHADOW(o)
-    // UNITY_TRANSFER_FOG(o,o.pos);
     o.fogCoord.x = ComputeFogFactor(o.pos.z);
     o.screenPos = ComputeScreenPos(o.pos);
     return o;

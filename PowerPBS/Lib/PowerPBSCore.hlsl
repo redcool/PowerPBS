@@ -57,7 +57,7 @@ inline float3 GetIndirectSpecular(float3 reflectDir,float rough){
         encodeIrradiance = SAMPLE_TEXTURECUBE_LOD(_EnvCube,sampler_linear_repeat,reflectDir,mip);
         encodeIrradiance *= _EnvIntensity;
     }else{
-        encodeIrradiance = UNITY_SAMPLE_TEXCUBE_LOD(unity_SpecCube0, reflectDir, mip);
+        encodeIrradiance = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0,sampler_linear_repeat, reflectDir, mip);
     }
     return DecodeHDR(encodeIrradiance,unity_SpecCube0_HDR);
 }

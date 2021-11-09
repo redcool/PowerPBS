@@ -6,7 +6,7 @@
 #ifndef UNITY_SHADER_VARIABLES_INCLUDED
 #define UNITY_SHADER_VARIABLES_INCLUDED
 
-#include "HLSLSupport.hlsl"
+#include "../Common.hlsl"
 
 #if defined (DIRECTIONAL_COOKIE) || defined (DIRECTIONAL)
 #define USING_DIRECTIONAL_LIGHT
@@ -300,7 +300,7 @@ CBUFFER_END
 // ----------------------------------------------------------------------------
 // Reflection Probes
 
-UNITY_DECLARE_TEXCUBE(unity_SpecCube0);
+TEXTURECUBE(unity_SpecCube0); SAMPLER(samplerunity_SpecCube0);
 // UNITY_DECLARE_TEXCUBE_NOSAMPLER(unity_SpecCube1);
 
 CBUFFER_START(UnityReflectionProbes)
@@ -335,11 +335,11 @@ CBUFFER_END
 #endif
      
 #if UNITY_LIGHT_PROBE_PROXY_VOLUME
-    UNITY_DECLARE_TEX3D_FLOAT(unity_ProbeVolumeSH);
+    // UNITY_DECLARE_TEX3D_FLOAT(unity_ProbeVolumeSH);
 
-    CBUFFER_START(UnityProbeVolume)
+    // CBUFFER_START(UnityProbeVolume)
 
-    CBUFFER_END
+    // CBUFFER_END
 #endif
 
 static float4x4 unity_MatrixMVP = mul(unity_MatrixVP, unity_ObjectToWorld);
