@@ -56,19 +56,17 @@
     #define TRANSFER_SHADOW(a) a._ShadowCoord = mul( _MainLightWorldToShadow[0], mul( unity_ObjectToWorld, v.vertex ) );
     inline float CalcShadow (float4 shadowCoord,float3 worldPos)
     {
+        float shadow = 1;
         #if defined(SHADOWS_NATIVE)
-            if(!_MainLightShadowOn)
-                return 1;
-            
-            float shadow = SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture, shadowCoord.xyz);
-                //float shadow = _MainLightShadowmapTexture.SampleCmpLevelZero(sampler_MainLightShadowmapTexture,shadowCoord.xy,shadowCoord.z);
-            shadow = lerp(1,shadow,_MainLightShadowParams.x);
-            float shadowFade = GetShadowFade(worldPos);
-            return lerp(shadow,1,shadowFade);
-        #else
-            // gles 2.0 , not supported
-            return 1;
+            if(_MainLightShadowOn){
+                shadow = SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture, shadowCoord.xyz);
+                    //float shadow = _MainLightShadowmapTexture.SampleCmpLevelZero(sampler_MainLightShadowmapTexture,shadowCoord.xy,shadowCoord.z);
+                shadow = lerp(1,shadow,_MainLightShadowParams.x);
+                float shadowFade = GetShadowFade(worldPos);
+                shadow = lerp(shadow,1,shadowFade);
+            }
         #endif
+        return shadow;
     }
 
     #undef SHADOW_COORDS

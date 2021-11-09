@@ -29,10 +29,12 @@ inline float3 CalcSSS(float3 l,float3 v,float2 fastSSSMask){
 }
 
 inline float3 GetWorldViewDir(float3 worldPos){
+    float3 dir = 0;
     if(unity_OrthoParams.w != 0){ // ortho
-        return -float3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
-    }
-    return UnityWorldSpaceViewDir(worldPos);
+        dir = -float3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
+    }else
+        dir = UnityWorldSpaceViewDir(worldPos);
+    return dir;
 }
 
 inline float3 PreScattering(float3 normal,float3 lightDir,float3 lightColor,float nl,float4 mainTex,float3 worldPos,float curveScale,float scatterIntensity){
@@ -236,13 +238,14 @@ float3 CalcDirect(inout PBSData data,float3 diffColor,half3 specColor,float nl,f
 }
 
 float3 CalcDirectApplyClearCoat(float3 directColor,ClearCoatData data,float fresnelTerm,float nl,float nh,float lh){
+    float3 specColor = 0;
     if(_SpecularOn){
         float3 coatSpec = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * data.specColor;
         float coatFresnel = kDielectricSpec.x + kDielectricSpec.a * fresnelTerm;
         // return directColor * 1;
-        return directColor * (1-coatFresnel) + coatSpec;
+        specColor = directColor * (1-coatFresnel) + coatSpec;
     }
-    return 0;
+    return specColor;
 }
 
 #define CALC_LIGHT_INFO(lightDir)\
