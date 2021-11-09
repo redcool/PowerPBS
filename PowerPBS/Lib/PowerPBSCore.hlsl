@@ -31,7 +31,8 @@ inline float3 CalcSSS(float3 l,float3 v,float2 fastSSSMask){
 inline float3 GetWorldViewDir(float3 worldPos){
     float3 dir = 0;
     if(unity_OrthoParams.w != 0){ // ortho
-        dir = -float3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
+        // dir = -float3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
+        dir = -UNITY_MATRIX_V[2].xyz;
     }else
         dir = UnityWorldSpaceViewDir(worldPos);
     return dir;
@@ -143,6 +144,12 @@ float3 CalcEmission(float3 albedo,float2 uv){
 #define PBR_MODE_ANISO 1
 #define PBR_MODE_CLOTH 2
 #define PBR_MODE_STRAND 3
+
+inline float3 CalcSpecularTermOnlyStandard(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor){
+    float3 specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+    specTerm *= specColor;
+    return specTerm;
+}
 
 inline float3 CalcSpeccularTerm(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor){
     float V = 1;
@@ -266,7 +273,11 @@ float3 CalcDirectApplyClearCoat(float3 directColor,ClearCoatData data,float fres
 inline float3 CalcDirectAdditionalLight(PBSData data,float3 diffColor,float3 specColor,Light light){
     CALC_LIGHT_INFO(light.direction);
     float lightAtten = light.distanceAttenuation * light.shadowAttenuation;
-    float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
+    // float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
+    float3 directColor = diffColor;
+    if(_SpecularOn){
+        directColor += CalcSpecularTermOnlyStandard(data,nl,nv,nh,lh,th,bh,specColor);
+    }
     return lightAtten *nl * light.color * directColor;
 }
 
