@@ -9,6 +9,7 @@
 #define HALF_MIN_SQRT 0.0078125
 #define FLT_MIN  1.175494351e-38
 #define kDielectricSpec unity_ColorSpaceDielectricSpec
+#define if UNITY_BRANCH if
 
 // Include language header
 #if defined (SHADER_API_GAMECORE)

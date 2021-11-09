@@ -300,14 +300,14 @@ float4 texCUBEproj(samplerCUBE s, in float4 t)          { return texCUBE(s, t.xy
 #define SAMPLER_UNIFORM
 #endif
 
-#if defined(SHADER_API_D3D11) || defined(UNITY_ENABLE_CBUFFER) || defined(SHADER_API_PSSL)
-#define CBUFFER_START(name) cbuffer name {
-#define CBUFFER_END };
-#else
-// On specific platforms, like OpenGL, GLES3 and Metal, constant buffers may still be used for instancing
-#define CBUFFER_START(name)
-#define CBUFFER_END
-#endif
+// #if defined(SHADER_API_D3D11) || defined(UNITY_ENABLE_CBUFFER) || defined(SHADER_API_PSSL)
+// #define CBUFFER_START(name) cbuffer name {
+// #define CBUFFER_END };
+// #else
+// // On specific platforms, like OpenGL, GLES3 and Metal, constant buffers may still be used for instancing
+// #define CBUFFER_START(name)
+// #define CBUFFER_END
+// #endif
 
 #if defined(UNITY_STEREO_MULTIVIEW_ENABLED) || ((defined(UNITY_SINGLE_PASS_STEREO) || defined(UNITY_STEREO_INSTANCING_ENABLED)) && (defined(SHADER_API_GLCORE) || defined(SHADER_API_GLES3) || defined(SHADER_API_METAL)))
     #define GLOBAL_CBUFFER_START(name)    cbuffer name {
