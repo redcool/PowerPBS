@@ -53,7 +53,13 @@ struct Light
 ///////////////////////////////////////////////////////////////////////////////
 //                        Attenuation Functions                               /
 ///////////////////////////////////////////////////////////////////////////////
-#define SHADER_HINT_NICE_QUALITY
+#if !defined(SHADER_HINT_NICE_QUALITY)
+    #if defined(SHADER_API_MOBILE) || defined(SHADER_API_SWITCH)
+        #define SHADER_HINT_NICE_QUALITY 0
+    #else
+        #define SHADER_HINT_NICE_QUALITY 1
+    #endif
+#endif
 // Matches Unity Vanila attenuation
 // Attenuation smoothly decreases to light range.
 float DistanceAttenuation(float distanceSqr, half2 distanceAttenuation)
@@ -61,7 +67,7 @@ float DistanceAttenuation(float distanceSqr, half2 distanceAttenuation)
     // We use a shared distance attenuation for additional directional and puctual lights
     // for directional lights attenuation will be 1
     float lightAtten = rcp(distanceSqr);
-#if defined(SHADER_HINT_NICE_QUALITY)
+#if SHADER_HINT_NICE_QUALITY
     // Use the smoothing factor also used in the Unity lightmapper.
     half factor = distanceSqr * distanceAttenuation.x;
     half smoothFactor = saturate(1.0h - factor * factor);
