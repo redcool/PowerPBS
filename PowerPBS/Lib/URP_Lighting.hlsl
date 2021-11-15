@@ -127,7 +127,7 @@ Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
 
     Light light;
     light.direction = lightDirection;
-    light.distanceAttenuation = attenuation;
+    light.distanceAttenuation = saturate(attenuation);
     light.shadowAttenuation = 1.0;
     light.color = color;
 
