@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lit_DrpShadow
-  m_Shader: {fileID: 4800000, guid: fbe0251092d95fc4994c576ac36492eb, type: 3}
+  m_Name: Unlit_Testpbr
+  m_Shader: {fileID: 4800000, guid: 1c6a4ca2b9886774cb6432ba841437f0, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
