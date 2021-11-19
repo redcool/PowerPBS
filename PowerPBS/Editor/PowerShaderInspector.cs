@@ -54,6 +54,7 @@ namespace PowerPBS
         PresetBlendMode presetBlendMode;
         int languageId;
         int renderQueue = 2000;
+        int toolbarCount = 5;
 
         public PowerShaderInspector()
         {
@@ -110,6 +111,10 @@ namespace PowerPBS
         /// </summary>
         private void DrawPageDetail(MaterialEditor materialEditor, Material mat)
         {
+            // content's tab 
+            EditorGUILayout.HelpBox(tabNames[selectedTabId], MessageType.Warning,true);
+
+            // contents
             var propNames = propNameList[selectedTabId];
             foreach (var propName in propNames)
             {
@@ -119,9 +124,10 @@ namespace PowerPBS
                 var prop = propDict[propName];
                 materialEditor.ShaderProperty(prop, ConfigTool.Text(propNameTextDict, prop.name));
 
-                if(OnDrawProperty != null)
+                if (OnDrawProperty != null)
                     OnDrawProperty(prop, mat);
             }
+            // blend 
             if (IsTargetShader(mat))
             {
                 if (selectedTabId == AlphaTabId)
@@ -143,7 +149,12 @@ namespace PowerPBS
         {
             //cache selectedId
             selectedTabId = EditorPrefs.GetInt(materialSelectedId, selectedTabId);
-            selectedTabId = GUILayout.Toolbar(selectedTabId, tabNamesInConfig);
+            
+            GUILayout.BeginVertical("Box");
+            toolbarCount = EditorGUILayout.IntSlider("ToolbarCount:",toolbarCount, 3, tabNamesInConfig.Length);
+            selectedTabId = GUILayout.SelectionGrid(selectedTabId, tabNamesInConfig, toolbarCount, EditorStyles.miniButton);
+            GUILayout.EndVertical();
+
             EditorPrefs.SetInt(materialSelectedId, selectedTabId);
         }
 
