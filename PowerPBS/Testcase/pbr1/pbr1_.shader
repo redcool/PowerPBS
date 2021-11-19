@@ -16,8 +16,8 @@ Shader "Unlit/pbr1_"
 HLSLINCLUDE
 float MinimalistCookTorrance(float nh,float lh,float a,float a2){
     float d = nh * nh * (a2 - 1)+1;
-    float vf = max(lh * lh,0.0001);
-    float s = a2/(d*d* vf * vf * (4*a+2));
+    float vf = max(lh * lh,0.1);
+    float s = a2/(d*d* vf * (4*a+2));
     return s;
 }
 
@@ -81,10 +81,10 @@ ENDHLSL
                 float roughness = 1 - smoothness;
 
                 float3 tn = UnpackScaleNormal(tex2D(_NormalMap,mainUV),_NormalScale);
-                float3 n = TangentToWorld(i.tSpace0,i.tSpace1,i.tSpace2,tn);
+                float3 n = normalize(TangentToWorld(i.tSpace0,i.tSpace1,i.tSpace2,tn));
 
-                float3 l = _MainLightPosition;
-                float3 v = UnityWorldSpaceViewDir(worldPos);
+                float3 l = normalize(_MainLightPosition.xyz);
+                float3 v = normalize(UnityWorldSpaceViewDir(worldPos));
                 float3 h = normalize(l+v);
                 
                 float lh = saturate(dot(l,h));
@@ -105,9 +105,11 @@ ENDHLSL
 
                 float3 diffColor = albedo.xyz * (1- metallic);
                 float3 directColor = (diffColor + specColor) * radiance;
-
+// return directColor.xyzx;
+                float3 gi = ShadeSH9(float4(n,1)) * diffColor;
+// return gi.xyzx;
                 float4 col = 1;
-                col.rgb = directColor;
+                col.rgb = directColor + gi;
                 return col;
             }
             ENDHLSL
