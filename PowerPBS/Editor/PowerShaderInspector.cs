@@ -28,13 +28,14 @@ namespace PowerPBS
 
         // properties
         const string SRC_MODE = "_SrcMode", DST_MODE = "_DstMode";
-        public string shaderName = "";
+        public string shaderName = ""; //子类来指定,用于EditorPrefs读写
         public int AlphaTabId = 0;  // preset blend mode 显示在 号tab页
         public int RenderQueueTabId = 0; // render Queue显示的tab页码
 
         string[] tabNames;
         List<string[]> propNameList = new List<string[]>();
         string materialSelectedId => shaderName + "_SeletectedId";
+        string materialToolbarCount => shaderName + "_ToolbarCount";
 
         int selectedTabId;
         bool showOriginalPage;
@@ -147,15 +148,19 @@ namespace PowerPBS
 
         private void DrawPageTabs()
         {
-            //cache selectedId
+            // read from cache
             selectedTabId = EditorPrefs.GetInt(materialSelectedId, selectedTabId);
+            toolbarCount = EditorPrefs.GetInt(materialToolbarCount, tabNamesInConfig.Length);
             
+            // draw 
             GUILayout.BeginVertical("Box");
             toolbarCount = EditorGUILayout.IntSlider("ToolbarCount:",toolbarCount, 3, tabNamesInConfig.Length);
             selectedTabId = GUILayout.SelectionGrid(selectedTabId, tabNamesInConfig, toolbarCount, EditorStyles.miniButton);
             GUILayout.EndVertical();
 
+            //cache selectedId
             EditorPrefs.SetInt(materialSelectedId, selectedTabId);
+            EditorPrefs.SetInt(materialToolbarCount, toolbarCount);
         }
 
         private void OnInit(Material mat, MaterialProperty[] properties)
