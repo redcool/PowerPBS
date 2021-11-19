@@ -3,10 +3,14 @@ Shader "Unlit/pbr1_"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        
         _NormalMap("_NormalMap",2d)=""{}
         _NormalScale("_NormalScale",float) = 1
+
+        _PbrMask("_PbrMask",2d)=""{}
+
         _Metallic("_Metallic",range(0,1)) = 0.5
-        _Roughness("_Roughness",range(0,1)) = 0.5
+        _Smoothness("_Smoothness",range(0,1)) = 0.5
     }
 
 HLSLINCLUDE
@@ -50,10 +54,12 @@ ENDHLSL
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            float _Roughness,_Metallic;
+            float _Metallic,_Smoothness;
 
             sampler2D _NormalMap;
             float _NormalScale;
+
+            sampler2D _PbrMask;
 
             v2f vert (appdata v)
             {
@@ -69,6 +75,11 @@ ENDHLSL
                 TANGENT_SPACE_SPLIT(i);
                 float2 mainUV = i.uv;
 
+                float4 pbrMask = tex2D(_PbrMask,mainUV);
+                float metallic = pbrMask.r * _Metallic;
+                float smoothness = pbrMask.g * _Smoothness;
+                float roughness = 1 - smoothness;
+
                 float3 tn = UnpackScaleNormal(tex2D(_NormalMap,mainUV),_NormalScale);
                 float3 n = TangentToWorld(i.tSpace0,i.tSpace1,i.tSpace2,tn);
 
@@ -79,7 +90,7 @@ ENDHLSL
                 float lh = saturate(dot(l,h));
                 float nh = saturate(dot(n,h));
                 float nl = saturate(dot(n,l));
-                float a = _Roughness * _Roughness;
+                float a = roughness * roughness;
                 float a2 = a * a;
 
                 
@@ -89,10 +100,10 @@ ENDHLSL
                 float radiance = _MainLightColor * nl;
                 
                 float specTerm = MinimalistCookTorrance(nh,lh,a,a2);
-                float3 specColor = lerp(0.04,albedo,_Metallic);
+                float3 specColor = lerp(0.04,albedo,metallic);
                 specColor *= specTerm;
 
-                float3 diffColor = albedo.xyz * (1- _Metallic);
+                float3 diffColor = albedo.xyz * (1- metallic);
                 float3 directColor = (diffColor + specColor) * radiance;
 
                 float4 col = 1;
