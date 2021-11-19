@@ -7,19 +7,6 @@ Shader "Unlit/Testpbr"
         _Roughness("_Roughness",range(0,1)) = 0.5
     }
 
-HLSLINCLUDE
-float MinimalistCookTorrance(float nh,float lh,float rough,float rough2){
-    float d = nh * nh * (rough2-1) + 1.00001f;
-    float lh2 = lh * lh;
-    float spec = rough2/((d*d) * max(0.1,lh2) * (rough*4+2)); // approach sqrt(rough2)
-    
-    #if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
-        spec = clamp(spec,0,100);
-    #endif
-    return spec;
-}
-ENDHLSL
-
     SubShader
     {
         Tags { "RenderType"="Opaque" }
@@ -30,8 +17,8 @@ ENDHLSL
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #include "../Lib/CommonUtils.hlsl"
             
+            #include "Lib/Lighting.hlsl"
 
             struct appdata
             {
@@ -52,9 +39,6 @@ ENDHLSL
             float4 _MainTex_ST;
             float _Roughness,_Metallic;
 
-            float3 _MainLightPosition;
-            float3 _MainLightColor;
-
             v2f vert (appdata v)
             {
                 v2f o;
@@ -71,24 +55,16 @@ ENDHLSL
                 float3 v = UnityWorldSpaceViewDir(i.worldPos);
                 float3 h = normalize(l+v);
                 float3 n = normalize(i.worldNormal);
-                float lh = saturate(dot(l,h));
-                float nh = saturate(dot(n,h));
-                float nl = saturate(dot(n,l));
-                float a = _Roughness * _Roughness;
-                float a2 = a * a;
+
+                float4 albedo = tex2D(_MainTex, i.uv);
+
+                BRDFData brdfData = (BRDFData)0;
+                InitBRDFData(albedo.xyz,_Roughness,_Metallic,brdfData/**/);
 
                 // sample the texture
-                float4 albedo = tex2D(_MainTex, i.uv);
                 
-                float specTerm = MinimalistCookTorrance(nh,lh,a,a2);
-                float3 specColor = lerp(0.04,albedo,_Metallic);
-                specColor *= specTerm;
-
-                float3 diffColor = lerp(albedo.xyz,specColor,_Metallic);
-
-                float4 col = 1;
-                col.rgb = diffColor + specColor;
-                return col;
+                float3 directColor = CalcPBS(brdfData,_MainLightColor,_MainLightPosition,n,v);
+                return float4(directColor,1);
             }
             ENDHLSL
         }
