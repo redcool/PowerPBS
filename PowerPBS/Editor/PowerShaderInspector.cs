@@ -134,12 +134,16 @@ namespace PowerPBS
                 if (selectedTabId == AlphaTabId)
                     DrawBlendMode(mat);
                 if (selectedTabId == RenderQueueTabId)
-                    DrawRenderQueue(mat);
+                {
+                    // render queue, instanced, double sided gi
+                    DrawMaterialProps(mat);
+                }
             }
 
             if (OnDrawPropertyFinish != null)
                 OnDrawPropertyFinish(propDict, mat);
         }
+
 
         private bool IsTargetShader(Material mat)
         {
@@ -220,12 +224,17 @@ namespace PowerPBS
             }
         }
 
-        void DrawRenderQueue(Material mat)
+        void DrawMaterialProps(Material mat)
         {
             GUILayout.BeginVertical();
             EditorGUILayout.Space(10);
-            GUILayout.Label("Render Queue",EditorStyles.boldLabel);
-            mat.renderQueue = EditorGUILayout.IntField(ConfigTool.Text(propNameTextDict, "RenderQueue"), mat.renderQueue);
+
+            GUILayout.Label("Material Props",EditorStyles.boldLabel);
+            //mat.renderQueue = EditorGUILayout.IntField(ConfigTool.Text(propNameTextDict, "RenderQueue"), mat.renderQueue);
+            materialEditor.RenderQueueField();
+            materialEditor.EnableInstancingField();
+            materialEditor.DoubleSidedGIField();
+
             GUILayout.EndVertical();
         }
 
