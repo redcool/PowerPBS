@@ -50,24 +50,6 @@ float3 ShiftTangent(float3 T, float3 N, float shift)
     return normalize(T + N * shift);
 }
 
-// Note: this is Blinn-Phong, the original paper uses Phong.
-float3 D_KajiyaKay(float3 T, float3 H, float specularExponent)
-{
-    float TdotH = dot(T, H);
-    float sinTHSq = saturate(1.0 - TdotH * TdotH);
-
-    float dirAttn = saturate(TdotH + 1.0); // Evgenii: this seems like a hack? Do we floatly need this?
-
-                                           // Note: Kajiya-Kay is not energy conserving.
-                                           // We attempt at least some energy conservation by approximately normalizing Blinn-Phong NDF.
-                                           // We use the formulation with the NdotL.
-                                           // See http://www.thetenthplanet.de/archives/255.
-    float n = specularExponent;
-    float norm = (n + 2) * rcp(2 * PI);
-
-    return dirAttn * norm * pow(sinTHSq, n);
-}
-
 float D_GGXAnisoNoPI(float TdotH, float BdotH, float NdotH, float roughnessT, float roughnessB)
 {
     float a2 = roughnessT * roughnessB;
@@ -76,7 +58,7 @@ float D_GGXAnisoNoPI(float TdotH, float BdotH, float NdotH, float roughnessT, fl
 
     // If roughness is 0, returns (NdotH == 1 ? 1 : 0).
     // That is, it returns 1 for perfect mirror reflection, and 0 otherwise.
-    return (a2 * a2 * a2)/( s * s);
+    return (a2 * a2 * a2)/max(0.0001, s * s);
 }
 ENDHLSL
 
