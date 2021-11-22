@@ -1,6 +1,7 @@
 namespace PowerUtilities.PowerPBS
 {
     using System;
+    using Unity.Collections;
     using UnityEngine;
     using UnityEngine.Rendering;
     using UnityEngine.Rendering.Universal;
@@ -33,7 +34,7 @@ namespace PowerUtilities.PowerPBS
             var lightData = renderingData.lightData;
             if (lightData.mainLightIndex < 0)
                 return;
-            
+
 
 
             // light
@@ -84,14 +85,17 @@ namespace PowerUtilities.PowerPBS
             _MainLightShadowOn = Shader.PropertyToID("_MainLightShadowOn");
         }
 
-        public static void SendParams(CommandBuffer cmd, PowerURPLitFeatures.Settings settings)
+
+        public static void SendParams(CommandBuffer cmd, PowerURPLitFeatures.Settings settings,ref RenderingData renderingData)
         {
             var asset = UniversalRenderPipeline.asset;
+            var mainLightCastShadows = renderingData.shadowData.supportsMainLightShadows;
+            
 
             cmd.SetGlobalInt(_MainLightShadowCascadeOn, asset.shadowCascadeCount > 1 ? 1 : 0);
             cmd.SetGlobalInt(_LightmapOn, settings._LightmapOn ? 1 : 0);
             cmd.SetGlobalInt(_Shadows_ShadowMaskOn, settings._Shadows_ShadowMaskOn ? 1 : 0);
-            cmd.SetGlobalInt(_MainLightShadowOn, asset.supportsMainLightShadows ? 1 : 0);
+            cmd.SetGlobalInt(_MainLightShadowOn, mainLightCastShadows ? 1 : 0);
             cmd.SetGlobalInt(_MainLightMode, (int)asset.mainLightRenderingMode);
             cmd.SetGlobalInt(_AdditionalLightMode, (int)asset.additionalLightsRenderingMode);
         }
@@ -122,7 +126,7 @@ namespace PowerUtilities.PowerPBS
 
             public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
             {
-                PowerLitShaderVariables.SendParams(cmd,settings);
+                PowerLitShaderVariables.SendParams(cmd,settings,ref renderingData);
                 if (settings.updateDRPShaderVarables)
                 {
                     DrpLightShaderVarables.SendLight(cmd, renderingData);
