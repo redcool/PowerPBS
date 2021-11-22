@@ -11,11 +11,16 @@ Shader "Unlit/pbr1_"
 
         _Metallic("_Metallic",range(0,1)) = 0.5
         _Smoothness("_Smoothness",range(0,1)) = 0.5
+
+        [Toggle]_SpecularOn("_SpecularOn",int) = 1
+
+        [Enum(PBR,0,Aniso,1)]_PbrMode("_PbrMode",int) = 0
+        _AnisoRough("_AnisoRough",range(-.5,.5)) = 0
     }
 
 HLSLINCLUDE
-            #include "Lib/Core/CommonUtils.hlsl"
-            #include "Lib/Core/TangentLib.hlsl"
+#include "Lib/Core/CommonUtils.hlsl"
+#include "Lib/Core/TangentLib.hlsl"
 
 #define PI 3.1415
 #define PI2 6.28
@@ -25,11 +30,6 @@ float MinimalistCookTorrance(float nh,float lh,float a,float a2){
     float vf = max(lh * lh,0.1);
     float s = a2/(d*d* vf * (4*a+2));
     return s;
-}
-
-float D_NBlinn(float nh,float exponent){
-    float norm = (exponent + 2) ;//* rcp(PI2); 
-    return max(0.0001,norm * pow(nh,exponent));
 }
 
 float3 CalcIBL(float3 viewDir, float3 n,float a){
@@ -65,7 +65,18 @@ float3 D_KajiyaKay(float3 T, float3 H, float specularExponent)
     float n = specularExponent;
     float norm = (n + 2) * rcp(2 * PI);
 
-    return dirAttn * norm * pow(sinTHSq, 0.5 * n);
+    return dirAttn * norm * pow(sinTHSq, n);
+}
+
+float D_GGXAnisoNoPI(float TdotH, float BdotH, float NdotH, float roughnessT, float roughnessB)
+{
+    float a2 = roughnessT * roughnessB;
+    float3 v = float3(roughnessB * TdotH, roughnessT * BdotH, a2 * NdotH);
+    float  s = dot(v, v);
+
+    // If roughness is 0, returns (NdotH == 1 ? 1 : 0).
+    // That is, it returns 1 for perfect mirror reflection, and 0 otherwise.
+    return (a2 * a2 * a2)/( s * s);
 }
 ENDHLSL
 
@@ -105,6 +116,10 @@ ENDHLSL
             float _NormalScale;
 
             sampler2D _PbrMask;
+            bool _SpecularOn;
+            float _AnisoRough;
+
+            int _PbrMode;
 
             v2f vert (appdata v)
             {
@@ -139,15 +154,25 @@ ENDHLSL
                 float a2 = a * a;
 
                 float nv = saturate(dot(n,v));
-// return  nl+nv-nl*nv;
+
+                float3 t = normalize(cross(n,float3(0,1,0)));
+                float3 b = cross(t,n);
+                float th = dot(t,h);
+                float bh = dot(b,h);
 
                 float4 albedo = tex2D(_MainTex, mainUV);
-
-
                 float radiance = _MainLightColor * nl;
                 
-                float specTerm = MinimalistCookTorrance(nh,lh,a,a2);
-                // float specTerm = D_NBlinn(nh,128* _Smoothness);
+                float specTerm = 0;
+                if(_SpecularOn){
+                    if(_PbrMode == 0)
+                        specTerm = MinimalistCookTorrance(nh,lh,a,a2);
+                    else if(_PbrMode == 1){
+                        float anisoRough = _AnisoRough + 0.5;
+                        specTerm = D_GGXAnisoNoPI(th,bh,nh,anisoRough,1 - anisoRough);
+                    }
+                }
+
                 float3 specColor = lerp(0.04,albedo,metallic);
                 specColor *= specTerm;
 
