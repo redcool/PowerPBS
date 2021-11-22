@@ -14,7 +14,7 @@ Shader "Unlit/pbr1_"
 
         [Toggle]_SpecularOn("_SpecularOn",int) = 1
 
-        [Enum(PBR,0,Aniso,1)]_PbrMode("_PbrMode",int) = 0
+        [Enum(PBR,0,Aniso,1,Charlie,2)]_PbrMode("_PbrMode",int) = 0
         _AnisoRough("_AnisoRough",range(-.5,.5)) = 0
     }
 
@@ -59,6 +59,15 @@ float D_GGXAnisoNoPI(float TdotH, float BdotH, float NdotH, float roughnessT, fl
     // If roughness is 0, returns (NdotH == 1 ? 1 : 0).
     // That is, it returns 1 for perfect mirror reflection, and 0 otherwise.
     return (a2 * a2 * a2)/max(0.0001, s * s);
+}
+
+float D_CharlieNoPI(float NdotH, float roughness)
+{
+    float invR = rcp(max(roughness,0.001));
+    float cos2h = NdotH * NdotH;
+    float sin2h = 1.0 - cos2h;
+    // Note: We have sin^2 so multiply by 0.5 to cancel it
+    return (2.0 + invR) * pow(sin2h, invR * 0.5) * 0.5;
 }
 ENDHLSL
 
@@ -152,6 +161,8 @@ ENDHLSL
                     else if(_PbrMode == 1){
                         float anisoRough = _AnisoRough + 0.5;
                         specTerm = D_GGXAnisoNoPI(th,bh,nh,anisoRough,1 - anisoRough);
+                    }else if(_PbrMode == 2){
+                        specTerm = D_CharlieNoPI(nh, _Smoothness);
                     }
                 }
 
