@@ -26,7 +26,9 @@ int _FogMode;
     #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
 #endif
 
-// #define KEYWORD_FOG
+#if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+#define KEYWORD_FOG
+#endif
 
 #if !defined(KEYWORD_FOG)
     float ComputeFogFactor(float z)
