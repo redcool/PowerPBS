@@ -69,7 +69,7 @@ CBUFFER_END
 float4 _ShadowBias; // x: depth bias, y: normal bias
 bool _MainLightShadowOn;
 
-#define BEYOND_SHADOW_FAR(shadowCoord) shadowCoord.z >= 1 || shadowCoord.z <= 0
+#define BEYOND_SHADOW_FAR(shadowCoord) (shadowCoord.z >= 1.0 || shadowCoord.z <= 0.0)
 
 struct ShadowSamplingData
 {
@@ -119,20 +119,36 @@ float4 TransformWorldToShadowCoord(float3 worldPos){
 half SampleShadowmap(TEXTURE2D_SHADOW_PARAM(shadowMap,sampler_shadowMap),float4 shadowCoord,ShadowSamplingData data,half4 params,bool isPerspectiveProj){
     if(isPerspectiveProj)
         shadowCoord.xyz / shadowCoord.w;
-    float atten;
     float shadowStrength = params.x;
+    float atten = 0;
     atten = SAMPLE_TEXTURE2D_SHADOW(shadowMap,sampler_shadowMap,shadowCoord.xyz);
     atten = lerp(1,atten,shadowStrength);
-    return BEYOND_SHADOW_FAR(shadowCoord) ? 1 : atten;
+    return atten;
+    // return BEYOND_SHADOW_FAR(shadowCoord) ? 1 : atten;
 }
 
-half MainlightRealtimeShadow(float4 shadowCoord){
+half MainLightRealtimeShadow(float4 shadowCoord){
     if(!_MainLightShadowOn)
-        return 0;
+        return 1;
     
     ShadowSamplingData data = GetMainLightShadowSamplingData();
     half4 params = GetMainLightShadowParams();
     return SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture),shadowCoord,data,params,false);
+}
+
+half GetShadowFade(float3 positionWS)
+{
+    float3 camToPixel = positionWS - _WorldSpaceCameraPos;
+    float distanceCamToPixel2 = dot(camToPixel, camToPixel);
+
+    half fade = saturate(distanceCamToPixel2 * _MainLightShadowParams.z + _MainLightShadowParams.w);
+    return fade * fade;
+}
+
+half MainLightShadow(float4 shadowCoord,float3 posWorld){
+    half realAtten = MainLightRealtimeShadow(shadowCoord);
+    half fade = GetShadowFade(posWorld);
+    return lerp(realAtten,1,fade);
 }
 
 #endif //SHADOWS_HLSL

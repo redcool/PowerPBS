@@ -20,6 +20,7 @@ Shader "Unlit/pbr1_"
 
         _Metallic("_Metallic",range(0,1)) = 0.5
         _Smoothness("_Smoothness",range(0,1)) = 0.5
+        _Occlusion("_Occlusion",range(0,1)) = 0
 
         [Toggle]_SpecularOn("_SpecularOn",int) = 1
 
@@ -78,13 +79,14 @@ ENDHLSL
             };
 
             sampler2D _MainTex;
-            float4 _MainTex_ST;
-            float _Metallic,_Smoothness;
-
             sampler2D _NormalMap;
+            sampler2D _PbrMask;
+
+            float4 _MainTex_ST;
+            float _Metallic,_Smoothness,_Occlusion;
+
             float _NormalScale;
 
-            sampler2D _PbrMask;
             bool _SpecularOn;
             float _AnisoRough;
 
@@ -108,7 +110,7 @@ ENDHLSL
                 float4 pbrMask = tex2D(_PbrMask,mainUV);
                 float metallic = pbrMask.r * _Metallic;
                 float smoothness = pbrMask.g * _Smoothness;
-                float occlusion = pbrMask.b;
+                float occlusion = lerp(1,pbrMask.b,_Occlusion);
                 float roughness = 1 - smoothness;
 
                 float3 tn = UnpackScaleNormal(tex2D(_NormalMap,mainUV),_NormalScale);
@@ -131,8 +133,9 @@ ENDHLSL
                 float th = dot(t,h);
                 float bh = dot(b,h);
 
-                float shadowAtten = MainlightRealtimeShadow(i.shadowCoord);
-                
+                float shadowAtten = MainLightShadow(i.shadowCoord,worldPos);
+                return shadowAtten;
+//--------- lighting                
                 float4 albedo = tex2D(_MainTex, mainUV);
                 float radiance = _MainLightColor * nl * shadowAtten;
                 
@@ -155,6 +158,7 @@ ENDHLSL
                 float3 diffColor = albedo.xyz * (1- metallic);
                 float3 directColor = (diffColor + specColor) * radiance;
 // return directColor.xyzx;
+//------- gi
                 float3 giColor = 0;
                 float3 giDiff = ShadeSH9(float4(n,1)) * diffColor;
 
