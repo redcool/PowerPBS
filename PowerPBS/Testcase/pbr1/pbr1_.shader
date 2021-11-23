@@ -60,6 +60,7 @@ ENDHLSL
             #pragma vertex vert
             #pragma fragment frag
             #pragma target 3.0
+            #pragma multi_compile_fog
 
 
             struct appdata
@@ -76,6 +77,7 @@ ENDHLSL
                 float4 vertex : SV_POSITION;
                 TANGENT_SPACE_DECLARE(1,2,3);
                 float4 shadowCoord:TEXCOORD4;
+                float4 fogFactor:TEXCOORD5;
             };
 
             sampler2D _MainTex;
@@ -99,6 +101,7 @@ ENDHLSL
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 TANGENT_SPACE_COMBINE(v.vertex,v.normal,v.tangent,o/**/);
                 o.shadowCoord = TransformWorldToShadowCoord(p);
+                o.fogFactor.x = ComputeFogFactor(o.vertex.z);
                 return o;
             }
 
@@ -134,8 +137,8 @@ ENDHLSL
                 float bh = dot(b,h);
 
                 float shadowAtten = MainLightShadow(i.shadowCoord,worldPos);
-                return shadowAtten;
-//--------- lighting                
+                // return shadowAtten;
+//--------- lighting
                 float4 albedo = tex2D(_MainTex, mainUV);
                 float radiance = _MainLightColor * nl * shadowAtten;
                 
@@ -172,6 +175,8 @@ ENDHLSL
 
                 float4 col = 1;
                 col.rgb = directColor + giColor;
+//------ fog
+                col.rgb = MixFog(col.xyz,i.fogFactor.x);
                 return col;
             }
             ENDHLSL
