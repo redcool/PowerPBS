@@ -266,55 +266,6 @@ float4 ComputeScreenPos(float4 positionCS)
     #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
 #endif
 
-float ComputeFogFactor(float z)
-{
-    float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
-
-    #if defined(FOG_LINEAR)
-        // factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
-        float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
-        return float(fogFactor);
-    #elif defined(FOG_EXP) || defined(FOG_EXP2)
-        // factor = exp(-(density*z)^2)
-        // -density * z computed at vertex
-        return float(unity_FogParams.x * clipZ_01);
-    #else
-        return 0.0h;
-    #endif
-}
-
-float ComputeFogIntensity(float fogFactor)
-{
-    float fogIntensity = 0.0h;
-    #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-        #if defined(FOG_EXP)
-            // factor = exp(-density*z)
-            // fogFactor = density*z compute at vertex
-            fogIntensity = saturate(exp2(-fogFactor));
-        #elif defined(FOG_EXP2)
-            // factor = exp(-(density*z)^2)
-            // fogFactor = density*z compute at vertex
-            fogIntensity = saturate(exp2(-fogFactor * fogFactor));
-        #elif defined(FOG_LINEAR)
-            fogIntensity = fogFactor;
-        #endif
-    #endif
-    return fogIntensity;
-}
-
-half3 MixFogColor(float3 fragColor, float3 fogColor, float fogFactor)
-{
-    #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-        float fogIntensity = ComputeFogIntensity(fogFactor);
-        fragColor = lerp(fogColor, fragColor, fogIntensity);
-    #endif
-    return fragColor;
-}
-
-half3 MixFog(float3 fragColor, float fogFactor)
-{
-    return MixFogColor(fragColor, unity_FogColor.rgb, fogFactor);
-}
 
 #endif  //! UNITY_CG_INCLUDED
 

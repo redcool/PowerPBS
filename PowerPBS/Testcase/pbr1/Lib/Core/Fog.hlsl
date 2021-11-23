@@ -26,72 +26,93 @@ int _FogMode;
     #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
 #endif
 
-float ComputeFogFactor(float z)
-{
-    float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
+// #define KEYWORD_FOG
 
-    // #if defined(FOG_LINEAR)
-    //     // factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
-    //     float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
-    //     return float(fogFactor);
-    // #elif defined(FOG_EXP) || defined(FOG_EXP2)
-    //     // factor = exp(-(density*z)^2)
-    //     // -density * z computed at vertex
-    //     return float(unity_FogParams.x * clipZ_01);
-    // #else
-    //     return 0.0h;
-    // #endif
-    if(_FogMode == FOG_LINEAR)
+#if !defined(KEYWORD_FOG)
+    float ComputeFogFactor(float z)
     {
-        float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
-        return float(fogFactor); 
-    }else if(_FogMode == FOG_EXP || _FogMode == FOG_EXP2){
-        return float(unity_FogParams.x * clipZ_01);
-    }
-    return 0;
-}
-
-float ComputeFogIntensity(float fogFactor)
-{
-    float fogIntensity = 0.0h;
-    // #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-    //     #if defined(FOG_EXP)
-    //         // factor = exp(-density*z)
-    //         // fogFactor = density*z compute at vertex
-    //         fogIntensity = saturate(exp2(-fogFactor));
-    //     #elif defined(FOG_EXP2)
-    //         // factor = exp(-(density*z)^2)
-    //         // fogFactor = density*z compute at vertex
-    //         fogIntensity = saturate(exp2(-fogFactor * fogFactor));
-    //     #elif defined(FOG_LINEAR)
-    //         fogIntensity = fogFactor;
-    //     #endif
-    // #endif
-    switch(_FogMode){
-        case FOG_LINEAR : fogIntensity = fogFactor;break;
-        case FOG_EXP:fogIntensity = saturate(exp2(-fogFactor)); break;
-        case FOG_EXP2:fogIntensity = saturate(exp2(-fogFactor * fogFactor));break;
+        float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
+        if(_FogMode == FOG_LINEAR)
+        {
+            float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
+            return float(fogFactor); 
+        }else if(_FogMode == FOG_EXP || _FogMode == FOG_EXP2){
+            return float(unity_FogParams.x * clipZ_01);
+        }
+        return 0;
     }
 
-    return fogIntensity;
-}
-
-half3 MixFogColor(float3 fragColor, float3 fogColor, float fogFactor)
-{
-    // #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-    //     float fogIntensity = ComputeFogIntensity(fogFactor);
-    //     fragColor = lerp(fogColor, fragColor, fogIntensity);
-    // #endif
-    if(_FogMode != FOG_NONE)
+    float ComputeFogIntensity(float fogFactor)
     {
-        float fogIntensity = ComputeFogIntensity(fogFactor);
-        fragColor = lerp(fogColor, fragColor, fogIntensity); 
+        float fogIntensity = 0.0h;
+        switch(_FogMode){
+            case FOG_LINEAR : fogIntensity = fogFactor;break;
+            case FOG_EXP:fogIntensity = saturate(exp2(-fogFactor)); break;
+            case FOG_EXP2:fogIntensity = saturate(exp2(-fogFactor * fogFactor));break;
+        }
+
+        return fogIntensity;
     }
-    return fragColor;
-}
+
+    half3 MixFogColor(float3 fragColor, float3 fogColor, float fogFactor)
+    {
+        if(_FogMode != FOG_NONE)
+        {
+            float fogIntensity = ComputeFogIntensity(fogFactor);
+            fragColor = lerp(fogColor, fragColor, fogIntensity); 
+        }
+        return fragColor;
+    }
+#else
+    float ComputeFogFactor(float z)
+    {
+        float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
+
+        #if defined(FOG_LINEAR)
+            // factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
+            float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
+            return float(fogFactor);
+        #elif defined(FOG_EXP) || defined(FOG_EXP2)
+            // factor = exp(-(density*z)^2)
+            // -density * z computed at vertex
+            return float(unity_FogParams.x * clipZ_01);
+        #else
+            return 0.0h;
+        #endif
+    }
+
+    float ComputeFogIntensity(float fogFactor)
+    {
+        float fogIntensity = 0.0h;
+        #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+            #if defined(FOG_EXP)
+                // factor = exp(-density*z)
+                // fogFactor = density*z compute at vertex
+                fogIntensity = saturate(exp2(-fogFactor));
+            #elif defined(FOG_EXP2)
+                // factor = exp(-(density*z)^2)
+                // fogFactor = density*z compute at vertex
+                fogIntensity = saturate(exp2(-fogFactor * fogFactor));
+            #elif defined(FOG_LINEAR)
+                fogIntensity = fogFactor;
+            #endif
+        #endif
+        return fogIntensity;
+    }
+
+    half3 MixFogColor(float3 fragColor, float3 fogColor, float fogFactor)
+    {
+        #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
+            float fogIntensity = ComputeFogIntensity(fogFactor);
+            fragColor = lerp(fogColor, fragColor, fogIntensity);
+        #endif
+        return fragColor;
+    }
+#endif //KEYWORD_FOG
 
 half3 MixFog(float3 fragColor, float fogFactor)
 {
     return MixFogColor(fragColor, unity_FogColor.rgb, fogFactor);
 }
+
 #endif //FOG_HLSL
