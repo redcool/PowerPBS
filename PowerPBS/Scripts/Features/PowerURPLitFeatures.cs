@@ -72,7 +72,8 @@ namespace PowerUtilities.PowerPBS
             _MainLightShadowCascadeOn,
             _LightmapOn,
             _Shadows_ShadowMaskOn,
-            _MainLightShadowOn
+            _MainLightShadowOn,
+            _FogMode
             ;
 
         static PowerLitShaderVariables()
@@ -83,6 +84,7 @@ namespace PowerUtilities.PowerPBS
             _LightmapOn = Shader.PropertyToID("_LightmapOn");
             _Shadows_ShadowMaskOn = Shader.PropertyToID("_Shadows_ShadowMaskOn");
             _MainLightShadowOn = Shader.PropertyToID("_MainLightShadowOn");
+            _FogMode = Shader.PropertyToID("_FogMode");
         }
 
 
@@ -98,13 +100,16 @@ namespace PowerUtilities.PowerPBS
             cmd.SetGlobalInt(_MainLightShadowOn, mainLightCastShadows ? 1 : 0);
             cmd.SetGlobalInt(_MainLightMode, (int)asset.mainLightRenderingMode);
             cmd.SetGlobalInt(_AdditionalLightMode, (int)asset.additionalLightsRenderingMode);
+
+            var fogMode = RenderSettings.fog ? (int)RenderSettings.fogMode : 0;
+            cmd.SetGlobalInt(_FogMode, fogMode);
+
         }
     }
 
 
     public class PowerURPLitFeatures : ScriptableRendererFeature
     {
-
         [Serializable]
         public struct Settings
         {
@@ -118,6 +123,7 @@ namespace PowerUtilities.PowerPBS
             [Tooltip("enable shadowMask ?")] public bool _Shadows_ShadowMaskOn;
 
             public bool updateDRPShaderVarables;
+            
         }
 
         class PowerURPLitUpdateParamsPass : ScriptableRenderPass
