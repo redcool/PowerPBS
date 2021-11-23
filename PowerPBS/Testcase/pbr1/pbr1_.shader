@@ -32,7 +32,9 @@ HLSLINCLUDE
 #include "Lib/Core/CommonUtils.hlsl"
 #include "Lib/Core/TangentLib.hlsl"
 #include "Lib/Core/BSDF.hlsl"
-#include "Lib/Shadows.hlsl"
+#include "Lib/Core/Shadows.hlsl"
+#include "Lib/PBRInput.hlsl"
+#include "Lib/Core/Fog.hlsl"
 
 float3 CalcIBL(float3 viewDir, float3 n,float a){
     a = a* (1.7 - a * 0.7);
@@ -60,8 +62,6 @@ ENDHLSL
             #pragma vertex vert
             #pragma fragment frag
             #pragma target 3.0
-            #pragma multi_compile_fog
-
 
             struct appdata
             {
@@ -79,20 +79,6 @@ ENDHLSL
                 float4 shadowCoord:TEXCOORD4;
                 float4 fogFactor:TEXCOORD5;
             };
-
-            sampler2D _MainTex;
-            sampler2D _NormalMap;
-            sampler2D _PbrMask;
-
-            float4 _MainTex_ST;
-            float _Metallic,_Smoothness,_Occlusion;
-
-            float _NormalScale;
-
-            bool _SpecularOn;
-            float _AnisoRough;
-
-            int _PbrMode;
 
             v2f vert (appdata v)
             {
