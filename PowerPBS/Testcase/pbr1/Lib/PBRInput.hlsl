@@ -17,6 +17,7 @@ bool _SpecularOn;
 float _AnisoRough;
 
 int _PbrMode;
+bool _CalcTangent;
 
 CBUFFER_END
 #endif //PBR_INPUT_HLSL

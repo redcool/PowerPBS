@@ -4,9 +4,11 @@ Shader "Unlit/pbr1_"
     lighting(pbr,charlie,aniso)
     shadow(main light)
     fog
+    srp batched 
+
+    instanced
     detail()
     alpha
-    srp batched (instanced)
 
     */
     Properties
@@ -26,6 +28,7 @@ Shader "Unlit/pbr1_"
 
         [Enum(PBR,0,Aniso,1,Charlie,2)]_PbrMode("_PbrMode",int) = 0
         _AnisoRough("_AnisoRough",range(-.5,.5)) = 0
+        [Toggle]_CalcTangent("_CalcTangent",int) = 0
     }
 
 HLSLINCLUDE
@@ -106,8 +109,8 @@ ENDHLSL
                 float3 tn = UnpackScaleNormal(tex2D(_NormalMap,mainUV),_NormalScale);
                 float3 n = normalize(TangentToWorld(i.tSpace0,i.tSpace1,i.tSpace2,tn));
 
-                float3 l = normalize(_MainLightPosition.xyz);
-                float3 v = normalize(UnityWorldSpaceViewDir(worldPos));
+                float3 l = (_MainLightPosition.xyz);
+                float3 v = (UnityWorldSpaceViewDir(worldPos));
                 float3 h = normalize(l+v);
                 
                 float lh = saturate(dot(l,h));
@@ -118,8 +121,12 @@ ENDHLSL
 
                 float nv = saturate(dot(n,v));
 
-                float3 t = normalize(cross(n,float3(0,1,0)));
-                float3 b = cross(t,n);
+                float3 t = tangent;//(cross(n,float3(0,1,0)));
+                float3 b = binormal;//cross(t,n);
+                if(_CalcTangent){
+                    t = cross(n,float3(0,1,0));
+                    b = cross(t,n);
+                }
                 float th = dot(t,h);
                 float bh = dot(b,h);
 
@@ -163,6 +170,8 @@ ENDHLSL
                 float4 col = 1;
                 col.rgb = directColor + giColor;
 //------ fog
+// return lerp(unity_FogColor,col,i.fogFactor.x);
+// return MixFog(1,i.fogFactor.x).xyzx;
                 col.rgb = MixFog(col.xyz,i.fogFactor.x);
                 return col;
             }
