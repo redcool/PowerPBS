@@ -69,6 +69,12 @@ float D_CharlieNoPI(float NdotH, float roughness)
     // Note: We have sin^2 so multiply by 0.5 to cancel it
     return (2.0 + invR) * pow(sin2h, invR * 0.5) * 0.5;
 }
+
+float D_GGXNoPI(float NdotH, float a2)
+{
+    float s = (NdotH * a2 - NdotH) * NdotH + 1.0;
+    return a2 / max(0.0001,s * s);
+}
 ENDHLSL
 
     SubShader
@@ -157,7 +163,8 @@ ENDHLSL
                 float specTerm = 0;
                 if(_SpecularOn){
                     if(_PbrMode == 0)
-                        specTerm = MinimalistCookTorrance(nh,lh,a,a2);
+                        // specTerm = MinimalistCookTorrance(nh,lh,a,a2);
+                        specTerm = D_GGXNoPI(nh,a2);
                     else if(_PbrMode == 1){
                         float anisoRough = _AnisoRough + 0.5;
                         specTerm = D_GGXAnisoNoPI(th,bh,nh,anisoRough,1 - anisoRough);
