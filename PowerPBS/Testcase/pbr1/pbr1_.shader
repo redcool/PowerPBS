@@ -34,7 +34,7 @@ HLSLINCLUDE
 #include "Lib/Core/BSDF.hlsl"
 #include "Lib/Core/Shadows.hlsl"
 #include "Lib/PBRInput.hlsl"
-#include "Lib/Core/Fog.hlsl"
+// #include "Lib/Core/Fog.hlsl"
 
 float3 CalcIBL(float3 viewDir, float3 n,float a){
     a = a* (1.7 - a * 0.7);
@@ -62,6 +62,7 @@ ENDHLSL
             #pragma vertex vert
             #pragma fragment frag
             #pragma target 3.0
+            #pragma multi_compile_fog
 
             struct appdata
             {
