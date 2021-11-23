@@ -1,5 +1,14 @@
 Shader "Unlit/pbr1_"
 {
+    /*
+    lighting(pbr,charlie,aniso)
+    shadow(main light)
+    fog
+    detail()
+    alpha
+    srp batched (instanced)
+
+    */
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
@@ -21,16 +30,8 @@ Shader "Unlit/pbr1_"
 HLSLINCLUDE
 #include "Lib/Core/CommonUtils.hlsl"
 #include "Lib/Core/TangentLib.hlsl"
-
-#define PI 3.1415
-#define PI2 6.28
-
-float MinimalistCookTorrance(float nh,float lh,float a,float a2){
-    float d = nh * nh * (a2 - 1)+1;
-    float vf = max(lh * lh,0.1);
-    float s = a2/(d*d* vf * (4*a+2));
-    return s;
-}
+#include "Lib/Core/BSDF.hlsl"
+#include "Lib/Shadows.hlsl"
 
 float3 CalcIBL(float3 viewDir, float3 n,float a){
     a = a* (1.7 - a * 0.7);
@@ -44,37 +45,7 @@ float3 CalcGI(){
     return 0;
 }
 
-//http://web.engr.oregonstate.edu/~mjb/cs519/Projects/Papers/HairRendering.pdf
-float3 ShiftTangent(float3 T, float3 N, float shift)
-{
-    return normalize(T + N * shift);
-}
 
-float D_GGXAnisoNoPI(float TdotH, float BdotH, float NdotH, float roughnessT, float roughnessB)
-{
-    float a2 = roughnessT * roughnessB;
-    float3 v = float3(roughnessB * TdotH, roughnessT * BdotH, a2 * NdotH);
-    float  s = dot(v, v);
-
-    // If roughness is 0, returns (NdotH == 1 ? 1 : 0).
-    // That is, it returns 1 for perfect mirror reflection, and 0 otherwise.
-    return (a2 * a2 * a2)/max(0.0001, s * s);
-}
-
-float D_CharlieNoPI(float NdotH, float roughness)
-{
-    float invR = rcp(max(roughness,0.001));
-    float cos2h = NdotH * NdotH;
-    float sin2h = 1.0 - cos2h;
-    // Note: We have sin^2 so multiply by 0.5 to cancel it
-    return (2.0 + invR) * pow(sin2h, invR * 0.5) * 0.5;
-}
-
-float D_GGXNoPI(float NdotH, float a2)
-{
-    float s = (NdotH * a2 - NdotH) * NdotH + 1.0;
-    return a2 / max(0.0001,s * s);
-}
 ENDHLSL
 
     SubShader
@@ -103,6 +74,7 @@ ENDHLSL
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
                 TANGENT_SPACE_DECLARE(1,2,3);
+                float4 shadowCoord:TEXCOORD4;
             };
 
             sampler2D _MainTex;
@@ -124,6 +96,7 @@ ENDHLSL
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 TANGENT_SPACE_COMBINE(v.vertex,v.normal,v.tangent,o/**/);
+                o.shadowCoord = TransformWorldToShadowCoord(p);
                 return o;
             }
 
@@ -135,6 +108,7 @@ ENDHLSL
                 float4 pbrMask = tex2D(_PbrMask,mainUV);
                 float metallic = pbrMask.r * _Metallic;
                 float smoothness = pbrMask.g * _Smoothness;
+                float occlusion = pbrMask.b;
                 float roughness = 1 - smoothness;
 
                 float3 tn = UnpackScaleNormal(tex2D(_NormalMap,mainUV),_NormalScale);
@@ -157,8 +131,10 @@ ENDHLSL
                 float th = dot(t,h);
                 float bh = dot(b,h);
 
+                float shadowAtten = MainlightRealtimeShadow(i.shadowCoord);
+                
                 float4 albedo = tex2D(_MainTex, mainUV);
-                float radiance = _MainLightColor * nl;
+                float radiance = _MainLightColor * nl * shadowAtten;
                 
                 float specTerm = 0;
                 if(_SpecularOn){
@@ -187,7 +163,6 @@ ENDHLSL
                 float fresnelTerm = pow(1-nv,4);
                 float3 giSpec = CalcIBL(v,n,a2);
                 giSpec *= surfaceReduction * lerp(specColor,grazingTerm,fresnelTerm);
-                // return giSpec.xyzx;
                 giColor = giDiff + giSpec;
                 // return giSpec.xyzx;
 
