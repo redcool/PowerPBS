@@ -3,9 +3,9 @@
 
 //------------ fog
 #define FOG_NONE 0
-#define FOG_LINEAR 1
-#define FOG_EXP 2
-#define FOG_EXP2 3
+#define FOG_MODE_LINEAR 1
+#define FOG_MODE_EXP 2
+#define FOG_MODE_EXP2 3
 
 int _FogMode;
 
@@ -34,11 +34,11 @@ int _FogMode;
     float ComputeFogFactor(float z)
     {
         float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
-        if(_FogMode == FOG_LINEAR)
+        if(_FogMode == FOG_MODE_LINEAR)
         {
             float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
             return float(fogFactor); 
-        }else if(_FogMode == FOG_EXP || _FogMode == FOG_EXP2){
+        }else if(_FogMode == FOG_MODE_EXP || _FogMode == FOG_MODE_EXP2){
             return float(unity_FogParams.x * clipZ_01);
         }
         return 0;
@@ -46,11 +46,11 @@ int _FogMode;
 
     float ComputeFogIntensity(float fogFactor)
     {
-        float fogIntensity = 0.0h;
+        float fogIntensity = 0;
         switch(_FogMode){
-            case FOG_LINEAR : fogIntensity = fogFactor;break;
-            case FOG_EXP:fogIntensity = saturate(exp2(-fogFactor)); break;
-            case FOG_EXP2:fogIntensity = saturate(exp2(-fogFactor * fogFactor));break;
+            case FOG_MODE_LINEAR : fogIntensity = fogFactor;break;
+            case FOG_MODE_EXP:fogIntensity = saturate(exp2(-fogFactor)); break;
+            case FOG_MODE_EXP2:fogIntensity = saturate(exp2(-fogFactor * fogFactor));break;
         }
 
         return fogIntensity;
