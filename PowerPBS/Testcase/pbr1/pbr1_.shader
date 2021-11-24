@@ -43,7 +43,6 @@ Shader "Unlit/pbr1_"
             #pragma fragment frag
             #pragma target 3.0
             // #pragma multi_compile_fog
-            #pragma multi_compile_instancing
             #include "Lib/PBRForwardPass.hlsl"
 
             struct appdata
