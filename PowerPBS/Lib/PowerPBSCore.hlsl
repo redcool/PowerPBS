@@ -146,7 +146,8 @@ float3 CalcEmission(float3 albedo,float2 uv){
 #define PBR_MODE_STRAND 3
 
 inline float3 CalcSpecularTermOnlyStandard(inout PBSData data,float nl,float nv,float nh,float lh,float th,float bh,float3 specColor){
-    float3 specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+    // float3 specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+    float3 specTerm = D_GGXTerm(nh,data.roughness2);
     specTerm *= specColor;
     return specTerm;
 }
@@ -343,7 +344,7 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     color += directColor;
 
     // additional lights
-    // color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
+    color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
 
     return float4(color,1);
 }
