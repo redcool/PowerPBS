@@ -14,7 +14,7 @@ inline UnityLight GetLight(){
     // ---- 改变主光源,方向,颜色.
     dir.xyz += _CustomLightOn > 0 ? _LightDir.xyz : 0;
     color += _CustomLightOn > 0 ?_LightColor : 0;
-    dir = SafeNormalize(dir);
+    dir = (dir);
 
     UnityLight l = {color.rgb,dir.xyz,0};
     return l;
@@ -157,7 +157,8 @@ inline float3 CalcSpecularTerm(inout PBSData data,float nl,float nv,float nh,flo
     float3 specTerm = 0;
     switch(_PBRMode){
         case PBR_MODE_STANDARD :
-            specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+            // specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+            specTerm = D_GGXTerm(nh,data.roughness2);
             specTerm *= specColor;
             // V = SmithJointGGXTerm(nl,nv,roughness);
             // D = D_GGXTerm(nh,roughness);
@@ -171,7 +172,7 @@ inline float3 CalcSpecularTerm(inout PBSData data,float nl,float nv,float nh,flo
 
             float anisoRough = _AnisoRough * 0.5+0.5;
             // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
-            V = SmithJointGGXTerm(nl,nv,data.roughness);
+            // V = SmithJointGGXTerm(nl,nv,data.roughness);
             D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough);
             // D = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough);
             specTerm = D * _AnisoIntensity * _AnisoColor;
@@ -193,7 +194,7 @@ inline float3 CalcSpecularTerm(inout PBSData data,float nl,float nv,float nh,flo
             // extra calc ggx
             if(_ClothGGXUseMainTexA){
                 sheenColor = lerp(sheenColor,1,data.mainTex.a);
-                float3 DF = D_GGXTerm(nh,data.roughness) * FresnelTerm(specColor,lh);
+                float3 DF = D_GGXTerm(nh,data.roughness);// * FresnelTerm(specColor,lh);
                 D = lerp(D*2,DF,data.mainTex.a);
             }
             specTerm = V * D * PI * sheenColor ;
@@ -203,13 +204,13 @@ inline float3 CalcSpecularTerm(inout PBSData data,float nl,float nv,float nh,flo
         break;
     }
     // specTerm = max(0,specTerm * nl);
-    specTerm *= any(specColor)? 1 : 0;
+    // specTerm *= any(specColor)? 1 : 0;
     // calc F
-    float3 F =1;
-    if(_PBRMode != PBR_MODE_CLOTH && _PBRMode != PBR_MODE_STANDARD)
-        F = FresnelTerm(specColor,lh);
+    // float3 F =1;
+    // if(_PBRMode != PBR_MODE_CLOTH && _PBRMode != PBR_MODE_STANDARD)
+    //     F = FresnelTerm(specColor,lh);
 
-    specTerm *= F;
+    // specTerm *= F;
 
     specTerm = min(specTerm, _MaxSpecularIntensity); // eliminate large value in HDR
     return specTerm;
@@ -256,7 +257,7 @@ float3 CalcDirectApplyClearCoat(float3 directColor,ClearCoatData data,float fres
 }
 
 #define CALC_LIGHT_INFO(lightDir)\
-    float3 l = SafeNormalize(lightDir);\
+    float3 l = (lightDir);\
     float3 v = (data.viewDir);\
     float3 h = SafeNormalize(l + v);\
     float3 t = (data.tangent);\
@@ -311,7 +312,7 @@ float3 CalcIndirectApplySHDirLight(float3 indirectColor,PBSData data,float3 diff
     return indirectColor;
 }
 
-float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,inout PBSData data,ClearCoatData coatData){
+float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,ClearCoatData coatData,inout PBSData data){
     CALC_LIGHT_INFO(mainLight.dir);
 
     // set pbsdata for others flow.
@@ -342,7 +343,7 @@ float4 CalcPBS(float3 diffColor,half3 specColor,UnityLight mainLight,UnityIndire
     color += directColor;
 
     // additional lights
-    color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
+    // color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
 
     return float4(color,1);
 }
@@ -380,20 +381,20 @@ void InitSurfaceData(float2 uv,float3 albedo,float alpha,float metallic,out Surf
 void InitWorldData(float2 uv,float detailMask,float4 tSpace0,float4 tSpace1,float4 tSpace2,out WorldData data ){
     float2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
     float3 tn = CalcNormal(normalMapUV,detailMask);
-    data.normal = normalize(float3(
+    data.normal = (float3(
         dot(tSpace0.xyz,tn),
         dot(tSpace1.xyz,tn),
         dot(tSpace2.xyz,tn)
     ));
     data.pos = float3(tSpace0.w,tSpace1.w,tSpace2.w);
-    data.view = normalize(GetWorldViewDir(data.pos));
-    data.reflect = SafeNormalize(reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
+    data.view = (GetWorldViewDir(data.pos));
+    data.reflect = (reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
 
-    data.vertexNormal = normalize(float3(tSpace0.z,tSpace1.z,tSpace2.z));
-    data.tangent = normalize(cross(data.normal,float3(0,1,0)));
-    data.binormal = normalize(cross(data.tangent,data.normal));
-    // data.tangent = normalize(float3(tSpace0.x,tSpace1.x,tSpace2.x));
-    // data.binormal = normalize(float3(tSpace0.y,tSpace1.y,tSpace2.y));
+    data.vertexNormal = (float3(tSpace0.z,tSpace1.z,tSpace2.z));
+    data.tangent = (cross(data.normal,float3(0,1,0)));
+    data.binormal = (cross(data.tangent,data.normal));
+    // data.tangent = (float3(tSpace0.x,tSpace1.x,tSpace2.x));
+    // data.binormal = (float3(tSpace0.y,tSpace1.y,tSpace2.y));
 }
 
 #endif // end of POWER_PBS_CORE_HLSL

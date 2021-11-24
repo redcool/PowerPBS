@@ -99,6 +99,7 @@ float4 frag (v2f i) : SV_Target
         half atten = URP_SHADOW_ATTENUATION(i,worldData.pos);
         light.color *= atten;
     }
+
     SurfaceData surfaceData;
     InitSurfaceData(i.uv.zw,albedo,alpha,metallic,surfaceData/**/);
 
@@ -123,7 +124,7 @@ float4 frag (v2f i) : SV_Target
     coatData.reflectDir = worldData.reflect;
     coatData.occlusion = occlusion;
 
-    half4 col = CalcPBS(surfaceData.diffColor, surfaceData.specColor, light, indirect,pbsData/**/,coatData);
+    half4 col = CalcPBS(surfaceData.diffColor, surfaceData.specColor, light, indirect,coatData,pbsData/**/);
     col.a = surfaceData.finalAlpha;
 
     //for preintegrated lut
@@ -137,10 +138,10 @@ float4 frag (v2f i) : SV_Target
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
         float2 screenUV = i.screenPos.xy/i.screenPos.w;
         float profileMask = _DiffuseProfileMaskUserMainTexA ? mainTex.a : 1;
-        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x,0) * _BlurSize,profileMask);
-        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y) * _BlurSize,profileMask);
+        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
+        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
         // col = originalColor + horizontalGasussianColor + verticalGausssianColor
-        col.rgb /=3;
+        col.rgb *= 0.333;
     }
     //for emission
     if(_EmissionOn){
