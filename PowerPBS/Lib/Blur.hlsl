@@ -40,7 +40,7 @@ float3 DiffuseProfile(float4 mainColor,TEXTURE2D_PARAM(tex,sampler_tex),float2 u
 
     float3 blurColor = mainColor * CalcKernel(0);
     UNITY_LOOP
-    for(int i=1;i<KERNEL_SIZE;i++){
+    for(int i=1;i<10;i++){
         float4 k = CalcKernel(i);
         float2 sssuv = uv + k.w * UVOffset;
         float3 sssColor = SAMPLE_TEXTURE2D(tex,sampler_tex,sssuv);
