@@ -43,13 +43,10 @@ inline float NDFBlinnPhongTerm(float nh,float a){
     return normTerm * specularTerm;
 }
 
-inline float D_GGXTerm(float nh,float a){
-    float a2 = a  * a;
+inline float D_GGXTerm(float nh,float a2){
     float d = (nh*a2-nh)*nh + 1;
     return INV_PI * a2 / (d*d + 1e-7f);
 }
-
-
 
 
 inline float D_GGXAnisoNoPI(float TdotH, float BdotH, float NdotH, float roughnessT, float roughnessB)
