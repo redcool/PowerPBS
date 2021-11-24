@@ -31,29 +31,6 @@ Shader "Unlit/pbr1_"
         [Toggle]_CalcTangent("_CalcTangent",int) = 0
     }
 
-HLSLINCLUDE
-#include "Lib/Core/CommonUtils.hlsl"
-#include "Lib/Core/TangentLib.hlsl"
-#include "Lib/Core/BSDF.hlsl"
-#include "Lib/Core/Shadows.hlsl"
-#include "Lib/PBRInput.hlsl"
-#include "Lib/Core/Fog.hlsl"
-
-float3 CalcIBL(float3 viewDir, float3 n,float a){
-    a = a* (1.7 - a * 0.7);
-    float mip = round(a * 6);
-    float3 reflectDir = reflect(-viewDir,n);
-    float4 hdrEnv = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0,samplerunity_SpecCube0,reflectDir,mip);
-    return DecodeHDR(hdrEnv,unity_SpecCube0_HDR);
-}
-
-float3 CalcGI(){
-    return 0;
-}
-
-
-ENDHLSL
-
     SubShader
     {
         Tags { "RenderType"="Opaque" }
@@ -67,6 +44,7 @@ ENDHLSL
             #pragma target 3.0
             // #pragma multi_compile_fog
             #pragma multi_compile_instancing
+            #include "Lib/PBRForwardPass.hlsl"
 
             struct appdata
             {
@@ -106,7 +84,7 @@ ENDHLSL
             float4 frag (v2f i) : SV_Target
             {
                 UNITY_SETUP_INSTANCE_ID(i);
-                
+
                 TANGENT_SPACE_SPLIT(i);
                 float2 mainUV = i.uv;
 
@@ -180,8 +158,6 @@ ENDHLSL
                 float4 col = 1;
                 col.rgb = directColor + giColor;
 //------ fog
-// return lerp(unity_FogColor,col,i.fogFactor.x);
-// return MixFog(1,i.fogFactor.x).xyzx;
                 col.rgb = MixFog(col.xyz,i.fogFactor.x);
                 return col;
             }
