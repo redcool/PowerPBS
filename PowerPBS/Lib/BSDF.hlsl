@@ -45,7 +45,7 @@ inline float NDFBlinnPhongTerm(float nh,float a){
 
 inline float D_GGXTerm(float nh,float a2){
     float d = (nh*a2-nh)*nh + 1;
-    return INV_PI * a2 / (d*d + 1e-7f);
+    return a2 / (d*d + 1e-7f);
 }
 
 

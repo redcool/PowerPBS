@@ -158,8 +158,8 @@ inline float3 CalcSpecularTerm(inout PBSData data,float nl,float nv,float nh,flo
     float3 specTerm = 0;
     switch(_PBRMode){
         case PBR_MODE_STANDARD :
-            specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
-            // specTerm = D_GGXTerm(nh,data.roughness2);
+            // specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+            specTerm = D_GGXTerm(nh,data.roughness2);
             specTerm *= specColor;
             // V = SmithJointGGXTerm(nl,nv,roughness);
             // D = D_GGXTerm(nh,roughness);
