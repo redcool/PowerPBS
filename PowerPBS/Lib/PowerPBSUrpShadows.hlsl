@@ -37,13 +37,15 @@
     float4 _ShadowBias; // x: depth bias, y: normal bias
     float _MainLightShadowOn; //send  from PowerUrpLitFeature
 
+    float4 _CustomShadowBias; // x: depth bias, y: normal bias
+
     float3 ApplyShadowBias(float3 positionWS, float3 normalWS, float3 lightDirection)
     {
         float invNdotL = 1.0 - saturate(dot(lightDirection, normalWS));
-        float scale = invNdotL * _ShadowBias.y;
+        float scale = invNdotL * (_ShadowBias.y + _CustomShadowBias.y);
 
         // normal bias is negative since we want to apply an inset normal offset
-        positionWS = lightDirection * _ShadowBias.xxx + positionWS;
+        positionWS = lightDirection * (_ShadowBias.xxx + _CustomShadowBias.xxx) + positionWS;
         positionWS = normalWS * scale.xxx + positionWS;
         return positionWS;
     }
