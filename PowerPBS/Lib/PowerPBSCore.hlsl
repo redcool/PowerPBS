@@ -263,7 +263,7 @@ float3 CalcDirectApplyClearCoat(float3 directColor,ClearCoatData data,float fres
     float3 h = SafeNormalize(l + v);\
     float3 t = (data.tangent);\
     float3 b = (data.binormal);\
-    float3 n = (data.normal);\
+    float3 n = SafeNormalize(data.normal);\
     float nh = saturate(dot(n,h));\
     float nl = saturate(dot(n,l));\
     float nv = saturate(dot(n,v));\
