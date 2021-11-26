@@ -3,6 +3,7 @@
 
 #define PI 3.1415
 #define PI2 6.28
+#define INV_PI 0.318
 
 float MinimalistCookTorrance(float nh,float lh,float a,float a2){
     float d = nh * nh * (a2 - 1)+1;
@@ -40,7 +41,11 @@ float D_CharlieNoPI(float NdotH, float roughness)
 float D_GGXNoPI(float NdotH, float a2)
 {
     float s = (NdotH * a2 - NdotH) * NdotH + 1.0;
-    return a2 / max(0.0001,s * s);
+    return a2 / (1e-7f+s * s);
+}
+
+float D_GGX(float nh,float a2){
+    return D_GGXNoPI(nh,a2) * INV_PI;
 }
 
 #endif //BSDF_HLSL

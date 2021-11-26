@@ -1,4 +1,4 @@
-Shader "Unlit/pbr1_"
+Shader "Lit/pbr1_"
 {
     /*
     lighting(pbr,charlie,aniso)
@@ -15,10 +15,10 @@ Shader "Unlit/pbr1_"
     {
         _MainTex ("Texture", 2D) = "white" {}
         
-        _NormalMap("_NormalMap",2d)=""{}
+        _NormalMap("_NormalMap",2d)="bump"{}
         _NormalScale("_NormalScale",float) = 1
 
-        _PbrMask("_PbrMask",2d)=""{}
+        _PbrMask("_PbrMask",2d)="white"{}
 
         _Metallic("_Metallic",range(0,1)) = 0.5
         _Smoothness("_Smoothness",range(0,1)) = 0.5
@@ -26,9 +26,12 @@ Shader "Unlit/pbr1_"
 
         [Toggle]_SpecularOn("_SpecularOn",int) = 1
 
-        [Enum(PBR,0,Aniso,1,Charlie,2)]_PbrMode("_PbrMode",int) = 0
-        _AnisoRough("_AnisoRough",range(-.5,.5)) = 0
+        // [Enum(PBR,0,Aniso,1,Charlie,2)]_PbrMode("_PbrMode",int) = 0
+        [KeywordEnum(None,PBR,Aniso,Charlie)]_PbrMode("_PbrMode",int) = 0
+
+        [Header(Aniso)]
         [Toggle]_CalcTangent("_CalcTangent",int) = 0
+        _AnisoRough("_AnisoRough",range(-0.5,0.5)) = 0
     }
 
     SubShader
@@ -43,6 +46,7 @@ Shader "Unlit/pbr1_"
             #pragma fragment frag
             #pragma target 3.0
             // #pragma multi_compile_fog
+            #pragma multi_compile _PBRMODE_NONE _PBRMODE_PBR _PBRMODE_ANISO _PBRMODE_CHARLIE
             #include "Lib/PBRForwardPass.hlsl"
 
             struct appdata
@@ -97,7 +101,7 @@ Shader "Unlit/pbr1_"
                 float3 n = normalize(TangentToWorld(i.tSpace0,i.tSpace1,i.tSpace2,tn));
 
                 float3 l = (_MainLightPosition.xyz);
-                float3 v = (UnityWorldSpaceViewDir(worldPos));
+                float3 v = normalize(UnityWorldSpaceViewDir(worldPos));
                 float3 h = normalize(l+v);
                 
                 float lh = saturate(dot(l,h));
@@ -107,15 +111,8 @@ Shader "Unlit/pbr1_"
                 float a2 = a * a;
 
                 float nv = saturate(dot(n,v));
+// return v.xyzx;
 
-                float3 t = tangent;//(cross(n,float3(0,1,0)));
-                float3 b = binormal;//cross(t,n);
-                if(_CalcTangent){
-                    t = cross(n,float3(0,1,0));
-                    b = cross(t,n);
-                }
-                float th = dot(t,h);
-                float bh = dot(b,h);
 
                 float shadowAtten = MainLightShadow(i.shadowCoord,worldPos);
                 // return shadowAtten;
@@ -124,23 +121,37 @@ Shader "Unlit/pbr1_"
                 float radiance = _MainLightColor * nl * shadowAtten;
                 
                 float specTerm = 0;
-                if(_SpecularOn){
-                    if(_PbrMode == 0)
+
+                // if(_SpecularOn){
+                    // if(_PbrMode == 0){
+                    #if defined(_PBRMODE_NONE)
+
+                    #elif defined(_PBRMODE_PBR)
                         // specTerm = MinimalistCookTorrance(nh,lh,a,a2);
                         specTerm = D_GGXNoPI(nh,a2);
-                    else if(_PbrMode == 1){
-                        float anisoRough = _AnisoRough + 0.5;
+                    // }else if(_PbrMode == 1){
+                    #elif defined(_PBRMODE_ANISO)
+                        float3 t = tangent;//(cross(n,float3(0,1,0)));
+                        float3 b = binormal;//cross(t,n);
+                        if(_CalcTangent){
+                            t = cross(n,float3(0,1,0));
+                            b = cross(t,n);
+                        }
+                        float th = dot(t,h);
+                        float bh = dot(b,h);
+                        float anisoRough = roughness;//_AnisoRough + 0.5;
                         specTerm = D_GGXAnisoNoPI(th,bh,nh,anisoRough,1 - anisoRough);
-                    }else if(_PbrMode == 2){
-                        specTerm = D_CharlieNoPI(nh, _Smoothness);
-                    }
-                }
+                    #elif defined(_PBRMODE_CHARLIE)
+                    // }else if(_PbrMode == 2){
+                        specTerm = D_CharlieNoPI(nh, roughness);
+                    // }
+                    #endif
+                // }
 
                 float3 specColor = lerp(0.04,albedo,metallic);
-                specColor *= specTerm;
-
+                
                 float3 diffColor = albedo.xyz * (1- metallic);
-                float3 directColor = (diffColor + specColor) * radiance;
+                float3 directColor = (diffColor + specColor * specTerm) * radiance;
 // return directColor.xyzx;
 //------- gi
                 float3 giColor = 0;
@@ -148,11 +159,12 @@ Shader "Unlit/pbr1_"
 
                 float surfaceReduction = 1/(a2+1);
                 float grazingTerm = saturate(smoothness + metallic);
-                float fresnelTerm = pow(1-nv,4);
+                float fresnelTerm = Pow4(1-nv);
                 float3 giSpec = CalcIBL(v,n,a2);
+                // return  lerp(specColor,grazingTerm,fresnelTerm).xyzx;
                 giSpec *= surfaceReduction * lerp(specColor,grazingTerm,fresnelTerm);
                 giColor = giDiff + giSpec;
-                // return giSpec.xyzx;
+// return giColor.xyzx;
 
                 float4 col = 1;
                 col.rgb = directColor + giColor;
