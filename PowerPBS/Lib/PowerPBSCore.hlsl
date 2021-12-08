@@ -155,8 +155,8 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
     half3 specTerm = 0;
     switch(_PBRMode){
         case PBR_MODE_STANDARD :
-            // specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
-            specTerm = D_GGXTerm(nh,data.roughness2);
+            specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+            // specTerm = D_GGXTerm(nh,data.roughness2);
             specTerm *= specColor;
             // V = SmithJointGGXTerm(nl,nv,roughness);
             // D = D_GGXTerm(nh,roughness);
@@ -168,23 +168,23 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             // half bv = (dot(data.binormal,data.viewDir));
             // half bl = (dot(data.binormal,data.lightDir));
 
-            half anisoRough = _AnisoRough ;
+            half anisoRough = saturate(_AnisoRough) ;
             // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
             // V = SmithJointGGXTerm(nl,nv,data.roughness);
-            D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough);
+            D = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
             // D = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough);
             specTerm = D * _AnisoIntensity * _AnisoColor;
             
             if(_AnisoLayer2On){
-                anisoRough = _Layer2AnisoRough;
-                D = D_GGXAniso(th,bh,nh,anisoRough,1-anisoRough);
+                anisoRough = saturate(_Layer2AnisoRough);
+                D = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
                 // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
                 specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor;
             }
             specTerm *= V * PI;
             specTerm *= lerp(1,data.mainTex.a,_AnisoIntensityUseMainTexA);
-            specTerm *= lerp(1,data.roughness,_AnisoIntensityUseRoughness);
-            
+            specTerm *= lerp(1,data.roughness,_AnisoIntensityUseSmoothness);
+            specTerm *= specColor;
         break;
         case PBR_MODE_CLOTH:
             // V = AshikhminV(nv,nl);

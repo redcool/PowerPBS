@@ -39,6 +39,9 @@ Shader "Character/PowerPBS"
         _Smoothness("Smoothness",range(0,1)) = 0
         _Occlusion("_Occlusion",range(0,1)) = 1
         
+        [Header(PBR Slider Options)]
+        [LiteToggle]_InvertSmoothnessOn("_InvertSmoothnessOn",int) = 0
+
         [Header(PBR Mask Channel)]
         [Enum(R,0,G,1,B,2,A,3)]_MetallicChannel("_MetallicChannel",float) = 0
         [Enum(R,0,G,1,B,2,A,3)]_SmoothnessChannel("_SmoothnessChannel",float) = 1
@@ -95,7 +98,7 @@ Shader "Character/PowerPBS"
         _Layer2AnisoRough("_Layer2AnisoRough",range(0,1)) = 0
         [Header(Mask)]
         [LiteToggle]_AnisoIntensityUseMainTexA("_AnisoIntensityUseMainTexA",float) = 0
-        [LiteToggle]_AnisoIntensityUseRoughness("_AnisoIntensityUseRoughness",float) = 0
+        [LiteToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0
 // ==================================================
         [Header(Pre Integral Scatter)]
         [LiteToggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0

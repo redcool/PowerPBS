@@ -38,8 +38,8 @@ TEXTURE2D(_StrandMaskTex); // xyzw  = shift_specMask_ao_tbMask
    //_Detail1_MapIntensity
     //_Detail1_Map_ST
 #define DECLARE_DETAIL(id)\
-    int _Detail##id##_MapOn;\
-    int _Detail##id##_MapMode;\
+    half _Detail##id##_MapOn;\
+    half _Detail##id##_MapMode;\
     half _Detail##id##_MapIntensity;\
     half4 _Detail##id##_Map_ST
 
@@ -58,61 +58,62 @@ CBUFFER_START(UnityPerMaterial)
     half _Metallic;
     half _Occlusion;
     half _Cutoff;
-    int _PBRMode; // standard,aniso,fabric,strand
+    half _InvertSmoothnessOn;
+    half _PBRMode; // standard,aniso,fabric,strand
     half _SpecularOn;
     half _FresnelIntensity;
     half _MetallicChannel;
     half _SmoothnessChannel;
     half _OcclusionChannel;
 
-    int _ClearCoatOn;
+    half _ClearCoatOn;
     half4 _ClearCoatSpecColor;
     half _CoatSmoothness;
     half _CoatIndirectSpecularIntensity;
 
-    int _CustomSpecularMapOn;
+    half _CustomSpecularMapOn;
     half4 _CustomSpecularMap_ST;
     half _CustomSpecularIntensity;
 
-    int _AlphaFrom;
-    int _FresnelAlphaOn;
+    half _AlphaFrom;
+    half _FresnelAlphaOn;
     half _FresnelMin,_FresnelMax;
 // ==================================================
     half _VertexScale;
-    int _VertexColorRAttenOn;
+    half _VertexColorRAttenOn;
 // ==================================================
     half _AnisoRough;
     half _AnisoIntensity;
     half4 _AnisoColor;
 
-    int _AnisoLayer2On;
+    half _AnisoLayer2On;
     half _Layer2AnisoRough;
     half _Layer2AnisoIntensity;
     half4 _Layer2AnisoColor;
     half _AnisoIntensityUseMainTexA;
-    half _AnisoIntensityUseRoughness;
+    half _AnisoIntensityUseSmoothness;
 // ==================================================
     half4 _ClothSheenColor;
     half _ClothDMax,_ClothDMin;
-    int _ClothGGXUseMainTexA;
+    half _ClothGGXUseMainTexA;
 // ==================================================
-    int _ApplyShadowOn;
-    int _ReceiveAdditionalLightsOn;
-    int _ReceiveAdditionalLightsShadowOn;
-    int _AdditionalLightSoftShadowOn;
-    int _DirectionalLightFromSHOn;
+    half _ApplyShadowOn;
+    half _ReceiveAdditionalLightsOn;
+    half _ReceiveAdditionalLightsShadowOn;
+    half _AdditionalLightSoftShadowOn;
+    half _DirectionalLightFromSHOn;
     half _AmbientSHIntensity;
     half _DirectionalSHIntensity;
 // ==================================================
-    int _ScatteringLUTOn;
+    half _ScatteringLUTOn;
     half _ScatteringIntensity;
     half _CurvatureScale;
-    int _PreScatterMaskUseMainTexA;
-    int _LightColorNoAtten;
-    int _AdditionalLightCalcScatter;
-    int _DiffuseProfileOn;
+    half _PreScatterMaskUseMainTexA;
+    half _LightColorNoAtten;
+    half _AdditionalLightCalcScatter;
+    half _DiffuseProfileOn;
     half _BlurSize;
-    int _DiffuseProfileMaskUserMainTexA;
+    half _DiffuseProfileMaskUserMainTexA;
 // ================================================== detail maps
     // main detail normalMap
     half4 _Detail_NormalMap_ST;
@@ -133,21 +134,21 @@ CBUFFER_START(UnityPerMaterial)
     half _IndirectSpecularIntensity;
     half _BackFaceGIDiffuse;
 
-    int _AlphaTestOn;
-    int _AlphaPreMultiply;
+    half _AlphaTestOn;
+    half _AlphaPreMultiply;
 
 // ================================================== custom light
-    int _CustomLightOn;
+    half _CustomLightOn;
     half4 _LightDir;
     half4 _LightColor;
     half _MaxSpecularIntensity;
 
-    int _SSSOn;
+    half _SSSOn;
     half3 _BackSSSColor,_FrontSSSColor;
     half _FrontSSSIntensity,_BackSSSIntensity;
-    int _AdditionalLightCalcFastSSS;
+    half _AdditionalLightCalcFastSSS;
 // ================================================== parallel
-    int _ParallalOn;
+    half _ParallalOn;
     half _HeightScale;
 
 // ================================================== strandSpec parameters
