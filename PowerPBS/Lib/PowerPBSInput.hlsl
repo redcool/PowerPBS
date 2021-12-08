@@ -40,59 +40,60 @@ TEXTURE2D(_StrandMaskTex); // xyzw  = shift_specMask_ao_tbMask
 #define DECLARE_DETAIL(id)\
     int _Detail##id##_MapOn;\
     int _Detail##id##_MapMode;\
-    float _Detail##id##_MapIntensity;\
-    float4 _Detail##id##_Map_ST
+    half _Detail##id##_MapIntensity;\
+    half4 _Detail##id##_Map_ST
 
 // transfereb by unity
-    float4 _CameraOpaqueTexture_TexelSize;
+    half4 _CameraOpaqueTexture_TexelSize;
 
 //------------------------- main texture
 CBUFFER_START(UnityPerMaterial)
-    float4 _Color;
-    float4 _MainTex_ST;
-    float4 _MainTex_TexelSize;
-    float4 _NormalMap_ST;
-    float _NormalMapScale;
+    half4 _Color;
+    half4 _MainTex_ST;
+    half4 _MainTex_TexelSize;
+    half4 _NormalMap_ST;
+    half _NormalMapScale;
 
-    float _Smoothness;
-    float _Metallic;
-    float _Occlusion;
-    float _Cutoff;
+    half _Smoothness;
+    half _Metallic;
+    half _Occlusion;
+    half _Cutoff;
     int _PBRMode; // standard,aniso,fabric,strand
-    float _SpecularOn;
-    float _FresnelIntensity;
-    float _MetallicChannel;
-    float _SmoothnessChannel;
-    float _OcclusionChannel;
+    half _SpecularOn;
+    half _FresnelIntensity;
+    half _MetallicChannel;
+    half _SmoothnessChannel;
+    half _OcclusionChannel;
 
     int _ClearCoatOn;
-    float4 _ClearCoatSpecColor;
-    float _CoatSmoothness;
-    float _CoatIndirectSpecularIntensity;
+    half4 _ClearCoatSpecColor;
+    half _CoatSmoothness;
+    half _CoatIndirectSpecularIntensity;
 
     int _CustomSpecularMapOn;
-    float4 _CustomSpecularMap_ST;
-    float _CustomSpecularIntensity;
+    half4 _CustomSpecularMap_ST;
+    half _CustomSpecularIntensity;
 
     int _AlphaFrom;
     int _FresnelAlphaOn;
-    float _FresnelMin,_FresnelMax;
+    half _FresnelMin,_FresnelMax;
 // ==================================================
-    float _VertexScale;
+    half _VertexScale;
     int _VertexColorRAttenOn;
 // ==================================================
-    float _AnisoRough;
-    float _AnisoIntensity;
-    float4 _AnisoColor;
+    half _AnisoRough;
+    half _AnisoIntensity;
+    half4 _AnisoColor;
 
     int _AnisoLayer2On;
-    float _Layer2AnisoRough;
-    float _Layer2AnisoIntensity;
-    float4 _Layer2AnisoColor;
-    float _AnisoMaskUseMainTexA;
+    half _Layer2AnisoRough;
+    half _Layer2AnisoIntensity;
+    half4 _Layer2AnisoColor;
+    half _AnisoIntensityUseMainTexA;
+    half _AnisoIntensityUseRoughness;
 // ==================================================
-    float4 _ClothSheenColor;
-    float _ClothDMax,_ClothDMin;
+    half4 _ClothSheenColor;
+    half _ClothDMax,_ClothDMin;
     int _ClothGGXUseMainTexA;
 // ==================================================
     int _ApplyShadowOn;
@@ -100,37 +101,37 @@ CBUFFER_START(UnityPerMaterial)
     int _ReceiveAdditionalLightsShadowOn;
     int _AdditionalLightSoftShadowOn;
     int _DirectionalLightFromSHOn;
-    float _AmbientSHIntensity;
-    float _DirectionalSHIntensity;
+    half _AmbientSHIntensity;
+    half _DirectionalSHIntensity;
 // ==================================================
     int _ScatteringLUTOn;
-    float _ScatteringIntensity;
-    float _CurvatureScale;
+    half _ScatteringIntensity;
+    half _CurvatureScale;
     int _PreScatterMaskUseMainTexA;
     int _LightColorNoAtten;
     int _AdditionalLightCalcScatter;
     int _DiffuseProfileOn;
-    float _BlurSize;
+    half _BlurSize;
     int _DiffuseProfileMaskUserMainTexA;
 // ================================================== detail maps
     // main detail normalMap
-    float4 _Detail_NormalMap_ST;
-    float _Detail_NormalMapScale;
+    half4 _Detail_NormalMap_ST;
+    half _Detail_NormalMapScale;
     DECLARE_DETAIL();
     DECLARE_DETAIL(1);
     DECLARE_DETAIL(2);
     // DECLARE_DETAIL(3);
     // DECLARE_DETAIL(4);
 // ================================================== ibl
-    float _CustomIBLOn;
-    float _EnvIntensity;
-    float3 _ReflectionOffsetDir;
+    half _CustomIBLOn;
+    half _EnvIntensity;
+    half3 _ReflectionOffsetDir;
 
-    float _EmissionOn;
-    float4 _EmissionColor;
-    float _Emission;
-    float _IndirectSpecularIntensity;
-    float _BackFaceGIDiffuse;
+    half _EmissionOn;
+    half4 _EmissionColor;
+    half _Emission;
+    half _IndirectSpecularIntensity;
+    half _BackFaceGIDiffuse;
 
     int _AlphaTestOn;
     int _AlphaPreMultiply;
@@ -139,22 +140,24 @@ CBUFFER_START(UnityPerMaterial)
     int _CustomLightOn;
     half4 _LightDir;
     half4 _LightColor;
-    float _MaxSpecularIntensity;
+    half _MaxSpecularIntensity;
 
     int _SSSOn;
-    float3 _BackSSSColor,_FrontSSSColor;
-    float _FrontSSSIntensity,_BackSSSIntensity;
+    half3 _BackSSSColor,_FrontSSSColor;
+    half _FrontSSSIntensity,_BackSSSIntensity;
     int _AdditionalLightCalcFastSSS;
 // ================================================== parallel
     int _ParallalOn;
-    float _HeightScale;
+    half _HeightScale;
 
 // ================================================== strandSpec parameters
-    float _Shift1,_Shift2;
-    float _SpecPower1, _SpecPower2;
-    float3 _SpecColor1,_SpecColor2;
-    float _SpecIntensity1,_SpecIntensity2;
-    float _HairAoIntensity;
+    half _Shift1,_Shift2;
+    half _SpecPower1, _SpecPower2;
+    half3 _SpecColor1,_SpecColor2;
+    half _SpecIntensity1,_SpecIntensity2;
+    half _HairAoIntensity;
+// ================================================== custom shadow caster params
+    half4 _CustomShadowBias; // x: depth bias, y: normal bias
 
 CBUFFER_END
 

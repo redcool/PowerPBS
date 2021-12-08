@@ -29,25 +29,25 @@ struct UnityGIInput
 {
     UnityLight light; // pixel light, sent from the engine
 
-    float3 worldPos;
+    half3 worldPos;
     half3 worldViewDir;
     half atten;
     half3 ambient;
 
-    // interpolated lightmap UVs are passed as full float precision data to fragment shaders
+    // interpolated lightmap UVs are passed as full half precision data to fragment shaders
     // so lightmapUV (which is used as a tmp inside of lightmap fragment shaders) should
-    // also be full float precision to avoid data loss before sampling a texture.
-    float4 lightmapUV; // .xy = static lightmap UV, .zw = dynamic lightmap UV
+    // also be full half precision to avoid data loss before sampling a texture.
+    half4 lightmapUV; // .xy = static lightmap UV, .zw = dynamic lightmap UV
 
     #if defined(UNITY_SPECCUBE_BLENDING) || defined(UNITY_SPECCUBE_BOX_PROJECTION) || defined(UNITY_ENABLE_REFLECTION_BUFFERS)
-    float4 boxMin[2];
+    half4 boxMin[2];
     #endif
     #ifdef UNITY_SPECCUBE_BOX_PROJECTION
-    float4 boxMax[2];
-    float4 probePosition[2];
+    half4 boxMax[2];
+    half4 probePosition[2];
     #endif
     // HDR cubemap properties, use to decompress HDR texture
-    float4 probeHDR[2];
+    half4 probeHDR[2];
 };
 
 #endif

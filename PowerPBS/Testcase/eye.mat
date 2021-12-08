@@ -141,7 +141,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Floats:
+    m_halfs:
     - _AdditionalLightCalcFastSSS: 0
     - _AdditionalLightCalcScatter: 0
     - _AlphaClip: 0
@@ -149,7 +149,7 @@ Material:
     - _AlphaTestOn: 0
     - _AnisoIntensity: 1
     - _AnisoLayer2On: 0
-    - _AnisoMaskUseMainTexA: 0
+    - _AnisoIntensityUseMainTexA: 0
     - _AnisoRough: 0
     - _ApplyShadowOn: 1
     - _BackSSSIntensity: 1

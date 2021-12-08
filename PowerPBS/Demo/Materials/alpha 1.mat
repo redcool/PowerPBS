@@ -132,7 +132,7 @@ Material:
     - _AmbientSHIntensity: 0.5
     - _AnisoIntensity: 6.22
     - _AnisoLayer2On: 1
-    - _AnisoMaskUseMainTexA: 0
+    - _AnisoIntensityUseMainTexA: 0
     - _AnisoRough: -0.81
     - _ApplyShadowOn: 1
     - _BackFaceGIDiffuse: 0

@@ -9,24 +9,24 @@
 
 struct appdata
 {
-    float4 vertex : POSITION;
-    float4 color:COLOR;
-    float2 uv : TEXCOORD0;
-    float3 normal:NORMAL;
-    float4 tangent:TANGENT;
+    half4 vertex : POSITION;
+    half4 color:COLOR;
+    half2 uv : TEXCOORD0;
+    half3 normal:NORMAL;
+    half4 tangent:TANGENT;
 };
 
 struct v2f
 {
-    float4 uv : TEXCOORD0;
-    float4 fogCoord:TEXCOORD1;
-    float4 pos : SV_POSITION;
-    float4 tSpace0:TEXCOORD2;
-    float4 tSpace1:TEXCOORD3;
-    float4 tSpace2:TEXCOORD4;
-    float3 viewTangentSpace:TEXCOORD5;
-    float4 _ShadowCoord:TEXCOORD6;
-    float4 screenPos:TEXCOORD7;
+    half4 uv : TEXCOORD0;
+    half4 fogCoord:TEXCOORD1;
+    half4 pos : SV_POSITION;
+    half4 tSpace0:TEXCOORD2;
+    half4 tSpace1:TEXCOORD3;
+    half4 tSpace2:TEXCOORD4;
+    half3 viewTangentSpace:TEXCOORD5;
+    half4 _ShadowCoord:TEXCOORD6;
+    half4 screenPos:TEXCOORD7;
 };
 
 //-------------------------------------
@@ -35,20 +35,20 @@ v2f vert (appdata v)
     v2f o = (v2f)0;
     ApplyVertexWave(v.vertex/**/,v.normal,v.color);
     o.pos = UnityObjectToClipPos(v.vertex);
-    o.uv = float4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
+    o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
-    float4 worldPos = mul(unity_ObjectToWorld,v.vertex);
-    float3 n = UnityObjectToWorldNormal(v.normal);
-    float3 t = UnityObjectToWorldDir(v.tangent.xyz);
-    float tangentSign = v.tangent.w * unity_WorldTransformParams.w;
-    float3 b = cross(n,t) * tangentSign;
-    o.tSpace0 = float4(t.x,b.x,n.x,worldPos.x);
-    o.tSpace1 = float4(t.y,b.y,n.y,worldPos.y);
-    o.tSpace2 = float4(t.z,b.z,n.z,worldPos.z);
+    half4 worldPos = mul(unity_ObjectToWorld,v.vertex);
+    half3 n = UnityObjectToWorldNormal(v.normal);
+    half3 t = UnityObjectToWorldDir(v.tangent.xyz);
+    half tangentSign = v.tangent.w * unity_WorldTransformParams.w;
+    half3 b = cross(n,t) * tangentSign;
+    o.tSpace0 = half4(t.x,b.x,n.x,worldPos.x);
+    o.tSpace1 = half4(t.y,b.y,n.y,worldPos.y);
+    o.tSpace2 = half4(t.z,b.z,n.z,worldPos.z);
 
     if(_ParallalOn){
-        float3 viewWorldSpace = UnityWorldSpaceViewDir(worldPos);
-        float3x3 tSpace = float3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
+        half3 viewWorldSpace = UnityWorldSpaceViewDir(worldPos);
+        half3x3 tSpace = half3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
         o.viewTangentSpace = mul(viewWorldSpace,tSpace);
     }
     TRANSFER_SHADOW(o)
@@ -57,33 +57,33 @@ v2f vert (appdata v)
     return o;
 }
 
-float4 frag (v2f i) : SV_Target
+half4 frag (v2f i) : SV_Target
 {
     // heightClothSSSMask
-    float4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
-    float height = heightClothSSSMask.x;
-    float clothMask = heightClothSSSMask.y;
-    // float frontSSS = heightClothSSSMask.z;
-    // float backSSS = heightClothSSSMask.w;
+    half4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
+    half height = heightClothSSSMask.x;
+    half clothMask = heightClothSSSMask.y;
+    // half frontSSS = heightClothSSSMask.z;
+    // half backSSS = heightClothSSSMask.w;
 
-    float2 uv = i.uv.xy;
+    half2 uv = i.uv.xy;
     if(_ParallalOn){
         uv += ParallaxMapOffset(_HeightScale,i.viewTangentSpace,height);
     }
 
     // pbrMask
-    float4 pbrMask = SAMPLE_TEXTURE2D(_MetallicMap,sampler_MetallicMap ,uv);
-    float metallic = pbrMask[_MetallicChannel] * _Metallic;
-    float smoothness = pbrMask[_SmoothnessChannel] * _Smoothness;
-    float occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
+    half4 pbrMask = SAMPLE_TEXTURE2D(_MetallicMap,sampler_MetallicMap ,uv);
+    half metallic = pbrMask[_MetallicChannel] * _Metallic;
+    half smoothness = pbrMask[_SmoothnessChannel] * _Smoothness;
+    half occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
     
-    float detailMask=0;
-    float4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
+    half detailMask=0;
+    half4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
     mainTex *= _Color;
 
-    float3 albedo = mainTex.rgb;
+    half3 albedo = mainTex.rgb;
     // albedo.rgb *= occlusion; // more dark than urp'lit
-    float alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a * _Color.a;
+    half alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a * _Color.a;
 
     if(_AlphaTestOn)
         clip(alpha - _Cutoff);
@@ -92,7 +92,7 @@ float4 frag (v2f i) : SV_Target
     InitWorldData(uv,detailMask,i.tSpace0,i.tSpace1,i.tSpace2,worldData/**/);
 
     UnityLight light = GetLight();
-    float3 lightColorNoAtten = light.color;
+    half3 lightColorNoAtten = light.color;
 
     if(_ApplyShadowOn){
         // UNITY_LIGHT_ATTENUATION(atten, i, worldPos)
@@ -109,8 +109,8 @@ float4 frag (v2f i) : SV_Target
 
     // calc strand specular
     if(_PBRMode == PBR_MODE_STRAND){
-        float4 ao_shift_specMask_tbMask = SAMPLE_TEXTURE2D(_StrandMaskTex,sampler_linear_repeat,i.uv);
-		float hairAo = ao_shift_specMask_tbMask.x;
+        half4 ao_shift_specMask_tbMask = SAMPLE_TEXTURE2D(_StrandMaskTex,sampler_linear_repeat,i.uv);
+		half hairAo = ao_shift_specMask_tbMask.x;
         pbsData.hairSpecColor = CalcHairSpecColor(worldData.tangent,worldData.normal,worldData.binormal,light.dir,worldData.view,ao_shift_specMask_tbMask.yzw);
 		surfaceData.diffColor *= lerp(1, hairAo, _HairAoIntensity);
     }
@@ -129,17 +129,17 @@ float4 frag (v2f i) : SV_Target
 
     //for preintegrated lut
     if(_ScatteringLUTOn){
-        float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
-        float3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity);
+        half3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
+        half3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity);
         col.rgb += scatteredColor;
     }
     if(_DiffuseProfileOn){
-        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
-        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
-        float2 screenUV = i.screenPos.xy/i.screenPos.w;
-        float profileMask = _DiffuseProfileMaskUserMainTexA ? mainTex.a : 1;
-        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
-        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
+        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
+        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
+        half2 screenUV = i.screenPos.xy/i.screenPos.w;
+        half profileMask = _DiffuseProfileMaskUserMainTexA ? mainTex.a : 1;
+        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
+        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
         // col = originalColor + horizontalGasussianColor + verticalGausssianColor
         col.rgb *= 0.333;
     }
@@ -166,14 +166,14 @@ v2f DepthOnlyVertex (appdata v)
 {
     v2f o = (v2f)0;
     o.pos = UnityObjectToClipPos(v.vertex);
-    o.uv = float4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
+    o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
     return o;
 }
 
-float4 DepthOnlyFragment (v2f i) : SV_Target
+half4 DepthOnlyFragment (v2f i) : SV_Target
 {
-    float detailMask = 0;
-    float4 mainTex = CalcAlbedo(i.uv.xy,detailMask/*out*/);
+    half detailMask = 0;
+    half4 mainTex = CalcAlbedo(i.uv.xy,detailMask/*out*/);
 
     if(_AlphaTestOn)
         clip(mainTex.a - _Cutoff);

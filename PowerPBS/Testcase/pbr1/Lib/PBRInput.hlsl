@@ -8,13 +8,13 @@ sampler2D _NormalMap;
 sampler2D _PbrMask;
 
 CBUFFER_START(UnityPerMaterial)
-float4 _MainTex_ST;
-float _Metallic,_Smoothness,_Occlusion;
+half4 _MainTex_ST;
+half _Metallic,_Smoothness,_Occlusion;
 
-float _NormalScale;
+half _NormalScale;
 
 bool _SpecularOn;
-float _AnisoRough;
+half _AnisoRough;
 
 int _PbrMode;
 bool _CalcTangent;

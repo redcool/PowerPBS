@@ -5,27 +5,27 @@
 
 
 struct PBSData{
-    float3 tangent;
-    float3 binormal;
-    float3 normal;
-    float3 viewDir;
-    float4 heightClothFastSSSMask;
-    float3 hairSpecColor;
-    float oneMinusReflectivity;
-    float smoothness;
-    float3 worldPos;
-    float4 mainTex;
-    float3 lightDir;
-    float3 halfDir;
-    float perceptualRoughness,roughness,roughness2;
+    half3 tangent;
+    half3 binormal;
+    half3 normal;
+    half3 viewDir;
+    half4 heightClothFastSSSMask;
+    half3 hairSpecColor;
+    half oneMinusReflectivity;
+    half smoothness;
+    half3 worldPos;
+    half4 mainTex;
+    half3 lightDir;
+    half3 halfDir;
+    half perceptualRoughness,roughness,roughness2;
     // output params
-    float nl;
-    float nv;
-    float fresnelTerm;
+    half nl;
+    half nv;
+    half fresnelTerm;
 };
 
-void InitPBSData(float3 tangent,float3 binormal,float3 normal,float3 viewDir,
-float oneMinusReflectivity,float smoothness,float4 heightClothFastSSSMask,float3 worldPos,out PBSData data
+void InitPBSData(half3 tangent,half3 binormal,half3 normal,half3 viewDir,
+half oneMinusReflectivity,half smoothness,half4 heightClothFastSSSMask,half3 worldPos,out PBSData data
 ){
     data = (PBSData)0;
     data.tangent = tangent;
@@ -43,15 +43,15 @@ float oneMinusReflectivity,float smoothness,float4 heightClothFastSSSMask,float3
 }
 
 struct ClearCoatData{
-    float smoothness;
-    float oneMinusReflectivity;
-    float occlusion;
-    float perceptualRoughness,roughness,roughness2;
-    float3 specColor;
-    // float3 diffColor;
-    float3 reflectDir;
+    half smoothness;
+    half oneMinusReflectivity;
+    half occlusion;
+    half perceptualRoughness,roughness,roughness2;
+    half3 specColor;
+    // half3 diffColor;
+    half3 reflectDir;
 };
-void InitCoatData(float smoothness,float3 specColor,float oneMinusReflectivity,out ClearCoatData data){
+void InitCoatData(half smoothness,half3 specColor,half oneMinusReflectivity,out ClearCoatData data){
     data = (ClearCoatData)0;
     data.smoothness = smoothness;
     data.perceptualRoughness = max(1-smoothness,HALF_MIN_SQRT);
@@ -63,12 +63,12 @@ void InitCoatData(float smoothness,float3 specColor,float oneMinusReflectivity,o
 
 
 struct SurfaceData{
-    float3 diffColor,specColor;
-    float oneMinusReflectivity,finalAlpha;
+    half3 diffColor,specColor;
+    half oneMinusReflectivity,finalAlpha;
 };
 
 struct WorldData{
-    float3 pos,view,reflect,tangent,binormal,normal,vertexNormal;
+    half3 pos,view,reflect,tangent,binormal,normal,vertexNormal;
 };
 
 

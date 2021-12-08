@@ -8,14 +8,14 @@
 
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
 
-StructuredBuffer<float4>   _AdditionalShadowParams_SSBO;        // Per-light data - TODO: test if splitting _AdditionalShadowParams_SSBO[lightIndex].w into a separate StructuredBuffer<int> buffer is faster
-StructuredBuffer<float4x4> _AdditionalLightsWorldToShadow_SSBO; // Per-shadow-slice-data - A shadow casting light can have 6 shadow slices (if it's a point light)
+StructuredBuffer<half4>   _AdditionalShadowParams_SSBO;        // Per-light data - TODO: test if splitting _AdditionalShadowParams_SSBO[lightIndex].w into a separate StructuredBuffer<int> buffer is faster
+StructuredBuffer<half4x4> _AdditionalLightsWorldToShadow_SSBO; // Per-shadow-slice-data - A shadow casting light can have 6 shadow slices (if it's a point light)
 
 half4       _AdditionalShadowOffset0;
 half4       _AdditionalShadowOffset1;
 half4       _AdditionalShadowOffset2;
 half4       _AdditionalShadowOffset3;
-float4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+half4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
 
 #else
 
@@ -37,13 +37,13 @@ CBUFFER_START(AdditionalLightShadows)
 #endif
 
 half4       _AdditionalShadowParams[MAX_VISIBLE_LIGHTS];                              // Per-light data
-float4x4    _AdditionalLightsWorldToShadow[MAX_PUNCTUAL_LIGHT_SHADOW_SLICES_IN_UBO];  // Per-shadow-slice-data
+half4x4    _AdditionalLightsWorldToShadow[MAX_PUNCTUAL_LIGHT_SHADOW_SLICES_IN_UBO];  // Per-shadow-slice-data
 
 half4       _AdditionalShadowOffset0;
 half4       _AdditionalShadowOffset1;
 half4       _AdditionalShadowOffset2;
 half4       _AdditionalShadowOffset3;
-float4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+half4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
 
 #ifndef SHADER_API_GLES3
 CBUFFER_END
@@ -59,7 +59,7 @@ struct ShadowSamplingData
     half4 shadowOffset1;
     half4 shadowOffset2;
     half4 shadowOffset3;
-    float4 shadowmapSize;
+    half4 shadowmapSize;
 };
 
 ShadowSamplingData GetAdditionalLightShadowSamplingData()
@@ -87,8 +87,8 @@ half4 GetAdditionalLightShadowParams(int lightIndex)
 #endif
 }
 
-half SampleShadowmapFiltered(ShadowSamplingData samplingData,float4 shadowCoord){
-    float4 atten4 = 0;
+half SampleShadowmapFiltered(ShadowSamplingData samplingData,half4 shadowCoord){
+    half4 atten4 = 0;
     atten4.x = SAMPLE_TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture,sampler_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset0.xyz);
     atten4.y = SAMPLE_TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture,sampler_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset1.xyz);
     atten4.z = SAMPLE_TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture,sampler_AdditionalLightsShadowmapTexture, shadowCoord.xyz + samplingData.shadowOffset2.xyz);
@@ -98,16 +98,16 @@ half SampleShadowmapFiltered(ShadowSamplingData samplingData,float4 shadowCoord)
 
 // returns 0.0 if position is in light's shadow
 // returns 1.0 if position is in light
-half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS,bool isSoftShadow)
+half AdditionalLightRealtimeShadow(int lightIndex, half3 positionWS,bool isSoftShadow)
 {
-    float4 shadowCoord = mul(_AdditionalLightsWorldToShadow[lightIndex], float4(positionWS, 1.0));
+    half4 shadowCoord = mul(_AdditionalLightsWorldToShadow[lightIndex], half4(positionWS, 1.0));
     // perspective 
     shadowCoord.xyz /= shadowCoord.w;
 
     half4 shadowParams = GetAdditionalLightShadowParams(lightIndex);
-    float shadowStrength = shadowParams.x;
+    half shadowStrength = shadowParams.x;
 
-    float attenuation = 1;
+    half attenuation = 1;
     if(isSoftShadow){
         ShadowSamplingData samplingData = GetAdditionalLightShadowSamplingData();
         attenuation = SampleShadowmapFiltered(samplingData,shadowCoord);
@@ -121,7 +121,7 @@ half AdditionalLightRealtimeShadow(int lightIndex, float3 positionWS,bool isSoft
     return BEYOND_SHADOW_FAR(shadowCoord) ? 1.0 : attenuation;
 }
 
-half AdditionalLightShadow(int lightIndex, float3 positionWS, bool isSoftShadow)
+half AdditionalLightShadow(int lightIndex, half3 positionWS, bool isSoftShadow)
 {
     half realtimeShadow = AdditionalLightRealtimeShadow(lightIndex, positionWS, isSoftShadow);
     return realtimeShadow;

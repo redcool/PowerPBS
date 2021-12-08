@@ -11,7 +11,7 @@
 #include "UnityLib/UnityShaderVariables.hlsl"
 #include "URP_Shadows.hlsl"
 // Input.hlsl
-float4 _MainLightPosition;
+half4 _MainLightPosition;
 half4 _MainLightColor;
 half4 _MainLightOcclusionProbes;
 
@@ -26,7 +26,7 @@ StructuredBuffer<int> _AdditionalLightsIndices;
 #ifndef SHADER_API_GLES3
 CBUFFER_START(AdditionalLights)
 #endif
-float4 _AdditionalLightsPosition[MAX_VISIBLE_LIGHTS];
+half4 _AdditionalLightsPosition[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsColor[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsAttenuation[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsSpotDir[MAX_VISIBLE_LIGHTS];
@@ -62,11 +62,11 @@ struct Light
 #endif
 // Matches Unity Vanila attenuation
 // Attenuation smoothly decreases to light range.
-float DistanceAttenuation(float distanceSqr, half2 distanceAttenuation)
+half DistanceAttenuation(half distanceSqr, half2 distanceAttenuation)
 {
     // We use a shared distance attenuation for additional directional and puctual lights
     // for directional lights attenuation will be 1
-    float lightAtten = rcp(distanceSqr);
+    half lightAtten = rcp(distanceSqr);
 #if SHADER_HINT_NICE_QUALITY
     // Use the smoothing factor also used in the Unity lightmapper.
     half factor = distanceSqr * distanceAttenuation.x;
@@ -102,16 +102,16 @@ half AngleAttenuation(half3 spotDirection, half3 lightDirection, half2 spotAtten
 }
 
 // Fills a light struct given a perObjectLightIndex
-Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
+Light GetAdditionalPerObjectLight(int perObjectLightIndex, half3 positionWS)
 {
     // Abstraction over Light input constants
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
-    float4 lightPositionWS = _AdditionalLightsBuffer[perObjectLightIndex].position;
+    half4 lightPositionWS = _AdditionalLightsBuffer[perObjectLightIndex].position;
     half3 color = _AdditionalLightsBuffer[perObjectLightIndex].color.rgb;
     half4 distanceAndSpotAttenuation = _AdditionalLightsBuffer[perObjectLightIndex].attenuation;
     half4 spotDirection = _AdditionalLightsBuffer[perObjectLightIndex].spotDirection;
 #else
-    float4 lightPositionWS = _AdditionalLightsPosition[perObjectLightIndex];
+    half4 lightPositionWS = _AdditionalLightsPosition[perObjectLightIndex];
     half3 color = _AdditionalLightsColor[perObjectLightIndex].rgb;
     half4 distanceAndSpotAttenuation = _AdditionalLightsAttenuation[perObjectLightIndex];
     half4 spotDirection = _AdditionalLightsSpotDir[perObjectLightIndex];
@@ -119,8 +119,8 @@ Light GetAdditionalPerObjectLight(int perObjectLightIndex, float3 positionWS)
 
     // Directional lights store direction in lightPosition.xyz and have .w set to 0.0.
     // This way the following code will work for both directional and punctual lights.
-    float3 lightVector = lightPositionWS.xyz - positionWS * lightPositionWS.w;
-    float distanceSqr = max(dot(lightVector, lightVector), HALF_MIN);
+    half3 lightVector = lightPositionWS.xyz - positionWS * lightPositionWS.w;
+    half distanceSqr = max(dot(lightVector, lightVector), HALF_MIN);
 
     half3 lightDirection = half3(lightVector * rsqrt(distanceSqr));
     half attenuation = DistanceAttenuation(distanceSqr, distanceAndSpotAttenuation.xy) * AngleAttenuation(spotDirection.xyz, lightDirection, distanceAndSpotAttenuation.zw);
@@ -162,16 +162,16 @@ int GetPerObjectLightIndex(uint index)
 /////////////////////////////////////////////////////////////////////////////////////////////
 // UBO path                                                                                 /
 //                                                                                          /
-// We store 8 light indices in float4 unity_LightIndices[2];                                /
-// Due to memory alignment unity doesn't support int[] or float[]                           /
-// Even trying to reinterpret cast the unity_LightIndices to float[] won't work             /
-// it will cast to float4[] and create extra register pressure. :(                          /
+// We store 8 light indices in half4 unity_LightIndices[2];                                /
+// Due to memory alignment unity doesn't support int[] or half[]                           /
+// Even trying to reinterpret cast the unity_LightIndices to half[] won't work             /
+// it will cast to half4[] and create extra register pressure. :(                          /
 /////////////////////////////////////////////////////////////////////////////////////////////
 #elif !defined(SHADER_API_GLES)
     // since index is uint shader compiler will implement
     // div & mod as bitfield ops (shift and mask).
 
-    // TODO: Can we index a float4? Currently compiler is
+    // TODO: Can we index a half4? Currently compiler is
     // replacing unity_LightIndicesX[i] with a dp4 with identity matrix.
     // u_xlat16_40 = dot(unity_LightIndices[int(u_xlatu13)], ImmCB_0_0_0[u_xlati1]);
     // This increases both arithmetic and register pressure.
@@ -189,7 +189,7 @@ int GetPerObjectLightIndex(uint index)
 
 // Fills a light struct given a loop i index. This will convert the i
 // index to a perObjectLightIndex
-Light GetAdditionalLight(uint i, float3 positionWS)
+Light GetAdditionalLight(uint i, half3 positionWS)
 {
     int perObjectLightIndex = GetPerObjectLightIndex(i);
     Light light = GetAdditionalPerObjectLight(perObjectLightIndex, positionWS);

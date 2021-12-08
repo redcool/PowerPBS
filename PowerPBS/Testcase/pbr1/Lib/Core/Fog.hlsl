@@ -31,22 +31,22 @@ int _FogMode;
 #endif
 
 #if !defined(KEYWORD_FOG)
-    float ComputeFogFactor(float z)
+    half ComputeFogFactor(half z)
     {
-        float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
+        half clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
         if(_FogMode == FOG_MODE_LINEAR)
         {
-            float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
-            return float(fogFactor); 
+            half fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
+            return half(fogFactor); 
         }else if(_FogMode == FOG_MODE_EXP || _FogMode == FOG_MODE_EXP2){
-            return float(unity_FogParams.x * clipZ_01);
+            return half(unity_FogParams.x * clipZ_01);
         }
         return 0;
     }
 
-    float ComputeFogIntensity(float fogFactor)
+    half ComputeFogIntensity(half fogFactor)
     {
-        float fogIntensity = 0;
+        half fogIntensity = 0;
         switch(_FogMode){
             case FOG_MODE_LINEAR : fogIntensity = fogFactor;break;
             case FOG_MODE_EXP:fogIntensity = saturate(exp2(-fogFactor)); break;
@@ -56,36 +56,36 @@ int _FogMode;
         return fogIntensity;
     }
 
-    half3 MixFogColor(float3 fragColor, float3 fogColor, float fogFactor)
+    half3 MixFogColor(half3 fragColor, half3 fogColor, half fogFactor)
     {
         if(_FogMode != FOG_NONE)
         {
-            float fogIntensity = ComputeFogIntensity(fogFactor);
+            half fogIntensity = ComputeFogIntensity(fogFactor);
             fragColor = lerp(fogColor, fragColor, fogIntensity); 
         }
         return fragColor;
     }
 #else
-    float ComputeFogFactor(float z)
+    half ComputeFogFactor(half z)
     {
-        float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
+        half clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
 
         #if defined(FOG_LINEAR)
             // factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
-            float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
-            return float(fogFactor);
+            half fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
+            return half(fogFactor);
         #elif defined(FOG_EXP) || defined(FOG_EXP2)
             // factor = exp(-(density*z)^2)
             // -density * z computed at vertex
-            return float(unity_FogParams.x * clipZ_01);
+            return half(unity_FogParams.x * clipZ_01);
         #else
             return 0.0h;
         #endif
     }
 
-    float ComputeFogIntensity(float fogFactor)
+    half ComputeFogIntensity(half fogFactor)
     {
-        float fogIntensity = 0.0h;
+        half fogIntensity = 0.0h;
         #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
             #if defined(FOG_EXP)
                 // factor = exp(-density*z)
@@ -102,17 +102,17 @@ int _FogMode;
         return fogIntensity;
     }
 
-    half3 MixFogColor(float3 fragColor, float3 fogColor, float fogFactor)
+    half3 MixFogColor(half3 fragColor, half3 fogColor, half fogFactor)
     {
         #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-            float fogIntensity = ComputeFogIntensity(fogFactor);
+            half fogIntensity = ComputeFogIntensity(fogFactor);
             fragColor = lerp(fogColor, fragColor, fogIntensity);
         #endif
         return fragColor;
     }
 #endif //KEYWORD_FOG
 
-half3 MixFog(float3 fragColor, float fogFactor)
+half3 MixFog(half3 fragColor, half fogFactor)
 {
     return MixFogColor(fragColor, unity_FogColor.rgb, fogFactor);
 }

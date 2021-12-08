@@ -11,7 +11,7 @@
 #define VERTEXID_SEMANTIC gl_VertexID
 #define INSTANCEID_SEMANTIC gl_InstanceID
 #define FRONT_FACE_SEMANTIC VFACE
-#define FRONT_FACE_TYPE float
+#define FRONT_FACE_TYPE half
 #define IS_FRONT_VFACE(VAL, FRONT, BACK) ((VAL > 0.0) ? (FRONT) : (BACK))
 
 #define CBUFFER_START(name)
@@ -29,7 +29,7 @@
 #define rcp(x) 1.0 / (x)
 #define ddx_fine ddx
 #define ddy_fine ddy
-#define asfloat
+#define ashalf
 #define asuint(x) asint(x)
 #define f32tof16
 #define f16tof32
@@ -49,8 +49,8 @@
 #define SHADOWCUBE_SAMPLE(textureName, samplerName, coord4) ((texCUBE(textureName,(coord4).xyz) < (coord4).w) ? 0.0 : 1.0)
 #else
 // emulate hardware comparison
-#define SHADOW2D_TEXTURE_AND_SAMPLER sampler2D_float
-#define SHADOWCUBE_TEXTURE_AND_SAMPLER samplerCUBE_float
+#define SHADOW2D_TEXTURE_AND_SAMPLER sampler2D_half
+#define SHADOWCUBE_TEXTURE_AND_SAMPLER samplerCUBE_half
 #define SHADOW2D_SAMPLE(textureName, samplerName, coord3) ((SAMPLE_DEPTH_TEXTURE(textureName, samplerName, (coord3).xy) < (coord3).z) ? 0.0 : 1.0)
 #define SHADOWCUBE_SAMPLE(textureName, samplerName, coord4) ((texCUBE(textureName,(coord4).xyz).r < (coord4).w) ? 0.0 : 1.0)
 #endif
@@ -67,11 +67,11 @@
 #define TEXTURECUBE_ARRAY(textureName)                  samplerCUBE textureName // No supoport to textureCubeArray and can't emulate with texture2DArray
 #define TEXTURE3D(textureName)                          sampler3D textureName
 
-#define TEXTURE2D_FLOAT(textureName)                    sampler2D_float textureName
-#define TEXTURE2D_ARRAY_FLOAT(textureName)              TEXTURECUBE_FLOAT(textureName) // No support to texture2DArray
-#define TEXTURECUBE_FLOAT(textureName)                  samplerCUBE_float textureName
-#define TEXTURECUBE_ARRAY_FLOAT(textureName)            TEXTURECUBE_FLOAT(textureName) // No support to textureCubeArray
-#define TEXTURE3D_FLOAT(textureName)                    sampler3D_float textureName
+#define TEXTURE2D_half(textureName)                    sampler2D_half textureName
+#define TEXTURE2D_ARRAY_half(textureName)              TEXTURECUBE_half(textureName) // No support to texture2DArray
+#define TEXTURECUBE_half(textureName)                  samplerCUBE_half textureName
+#define TEXTURECUBE_ARRAY_half(textureName)            TEXTURECUBE_half(textureName) // No support to textureCubeArray
+#define TEXTURE3D_half(textureName)                    sampler3D_half textureName
 
 #define TEXTURE2D_HALF(textureName)                     sampler2D_half textureName
 #define TEXTURE2D_ARRAY_HALF(textureName)               TEXTURECUBE_HALF(textureName) // No support to texture2DArray
@@ -113,13 +113,13 @@
 #define SAMPLE_TEXTURE2D(textureName, samplerName, coord2) tex2D(textureName, coord2)
 
 #if (SHADER_TARGET >= 30)
-    #define SAMPLE_TEXTURE2D_LOD(textureName, samplerName, coord2, lod) tex2Dlod(textureName, float4(coord2, 0, lod))
+    #define SAMPLE_TEXTURE2D_LOD(textureName, samplerName, coord2, lod) tex2Dlod(textureName, half4(coord2, 0, lod))
 #else
     // No lod support. Very poor approximation with bias.
     #define SAMPLE_TEXTURE2D_LOD(textureName, samplerName, coord2, lod) SAMPLE_TEXTURE2D_BIAS(textureName, samplerName, coord2, lod)
 #endif
 
-#define SAMPLE_TEXTURE2D_BIAS(textureName, samplerName, coord2, bias)                       tex2Dbias(textureName, float4(coord2, 0, bias))
+#define SAMPLE_TEXTURE2D_BIAS(textureName, samplerName, coord2, bias)                       tex2Dbias(textureName, half4(coord2, 0, bias))
 #define SAMPLE_TEXTURE2D_GRAD(textureName, samplerName, coord2, ddx, ddy)                   SAMPLE_TEXTURE2D(textureName, samplerName, coord2)
 #define SAMPLE_TEXTURE2D_ARRAY(textureName, samplerName, coord2, index)                     ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURE2D_ARRAY)
 #define SAMPLE_TEXTURE2D_ARRAY_LOD(textureName, samplerName, coord2, index, lod)            ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURE2D_ARRAY_LOD)
@@ -128,7 +128,7 @@
 #define SAMPLE_TEXTURECUBE(textureName, samplerName, coord3)                                texCUBE(textureName, coord3)
 // No lod support. Very poor approximation with bias.
 #define SAMPLE_TEXTURECUBE_LOD(textureName, samplerName, coord3, lod)                       SAMPLE_TEXTURECUBE_BIAS(textureName, samplerName, coord3, lod)
-#define SAMPLE_TEXTURECUBE_BIAS(textureName, samplerName, coord3, bias)                     texCUBEbias(textureName, float4(coord3, bias))
+#define SAMPLE_TEXTURECUBE_BIAS(textureName, samplerName, coord3, bias)                     texCUBEbias(textureName, half4(coord3, bias))
 #define SAMPLE_TEXTURECUBE_ARRAY(textureName, samplerName, coord3, index)                   ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURECUBE_ARRAY)
 #define SAMPLE_TEXTURECUBE_ARRAY_LOD(textureName, samplerName, coord3, index, lod)          ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURECUBE_ARRAY_LOD)
 #define SAMPLE_TEXTURECUBE_ARRAY_BIAS(textureName, samplerName, coord3, index, bias)        ERROR_ON_UNSUPPORTED_FUNCTION(SAMPLE_TEXTURECUBE_ARRAY_BIAS)

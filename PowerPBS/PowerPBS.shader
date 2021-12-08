@@ -85,16 +85,17 @@ Shader "Character/PowerPBS"
 // ==================================================
         [Header(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)
-        _AnisoIntensity("_AnisoIntensity",float) = 1
-        _AnisoRough("_AnisoRough",range(-1,1)) = 0
+        _AnisoIntensity("_AnisoIntensity",range(0,10)) = 1
+        _AnisoRough("_AnisoRough",range(0,1)) = 0
         // ---- layer2
         [Header(Aniso2)]
         [LiteToggle]_AnisoLayer2On("_AnisoLayer2On",int) = 0
         _Layer2AnisoColor("_Layer2AnisoColor",color) = (.5,0,0,0)
-        _Layer2AnisoIntensity("_Layer2AnisoIntensity",float) = 1
-        _Layer2AnisoRough("_Layer2AnisoRough",range(-1,1)) = 0
+        _Layer2AnisoIntensity("_Layer2AnisoIntensity",range(0,10)) = 1
+        _Layer2AnisoRough("_Layer2AnisoRough",range(0,1)) = 0
         [Header(Mask)]
-        [LiteToggle]_AnisoMaskUseMainTexA("_AnisoMaskUseMainTexA",float) = 0
+        [LiteToggle]_AnisoIntensityUseMainTexA("_AnisoIntensityUseMainTexA",float) = 0
+        [LiteToggle]_AnisoIntensityUseRoughness("_AnisoIntensityUseRoughness",float) = 0
 // ==================================================
         [Header(Pre Integral Scatter)]
         [LiteToggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
