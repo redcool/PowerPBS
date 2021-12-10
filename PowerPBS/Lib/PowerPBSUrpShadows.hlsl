@@ -4,6 +4,14 @@
 #if !defined(POWER_PBS_SHADOW_HLSL)
 #define POWER_PBS_SHADOW_HLSL
 
+#if defined(SHADER_API_MOBILE)
+    static const int SOFT_SHADOW_COUNT = 2;
+    static const half SOFT_SHADOW_WEIGHTS[] = {0.2,0.4,0.4};
+#else
+    static const int SOFT_SHADOW_COUNT = 4;
+    static const half SOFT_SHADOW_WEIGHTS[] = {0.2,0.25,0.25,0.15,0.15};
+#endif 
+
 #ifndef SHADER_API_GLES3
 CBUFFER_START(MainLightShadows)
 #endif
@@ -43,11 +51,11 @@ half ComputeCascadeIndex(half3 positionWS)
 
 half4 TransformWorldToShadowCoord(half3 positionWS)
 {
-// #ifdef _MAIN_LIGHT_SHADOWS_CASCADE
+#ifdef _MAIN_LIGHT_SHADOWS_CASCADE
     half cascadeIndex = ComputeCascadeIndex(positionWS);
-// #else
-//     half cascadeIndex = 0;
-// #endif
+#else
+    half cascadeIndex = 0;
+#endif
 
     half4 shadowCoord = mul(_MainLightWorldToShadow[cascadeIndex], half4(positionWS, 1.0));
 
@@ -79,18 +87,19 @@ half4 TransformWorldToShadowCoord(half3 positionWS)
 
     half SampleShadowmap(TEXTURE2D_SHADOW_PARAM(shadowMap,sampler_ShadowMap),half4 shadowCoord,half shadowSoftScale){
         half shadow = SAMPLE_TEXTURE2D_SHADOW(shadowMap,sampler_ShadowMap, shadowCoord.xyz);
+
         // return shadow;
-        half weights[] = {0.2,0.25,0.25,0.15,0.15};
-        shadow *= weights[0];
+        shadow *= SOFT_SHADOW_WEIGHTS[0];
 
         half2 psize = _MainLightShadowmapSize.xy * shadowSoftScale;
-        const half2 uvs[4] = { half2(-psize.x,0),half2(0,psize.y),half2(psize.x,0),half2(0,-psize.y) };
+        const half2 uvs[] = { half2(-psize.x,0),half2(0,psize.y),half2(psize.x,0),half2(0,-psize.y) };
 
         half2 offset = 0;
-        for(int x=0;x<4;x++){
+        for(int x=0;x< 4;x++){
             offset = uvs[x] ;
-            shadow +=  SAMPLE_TEXTURE2D_SHADOW(shadowMap,sampler_ShadowMap, half3(shadowCoord.xy + offset,shadowCoord.z)) * weights[x+1];
+            shadow +=SAMPLE_TEXTURE2D_SHADOW(shadowMap,sampler_ShadowMap, half3(shadowCoord.xy + offset,shadowCoord.z)) * SOFT_SHADOW_WEIGHTS[x+1];
         }
+        
         return shadow;
     }
 
