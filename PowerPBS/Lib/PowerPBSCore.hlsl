@@ -31,8 +31,8 @@ inline half3 CalcSSS(half3 l,half3 v,half2 fastSSSMask){
 inline half3 GetWorldViewDir(half3 worldPos){
     half3 dir = 0;
     if(unity_OrthoParams.w != 0){ // ortho
-        // dir = -half3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
-        dir = -UNITY_MATRIX_V[2].xyz;
+        // dir = half3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
+        dir = UNITY_MATRIX_V[2].xyz;
     }else
         dir = UnityWorldSpaceViewDir(worldPos);
     return dir;
