@@ -1,43 +1,61 @@
 /**
     MainLight Shadow
-    shadows 
-    URP keyword URP_SHADOW required
-    drp keyword SHADOW_SCREEN required
 */
 #if !defined(POWER_PBS_SHADOW_HLSL)
 #define POWER_PBS_SHADOW_HLSL
 
-// open keywords
-// #if defined(URP_SHADOW)
-//     #undef SHADOWS_SCREEN
-// #else    
-//     #define SHADOWS_SCREEN
-// #endif
-
-// #include "UnityLib/AutoLight.hlsl"
-//--------- urp shadow handles
-// CBUFFER_START(MainLightShadows)
+#ifndef SHADER_API_GLES3
+CBUFFER_START(MainLightShadows)
+#endif
     #define MAX_SHADOW_CASCADES 4
     half4x4    _MainLightWorldToShadow[MAX_SHADOW_CASCADES + 1];
+    half4      _CascadeShadowSplitSpheres0;
+    half4      _CascadeShadowSplitSpheres1;
+    half4      _CascadeShadowSplitSpheres2;
+    half4      _CascadeShadowSplitSpheres3;
+    half4      _CascadeShadowSplitSphereRadii;
     half4       _MainLightShadowOffset0;
     half4       _MainLightShadowOffset1;
     half4       _MainLightShadowOffset2;
     half4       _MainLightShadowOffset3;
     half4       _MainLightShadowParams;  // (x: shadowStrength, y: 1.0 if soft shadows, 0.0 otherwise, z: oneOverFadeDist, w: minusStartFade)
+    half4      _MainLightShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
 // CBUFFER_END
+#ifndef SHADER_API_GLES3
+CBUFFER_END
+#endif
 
-#undef TRANSFER_SHADOW
-#define TRANSFER_SHADOW(a) a._ShadowCoord = mul( _MainLightWorldToShadow[0], mul( unity_ObjectToWorld, v.vertex ) );
+#define BEYOND_SHADOW_FAR(shadowCoord) shadowCoord.z <= 0.0 || shadowCoord.z >= 1.0
 
-#undef SHADOW_COORDS
-#define SHADOW_COORDS(idx1) half4 _ShadowCoord : TEXCOORD##idx1;
+half ComputeCascadeIndex(half3 positionWS)
+{
+    half3 fromCenter0 = positionWS - _CascadeShadowSplitSpheres0.xyz;
+    half3 fromCenter1 = positionWS - _CascadeShadowSplitSpheres1.xyz;
+    half3 fromCenter2 = positionWS - _CascadeShadowSplitSpheres2.xyz;
+    half3 fromCenter3 = positionWS - _CascadeShadowSplitSpheres3.xyz;
+    half4 distances2 = half4(dot(fromCenter0, fromCenter0), dot(fromCenter1, fromCenter1), dot(fromCenter2, fromCenter2), dot(fromCenter3, fromCenter3));
 
-// #if defined (URP_SHADOW)
+    half4 weights = half4(distances2 < _CascadeShadowSplitSphereRadii);
+    weights.yzw = saturate(weights.yzw - weights.xyz);
+
+    return 4 - dot(weights, half4(4, 3, 2, 1));
+}
+
+half4 TransformWorldToShadowCoord(half3 positionWS)
+{
+// #ifdef _MAIN_LIGHT_SHADOWS_CASCADE
+    half cascadeIndex = ComputeCascadeIndex(positionWS);
+// #else
+//     half cascadeIndex = 0;
+// #endif
+
+    half4 shadowCoord = mul(_MainLightWorldToShadow[cascadeIndex], half4(positionWS, 1.0));
+
+    return half4(shadowCoord.xyz, cascadeIndex);
+}
 
     half4 _ShadowBias; // x: depth bias, y: normal bias
     half _MainLightShadowOn; //send  from PowerUrpLitFeature
-
-
 
     half3 ApplyShadowBias(half3 positionWS, half3 normalWS, half3 lightDirection)
     {
@@ -59,30 +77,38 @@
         return fade * fade;
     }
 
-    inline half CalcShadow (half4 shadowCoord,half3 worldPos)
-    {
-        half shadow = 1;
-        // #if defined(SHADOWS_NATIVE)
-            if(_MainLightShadowOn){
-                shadow = SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture, shadowCoord.xyz);
-                    //half shadow = _MainLightShadowmapTexture.SampleCmpLevelZero(sampler_MainLightShadowmapTexture,shadowCoord.xy,shadowCoord.z);
-                shadow = lerp(1,shadow,_MainLightShadowParams.x);
-                half shadowFade = GetShadowFade(worldPos);
-                shadow = lerp(shadow,1,shadowFade);
-            }
-        // #endif
+    half SampleShadowmap(TEXTURE2D_SHADOW_PARAM(shadowMap,sampler_ShadowMap),half4 shadowCoord,half shadowSoftScale){
+        half shadow = SAMPLE_TEXTURE2D_SHADOW(shadowMap,sampler_ShadowMap, shadowCoord.xyz);
+        // return shadow;
+        half weights[] = {0.2,0.25,0.25,0.15,0.15};
+        shadow *= weights[0];
+
+        half2 psize = _MainLightShadowmapSize.xy * shadowSoftScale;
+        const half2 uvs[4] = { half2(-psize.x,0),half2(0,psize.y),half2(psize.x,0),half2(0,-psize.y) };
+
+        half2 offset = 0;
+        for(int x=0;x<4;x++){
+            offset = uvs[x] ;
+            shadow +=  SAMPLE_TEXTURE2D_SHADOW(shadowMap,sampler_ShadowMap, half3(shadowCoord.xy + offset,shadowCoord.z)) * weights[x+1];
+        }
         return shadow;
     }
 
+    half CalcShadow (half4 shadowCoord,half3 worldPos)
+    {
+        half shadow = 1;
+        if(_MainLightShadowOn){
+            //shadow = SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture, shadowCoord.xyz);
+            shadow = SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture),shadowCoord,_MainLightShadowSoftScale);
+            shadow = lerp(1,shadow,_MainLightShadowParams.x); // shadow intensity
+            shadow = BEYOND_SHADOW_FAR(shadowCoord) ? 1 : shadow; // shadow range
 
-// #endif
-
-// #if !defined(URP_SHADOW)
-//     // drp shadows , call AutoLight.cginc' SHADOW_ATTENUATION
-//     #define URP_SHADOW_ATTENUATION(a,worldPos) SHADOW_ATTENUATION(a)
-// #else
-    //urp shadows
-    #define URP_SHADOW_ATTENUATION(a,worldPos) CalcShadow(a._ShadowCoord,worldPos)
-// #endif
+            half shadowFade = GetShadowFade(worldPos); 
+            shadowFade = shadowCoord.w == 4 ? 1.0 : shadowFade;
+            
+            shadow = lerp(shadow,1,shadowFade);
+        }
+        return shadow;
+    }
 
 #endif //POWER_PBS_SHADOW_HLSL

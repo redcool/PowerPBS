@@ -25,7 +25,7 @@ struct v2f
     half4 tSpace1:TEXCOORD3;
     half4 tSpace2:TEXCOORD4;
     half3 viewTangentSpace:TEXCOORD5;
-    half4 _ShadowCoord:TEXCOORD6;
+    float4 _ShadowCoord:TEXCOORD6;
     half4 screenPos:TEXCOORD7;
 };
 
@@ -37,7 +37,7 @@ v2f vert (appdata v)
     o.pos = UnityObjectToClipPos(v.vertex);
     o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
-    half4 worldPos = mul(unity_ObjectToWorld,v.vertex);
+    float4 worldPos = mul(unity_ObjectToWorld,v.vertex);
     half3 n = UnityObjectToWorldNormal(v.normal);
     half3 t = UnityObjectToWorldDir(v.tangent.xyz);
     half tangentSign = v.tangent.w * unity_WorldTransformParams.w;
@@ -51,7 +51,8 @@ v2f vert (appdata v)
         half3x3 tSpace = half3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
         o.viewTangentSpace = mul(viewWorldSpace,tSpace);
     }
-    TRANSFER_SHADOW(o)
+    // TRANSFER_SHADOW(o)
+    o._ShadowCoord = TransformWorldToShadowCoord(worldPos.xyz);
     o.fogCoord.x = ComputeFogFactor(o.pos.z);
     o.screenPos = ComputeScreenPos(o.pos);
     return o;
@@ -92,12 +93,15 @@ half4 frag (v2f i) : SV_Target
     WorldData worldData;
     InitWorldData(uv,detailMask,i.tSpace0,i.tSpace1,i.tSpace2,worldData/**/);
 
+    i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz);
+
     UnityLight light = GetLight();
     half3 lightColorNoAtten = light.color;
 
     if(_ApplyShadowOn){
         // UNITY_LIGHT_ATTENUATION(atten, i, worldPos)
-        half atten = URP_SHADOW_ATTENUATION(i,worldData.pos);
+        float atten = CalcShadow(i._ShadowCoord,worldData.pos);
+        // return atten;
         light.color *= atten;
     }
 

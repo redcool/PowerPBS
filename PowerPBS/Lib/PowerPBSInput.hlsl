@@ -98,6 +98,7 @@ CBUFFER_START(UnityPerMaterial)
     half _ClothGGXUseMainTexA;
 // ==================================================
     half _ApplyShadowOn;
+    half _MainLightShadowSoftScale;
     half _ReceiveAdditionalLightsOn;
     half _ReceiveAdditionalLightsShadowOn;
     half _AdditionalLightSoftShadowOn;
