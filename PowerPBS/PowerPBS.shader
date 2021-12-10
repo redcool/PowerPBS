@@ -262,7 +262,10 @@ Shader "Character/PowerPBS"
             #pragma multi_compile_fog
             #pragma target 3.0
 
-            #define URP_SHADOW
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+
             #include "Lib/PowerPBSForward.hlsl"
            
             ENDHLSL
@@ -297,7 +300,6 @@ Shader "Character/PowerPBS"
             #pragma vertex vert
             #pragma fragment frag
 
-            #define URP_SHADOW
             #include "Lib/PowerPBSShadowCasterPass.hlsl"
             ENDHLSL
         }

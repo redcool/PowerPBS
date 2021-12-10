@@ -1,9 +1,5 @@
 #if !defined(POWERPBS_SHADOW_CASTER_PASS_HLSL)
 #define POWERPBS_SHADOW_CASTER_PASS_HLSL
-/**
-    handle DRP and URP shadow offset ,remove shadowMap artifact
-    urp need define URP_SHADOW before include this file
-**/
 
 #include "CommonUtils.hlsl"
 #include "PowerPBSInput.hlsl"
@@ -17,7 +13,7 @@ struct v2f{
 };
 
 //--------- shadow helpers
-#if defined(URP_SHADOW)
+// #if defined(URP_SHADOW)
 half4 GetShadowPositionHClip(appdata_full input){
     half3 worldPos = mul(unity_ObjectToWorld,input.vertex);
     half3 worldNormal = UnityObjectToWorldNormal(input.normal);
@@ -29,17 +25,17 @@ half4 GetShadowPositionHClip(appdata_full input){
     #endif
     return positionCS;
 }
-#endif
+// #endif
 
 v2f vert(appdata_full input){
     v2f output;
 
-    #if defined(URP_SHADOW)
+    // #if defined(URP_SHADOW)
         output.pos = GetShadowPositionHClip(input);
-    #else 
-        output.pos = UnityClipSpaceShadowCasterPos(input.vertex, input.normal);
-        output.pos = UnityApplyLinearShadowBias(output.pos);
-    #endif
+    // #else 
+    //     output.pos = UnityClipSpaceShadowCasterPos(input.vertex, input.normal);
+    //     output.pos = UnityApplyLinearShadowBias(output.pos);
+    // #endif
     output.uv = TRANSFORM_TEX(input.texcoord,_MainTex);
     return output;
 }
