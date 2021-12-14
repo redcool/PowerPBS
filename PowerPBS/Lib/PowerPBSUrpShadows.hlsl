@@ -95,7 +95,7 @@ half4 TransformWorldToShadowCoord(half3 positionWS)
         const half2 uvs[] = { half2(-psize.x,0),half2(0,psize.y),half2(psize.x,0),half2(0,-psize.y) };
 
         half2 offset = 0;
-        for(int x=0;x< 4;x++){
+        for(int x=0;x< SOFT_SHADOW_COUNT;x++){
             offset = uvs[x] ;
             shadow +=SAMPLE_TEXTURE2D_SHADOW(shadowMap,sampler_ShadowMap, half3(shadowCoord.xy + offset,shadowCoord.z)) * SOFT_SHADOW_WEIGHTS[x+1];
         }
