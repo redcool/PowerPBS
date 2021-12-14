@@ -125,7 +125,7 @@
     #define DEFAULT_UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(input, output)  output.stereoTargetEyeIndex = input.stereoTargetEyeIndex;
     #define DEFAULT_UNITY_SETUP_STEREO_EYE_INDEX_POST_VERTEX(input) unity_StereoEyeIndex = input.stereoTargetEyeIndex;
 #elif defined(UNITY_STEREO_MULTIVIEW_ENABLED)
-    #define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO float stereoTargetEyeIndex : BLENDWEIGHT0;
+    #define DEFAULT_UNITY_VERTEX_OUTPUT_STEREO half stereoTargetEyeIndex : BLENDWEIGHT0;
     // HACK: Workaround for Mali shader compiler issues with directly using GL_ViewID_OVR (GL_OVR_multiview). This array just contains the values 0 and 1.
     #define DEFAULT_UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output) output.stereoTargetEyeIndex = unity_StereoEyeIndices[unity_StereoEyeIndex].x;
     #define DEFAULT_UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(input, output) output.stereoTargetEyeIndex = input.stereoTargetEyeIndex;
@@ -272,44 +272,44 @@
 
     UNITY_INSTANCING_BUFFER_START(PerDraw0)
         #ifndef UNITY_DONT_INSTANCE_OBJECT_MATRICES
-            UNITY_DEFINE_INSTANCED_PROP(float4x4, unity_ObjectToWorldArray)
+            UNITY_DEFINE_INSTANCED_PROP(half4x4, unity_ObjectToWorldArray)
             #if UNITY_WORLDTOOBJECTARRAY_CB == 0
-                UNITY_DEFINE_INSTANCED_PROP(float4x4, unity_WorldToObjectArray)
+                UNITY_DEFINE_INSTANCED_PROP(half4x4, unity_WorldToObjectArray)
             #endif
         #endif
         #if defined(UNITY_USE_LODFADE_ARRAY) && defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
-            UNITY_DEFINE_INSTANCED_PROP(float2, unity_LODFadeArray)
+            UNITY_DEFINE_INSTANCED_PROP(half2, unity_LODFadeArray)
             // the quantized fade value (unity_LODFade.y) is automatically used for cross-fading instances
             #define unity_LODFade UNITY_ACCESS_INSTANCED_PROP(unity_Builtins0, unity_LODFadeArray).xyxx
         #endif
         #if defined(UNITY_USE_RENDERINGLAYER_ARRAY) && defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
-            UNITY_DEFINE_INSTANCED_PROP(float, unity_RenderingLayerArray)
+            UNITY_DEFINE_INSTANCED_PROP(half, unity_RenderingLayerArray)
             #define unity_RenderingLayer UNITY_ACCESS_INSTANCED_PROP(unity_Builtins0, unity_RenderingLayerArray).xxxx
         #endif
     UNITY_INSTANCING_BUFFER_END(unity_Builtins0)
 
     UNITY_INSTANCING_BUFFER_START(PerDraw1)
         #if !defined(UNITY_DONT_INSTANCE_OBJECT_MATRICES) && UNITY_WORLDTOOBJECTARRAY_CB == 1
-            UNITY_DEFINE_INSTANCED_PROP(float4x4, unity_WorldToObjectArray)
+            UNITY_DEFINE_INSTANCED_PROP(half4x4, unity_WorldToObjectArray)
         #endif
         #if defined(UNITY_USE_LODFADE_ARRAY) && !defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
-            UNITY_DEFINE_INSTANCED_PROP(float2, unity_LODFadeArray)
+            UNITY_DEFINE_INSTANCED_PROP(half2, unity_LODFadeArray)
             // the quantized fade value (unity_LODFade.y) is automatically used for cross-fading instances
             #define unity_LODFade UNITY_ACCESS_INSTANCED_PROP(unity_Builtins1, unity_LODFadeArray).xyxx
         #endif
         #if defined(UNITY_USE_RENDERINGLAYER_ARRAY) && !defined(UNITY_INSTANCING_SUPPORT_FLEXIBLE_ARRAY_SIZE)
-            UNITY_DEFINE_INSTANCED_PROP(float, unity_RenderingLayerArray)
+            UNITY_DEFINE_INSTANCED_PROP(half, unity_RenderingLayerArray)
             #define unity_RenderingLayer UNITY_ACCESS_INSTANCED_PROP(unity_Builtins1, unity_RenderingLayerArray).xxxx
         #endif
     UNITY_INSTANCING_BUFFER_END(unity_Builtins1)
 
     UNITY_INSTANCING_BUFFER_START(PerDraw2)
         #ifdef UNITY_USE_LIGHTMAPST_ARRAY
-            UNITY_DEFINE_INSTANCED_PROP(float4, unity_LightmapSTArray)
+            UNITY_DEFINE_INSTANCED_PROP(half4, unity_LightmapSTArray)
             #define unity_LightmapST UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_LightmapSTArray)
         #endif
         #ifdef UNITY_USE_DYNAMICLIGHTMAPST_ARRAY
-            UNITY_DEFINE_INSTANCED_PROP(float4, unity_DynamicLightmapSTArray)
+            UNITY_DEFINE_INSTANCED_PROP(half4, unity_DynamicLightmapSTArray)
             #define unity_DynamicLightmapST UNITY_ACCESS_INSTANCED_PROP(unity_Builtins2, unity_DynamicLightmapSTArray)
         #endif
         #ifdef UNITY_USE_SHCOEFFS_ARRAYS
@@ -340,11 +340,11 @@
         #define CALL_MERGE(X) MERGE_UNITY_BUILTINS_INDEX(X)
         #define unity_WorldToObject     UNITY_ACCESS_MERGED_INSTANCED_PROP(CALL_MERGE(UNITY_WORLDTOOBJECTARRAY_CB), unity_WorldToObjectArray)
 
-        inline float4 UnityObjectToClipPosInstanced(in float3 pos)
+        inline half4 UnityObjectToClipPosInstanced(in half3 pos)
         {
-            return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, float4(pos, 1.0)));
+            return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, half4(pos, 1.0)));
         }
-        inline float4 UnityObjectToClipPosInstanced(float4 pos)
+        inline half4 UnityObjectToClipPosInstanced(half4 pos)
         {
             return UnityObjectToClipPosInstanced(pos.xyz);
         }
@@ -374,10 +374,10 @@
         void UnitySetupCompoundMatrices() {}
     #else
         // The following matrix evaluations depend on the static var unity_InstanceID & unity_StereoEyeIndex. They need to be initialized after UnitySetupInstanceID.
-        static float4x4 unity_MatrixMVP_Instanced;
-        static float4x4 unity_MatrixMV_Instanced;
-        static float4x4 unity_MatrixTMV_Instanced;
-        static float4x4 unity_MatrixITMV_Instanced;
+        static half4x4 unity_MatrixMVP_Instanced;
+        static half4x4 unity_MatrixMV_Instanced;
+        static half4x4 unity_MatrixTMV_Instanced;
+        static half4x4 unity_MatrixITMV_Instanced;
         void UnitySetupCompoundMatrices()
         {
             unity_MatrixMVP_Instanced = mul(unity_MatrixVP, unity_ObjectToWorld);

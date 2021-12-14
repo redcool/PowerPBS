@@ -27,85 +27,85 @@
 #define _WorldSpaceLightPos0 _MainLightPosition // redefine 
 
 struct appdata_base {
-    float4 vertex : POSITION;
-    float3 normal : NORMAL;
-    float4 texcoord : TEXCOORD0;
+    half4 vertex : POSITION;
+    half3 normal : NORMAL;
+    half4 texcoord : TEXCOORD0;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
 struct appdata_tan {
-    float4 vertex : POSITION;
-    float4 tangent : TANGENT;
-    float3 normal : NORMAL;
-    float4 texcoord : TEXCOORD0;
+    half4 vertex : POSITION;
+    half4 tangent : TANGENT;
+    half3 normal : NORMAL;
+    half4 texcoord : TEXCOORD0;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 struct appdata_full {
-    float4 vertex : POSITION;
-    float4 tangent : TANGENT;
-    float3 normal : NORMAL;
-    float4 texcoord : TEXCOORD0;
-    float4 texcoord1 : TEXCOORD1;
-    float4 texcoord2 : TEXCOORD2;
-    float4 texcoord3 : TEXCOORD3;
+    half4 vertex : POSITION;
+    half4 tangent : TANGENT;
+    half3 normal : NORMAL;
+    half4 texcoord : TEXCOORD0;
+    half4 texcoord1 : TEXCOORD1;
+    half4 texcoord2 : TEXCOORD2;
+    half4 texcoord3 : TEXCOORD3;
     half4 color : COLOR;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
 
 // Tranforms position from world to homogenous space
-inline float4 UnityWorldToClipPos( in float3 pos )
+inline half4 UnityWorldToClipPos( in half3 pos )
 {
-    return mul(UNITY_MATRIX_VP, float4(pos, 1.0));
+    return mul(UNITY_MATRIX_VP, half4(pos, 1.0));
 }
 
 // Tranforms position from view to homogenous space
-inline float4 UnityViewToClipPos( in float3 pos )
+inline half4 UnityViewToClipPos( in half3 pos )
 {
-    return mul(UNITY_MATRIX_P, float4(pos, 1.0));
+    return mul(UNITY_MATRIX_P, half4(pos, 1.0));
 }
 
 // Tranforms position from object to camera space
-inline float3 UnityObjectToViewPos( in float3 pos )
+inline half3 UnityObjectToViewPos( in half3 pos )
 {
-    return mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, float4(pos, 1.0))).xyz;
+    return mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, half4(pos, 1.0))).xyz;
 }
-inline float3 UnityObjectToViewPos(float4 pos) // overload for float4; avoids "implicit truncation" warning for existing shaders
+inline half3 UnityObjectToViewPos(half4 pos) // overload for half4; avoids "implicit truncation" warning for existing shaders
 {
     return UnityObjectToViewPos(pos.xyz);
 }
 
 // Tranforms position from world to camera space
-inline float3 UnityWorldToViewPos( in float3 pos )
+inline half3 UnityWorldToViewPos( in half3 pos )
 {
-    return mul(UNITY_MATRIX_V, float4(pos, 1.0)).xyz;
+    return mul(UNITY_MATRIX_V, half4(pos, 1.0)).xyz;
 }
 
 // Transforms direction from object to world space
-inline float3 UnityObjectToWorldDir( in float3 dir )
+inline half3 UnityObjectToWorldDir( in half3 dir )
 {
-    return normalize(mul((float3x3)unity_ObjectToWorld, dir));
+    return normalize(mul((half3x3)unity_ObjectToWorld, dir));
 }
 
 // Transforms direction from world to object space
-inline float3 UnityWorldToObjectDir( in float3 dir )
+inline half3 UnityWorldToObjectDir( in half3 dir )
 {
-    return normalize(mul((float3x3)unity_WorldToObject, dir));
+    return normalize(mul((half3x3)unity_WorldToObject, dir));
 }
 
 // Transforms normal from object to world space
-inline float3 UnityObjectToWorldNormal( in float3 norm )
+inline half3 UnityObjectToWorldNormal( in half3 norm )
 {
 #ifdef UNITY_ASSUME_UNIFORM_SCALING
     return UnityObjectToWorldDir(norm);
 #else
     // mul(IT_M, norm) => mul(norm, I_M) => {dot(norm, I_M.col0), dot(norm, I_M.col1), dot(norm, I_M.col2)}
-    return normalize(mul(norm, (float3x3)unity_WorldToObject));
+    return normalize(mul(norm, (half3x3)unity_WorldToObject));
 #endif
 }
 
 // Computes world space light direction, from world space position
-inline float3 UnityWorldSpaceLightDir( in float3 worldPos )
+inline half3 UnityWorldSpaceLightDir( in half3 worldPos )
 {
     #ifndef USING_LIGHT_MULTI_COMPILE
         return _WorldSpaceLightPos0.xyz - worldPos * _WorldSpaceLightPos0.w;
@@ -120,16 +120,16 @@ inline float3 UnityWorldSpaceLightDir( in float3 worldPos )
 
 // Computes world space light direction, from object space position
 // *Legacy* Please use UnityWorldSpaceLightDir instead
-inline float3 WorldSpaceLightDir( in float4 localPos )
+inline half3 WorldSpaceLightDir( in half4 localPos )
 {
-    float3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
+    half3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
     return UnityWorldSpaceLightDir(worldPos);
 }
 
 // Computes object space light direction
-inline float3 ObjSpaceLightDir( in float4 v )
+inline half3 ObjSpaceLightDir( in half4 v )
 {
-    float3 objSpaceLightPos = mul(unity_WorldToObject, _WorldSpaceLightPos0).xyz;
+    half3 objSpaceLightPos = mul(unity_WorldToObject, _WorldSpaceLightPos0).xyz;
     #ifndef USING_LIGHT_MULTI_COMPILE
         return objSpaceLightPos.xyz - v.xyz * _WorldSpaceLightPos0.w;
     #else
@@ -142,23 +142,23 @@ inline float3 ObjSpaceLightDir( in float4 v )
 }
 
 // Computes world space view direction, from object space position
-inline float3 UnityWorldSpaceViewDir( in float3 worldPos )
+inline half3 UnityWorldSpaceViewDir( in half3 worldPos )
 {
     return _WorldSpaceCameraPos.xyz - worldPos;
 }
 
 // Computes world space view direction, from object space position
 // *Legacy* Please use UnityWorldSpaceViewDir instead
-inline float3 WorldSpaceViewDir( in float4 localPos )
+inline half3 WorldSpaceViewDir( in half4 localPos )
 {
-    float3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
+    half3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
     return UnityWorldSpaceViewDir(worldPos);
 }
 
 // Computes object space view direction
-inline float3 ObjSpaceViewDir( in float4 v )
+inline half3 ObjSpaceViewDir( in half4 v )
 {
-    float3 objSpaceCameraPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos.xyz, 1)).xyz;
+    half3 objSpaceCameraPos = mul(unity_WorldToObject, half4(_WorldSpaceCameraPos.xyz, 1)).xyz;
     return objSpaceCameraPos - v.xyz;
 }
 
@@ -239,10 +239,10 @@ inline half3 DecodeHDR (half4 data, half4 decodeInstructions)
     #endif
 }
 
-float4 ComputeScreenPos(float4 positionCS)
+half4 ComputeScreenPos(half4 positionCS)
 {
-    float4 o = positionCS * 0.5f;
-    o.xy = float2(o.x, o.y * _ProjectionParams.x) + o.w;
+    half4 o = positionCS * 0.5f;
+    o.xy = half2(o.x, o.y * _ProjectionParams.x) + o.w;
     o.zw = positionCS.zw;
     return o;
 }
@@ -269,26 +269,26 @@ float4 ComputeScreenPos(float4 positionCS)
 
 #endif  //! UNITY_CG_INCLUDED
 
-inline float Pow2(float a){return a*a;}
+inline half Pow2(half a){return a*a;}
 
-inline float Pow4(float a){
-    float a2 = a*a;
+inline half Pow4(half a){
+    half a2 = a*a;
     return a2*a2;
 }
 
-inline float Pow5(float a){
-    float a2 = a*a;
+inline half Pow5(half a){
+    half a2 = a*a;
     return a2*a2*a;
 }
 
 
-float SafeDiv(float numer, float denom)
+half SafeDiv(half numer, half denom)
 {
     return (numer != denom) ? numer / denom : 1;
 }
-float3 SafeNormalize(float3 inVec)
+half3 SafeNormalize(half3 inVec)
 {
-    float3 dp3 = max(FLT_MIN, dot(inVec, inVec));
+    half3 dp3 = max(FLT_MIN, dot(inVec, inVec));
     return inVec * rsqrt(dp3);
 }
 

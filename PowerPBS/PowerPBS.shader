@@ -39,6 +39,9 @@ Shader "Character/PowerPBS"
         _Smoothness("Smoothness",range(0,1)) = 0
         _Occlusion("_Occlusion",range(0,1)) = 1
         
+        [Header(PBR Slider Options)]
+        [LiteToggle]_InvertSmoothnessOn("_InvertSmoothnessOn",int) = 0
+
         [Header(PBR Mask Channel)]
         [Enum(R,0,G,1,B,2,A,3)]_MetallicChannel("_MetallicChannel",float) = 0
         [Enum(R,0,G,1,B,2,A,3)]_SmoothnessChannel("_SmoothnessChannel",float) = 1
@@ -70,6 +73,7 @@ Shader "Character/PowerPBS"
 // ==================================================
         [Space(10)][Header(Shadow)]
         [LiteToggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
+        _MainLightShadowSoftScale("_MainLightShadowSoftScale",range(0.01,3)) = 1
         [Header(Shadow Bias)]
         _CustomShadowBias("_CustomShadowBias(x: depth bias, y: normal bias)",vector) = (0,0,0,0)
 
@@ -85,16 +89,17 @@ Shader "Character/PowerPBS"
 // ==================================================
         [Header(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)
-        _AnisoIntensity("_AnisoIntensity",float) = 1
-        _AnisoRough("_AnisoRough",range(-1,1)) = 0
+        _AnisoIntensity("_AnisoIntensity",range(0,10)) = 1
+        _AnisoRough("_AnisoRough",range(0,1)) = 0
         // ---- layer2
         [Header(Aniso2)]
         [LiteToggle]_AnisoLayer2On("_AnisoLayer2On",int) = 0
         _Layer2AnisoColor("_Layer2AnisoColor",color) = (.5,0,0,0)
-        _Layer2AnisoIntensity("_Layer2AnisoIntensity",float) = 1
-        _Layer2AnisoRough("_Layer2AnisoRough",range(-1,1)) = 0
+        _Layer2AnisoIntensity("_Layer2AnisoIntensity",range(0,10)) = 1
+        _Layer2AnisoRough("_Layer2AnisoRough",range(0,1)) = 0
         [Header(Mask)]
-        [LiteToggle]_AnisoMaskUseMainTexA("_AnisoMaskUseMainTexA",float) = 0
+        [LiteToggle]_AnisoIntensityUseMainTexA("_AnisoIntensityUseMainTexA",float) = 0
+        [LiteToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0
 // ==================================================
         [Header(Pre Integral Scatter)]
         [LiteToggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
@@ -257,7 +262,10 @@ Shader "Character/PowerPBS"
             #pragma multi_compile_fog
             #pragma target 3.0
 
-            #define URP_SHADOW
+        //     #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+        //     #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+        //     #pragma multi_compile_fragment _ _SHADOWS_SOFT
+
             #include "Lib/PowerPBSForward.hlsl"
            
             ENDHLSL
@@ -292,7 +300,6 @@ Shader "Character/PowerPBS"
             #pragma vertex vert
             #pragma fragment frag
 
-            #define URP_SHADOW
             #include "Lib/PowerPBSShadowCasterPass.hlsl"
             ENDHLSL
         }

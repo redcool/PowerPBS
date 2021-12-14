@@ -25,18 +25,18 @@ CBUFFER_START(MainLightShadows)
 // Last cascade is initialized with a no-op matrix. It always transforms
 // shadow coord to half3(0, 0, NEAR_PLANE). We use this trick to avoid
 // branching since ComputeCascadeIndex can return cascade index = MAX_SHADOW_CASCADES
-float4x4    _MainLightWorldToShadow[MAX_SHADOW_CASCADES + 1];
-float4      _CascadeShadowSplitSpheres0;
-float4      _CascadeShadowSplitSpheres1;
-float4      _CascadeShadowSplitSpheres2;
-float4      _CascadeShadowSplitSpheres3;
-float4      _CascadeShadowSplitSphereRadii;
+half4x4    _MainLightWorldToShadow[MAX_SHADOW_CASCADES + 1];
+half4      _CascadeShadowSplitSpheres0;
+half4      _CascadeShadowSplitSpheres1;
+half4      _CascadeShadowSplitSpheres2;
+half4      _CascadeShadowSplitSpheres3;
+half4      _CascadeShadowSplitSphereRadii;
 half4       _MainLightShadowOffset0;
 half4       _MainLightShadowOffset1;
 half4       _MainLightShadowOffset2;
 half4       _MainLightShadowOffset3;
 half4       _MainLightShadowParams;  // (x: shadowStrength, y: 1.0 if soft shadows, 0.0 otherwise, z: oneOverFadeDist, w: minusStartFade)
-float4      _MainLightShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+half4      _MainLightShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
 #ifndef SHADER_API_GLES3
 CBUFFER_END
 #endif
@@ -48,25 +48,25 @@ half4       _AdditionalShadowOffset0;
 half4       _AdditionalShadowOffset1;
 half4       _AdditionalShadowOffset2;
 half4       _AdditionalShadowOffset3;
-float4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+half4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
 #else
 // GLES3 causes a performance regression in some devices when using CBUFFER.
 #ifndef SHADER_API_GLES3
 CBUFFER_START(AdditionalLightShadows)
 #endif
-float4x4    _AdditionalLightsWorldToShadow[MAX_VISIBLE_LIGHTS];
+half4x4    _AdditionalLightsWorldToShadow[MAX_VISIBLE_LIGHTS];
 half4       _AdditionalShadowParams[MAX_VISIBLE_LIGHTS];
 half4       _AdditionalShadowOffset0;
 half4       _AdditionalShadowOffset1;
 half4       _AdditionalShadowOffset2;
 half4       _AdditionalShadowOffset3;
-float4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
+half4      _AdditionalShadowmapSize; // (xy: 1/width and 1/height, zw: width and height)
 #ifndef SHADER_API_GLES3
 CBUFFER_END
 #endif
 #endif
 
-float4 _ShadowBias; // x: depth bias, y: normal bias
+half4 _ShadowBias; // x: depth bias, y: normal bias
 bool _MainLightShadowOn;
 
 #define BEYOND_SHADOW_FAR(shadowCoord) (shadowCoord.z >= 1.0 || shadowCoord.z <= 0.0)
@@ -77,7 +77,7 @@ struct ShadowSamplingData
     half4 shadowOffset1;
     half4 shadowOffset2;
     half4 shadowOffset3;
-    float4 shadowmapSize;
+    half4 shadowmapSize;
 };
 
 ShadowSamplingData GetMainLightShadowSamplingData()
@@ -110,24 +110,24 @@ half4 GetMainLightShadowParams()
     return _MainLightShadowParams;
 }
 
-float4 TransformWorldToShadowCoord(float3 worldPos){
+half4 TransformWorldToShadowCoord(half3 worldPos){
     int cascadeIndex = 0;
-    float4 coord = mul(_MainLightWorldToShadow[cascadeIndex],float4(worldPos,1));
-    return float4(coord.xyz,cascadeIndex);
+    half4 coord = mul(_MainLightWorldToShadow[cascadeIndex],half4(worldPos,1));
+    return half4(coord.xyz,cascadeIndex);
 }
 
-half SampleShadowmap(TEXTURE2D_SHADOW_PARAM(shadowMap,sampler_shadowMap),float4 shadowCoord,ShadowSamplingData data,half4 params,bool isPerspectiveProj){
+half SampleShadowmap(TEXTURE2D_SHADOW_PARAM(shadowMap,sampler_shadowMap),half4 shadowCoord,ShadowSamplingData data,half4 params,bool isPerspectiveProj){
     if(isPerspectiveProj)
         shadowCoord.xyz / shadowCoord.w;
-    float shadowStrength = params.x;
-    float atten = 0;
+    half shadowStrength = params.x;
+    half atten = 0;
     atten = SAMPLE_TEXTURE2D_SHADOW(shadowMap,sampler_shadowMap,shadowCoord.xyz);
     atten = lerp(1,atten,shadowStrength);
     return atten;
     // return BEYOND_SHADOW_FAR(shadowCoord) ? 1 : atten;
 }
 
-half MainLightRealtimeShadow(float4 shadowCoord){
+half MainLightRealtimeShadow(half4 shadowCoord){
     if(!_MainLightShadowOn)
         return 1;
     
@@ -136,16 +136,16 @@ half MainLightRealtimeShadow(float4 shadowCoord){
     return SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture),shadowCoord,data,params,false);
 }
 
-half GetShadowFade(float3 positionWS)
+half GetShadowFade(half3 positionWS)
 {
-    float3 camToPixel = positionWS - _WorldSpaceCameraPos;
-    float distanceCamToPixel2 = dot(camToPixel, camToPixel);
+    half3 camToPixel = positionWS - _WorldSpaceCameraPos;
+    half distanceCamToPixel2 = dot(camToPixel, camToPixel);
 
     half fade = saturate(distanceCamToPixel2 * _MainLightShadowParams.z + _MainLightShadowParams.w);
     return fade * fade;
 }
 
-half MainLightShadow(float4 shadowCoord,float3 posWorld){
+half MainLightShadow(half4 shadowCoord,half3 posWorld){
     half realAtten = MainLightRealtimeShadow(shadowCoord);
     half fade = GetShadowFade(posWorld);
     return lerp(realAtten,1,fade);

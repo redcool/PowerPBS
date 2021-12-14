@@ -17,9 +17,9 @@ half4 _GlossyEnvironmentColor;
 half4 _SubtractiveShadowColor;
 
 #define _InvCameraViewProj unity_MatrixInvVP
-float4 _ScaledScreenParams;
+half4 _ScaledScreenParams;
 
-float4 _MainLightPosition;
+half4 _MainLightPosition;
 half4 _MainLightColor;
 half4 _MainLightOcclusionProbes;
 
@@ -37,7 +37,7 @@ StructuredBuffer<int> _AdditionalLightsIndices;
 #ifndef SHADER_API_GLES3
 CBUFFER_START(AdditionalLights)
 #endif
-float4 _AdditionalLightsPosition[MAX_VISIBLE_LIGHTS];
+half4 _AdditionalLightsPosition[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsColor[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsAttenuation[MAX_VISIBLE_LIGHTS];
 half4 _AdditionalLightsSpotDir[MAX_VISIBLE_LIGHTS];

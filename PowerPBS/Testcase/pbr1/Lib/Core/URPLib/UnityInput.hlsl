@@ -37,27 +37,27 @@
 // ----------------------------------------------------------------------------
 
 // Time (t = time since current level load) values from Unity
-float4 _Time; // (t/20, t, t*2, t*3)
-float4 _SinTime; // sin(t/8), sin(t/4), sin(t/2), sin(t)
-float4 _CosTime; // cos(t/8), cos(t/4), cos(t/2), cos(t)
-float4 unity_DeltaTime; // dt, 1/dt, smoothdt, 1/smoothdt
-float4 _TimeParameters; // t, sin(t), cos(t)
+half4 _Time; // (t/20, t, t*2, t*3)
+half4 _SinTime; // sin(t/8), sin(t/4), sin(t/2), sin(t)
+half4 _CosTime; // cos(t/8), cos(t/4), cos(t/2), cos(t)
+half4 unity_DeltaTime; // dt, 1/dt, smoothdt, 1/smoothdt
+half4 _TimeParameters; // t, sin(t), cos(t)
 
 #if !defined(USING_STEREO_MATRICES)
-float3 _WorldSpaceCameraPos;
+half3 _WorldSpaceCameraPos;
 #endif
 
 // x = 1 or -1 (-1 if projection is flipped)
 // y = near plane
 // z = far plane
 // w = 1/far plane
-float4 _ProjectionParams;
+half4 _ProjectionParams;
 
 // x = width
 // y = height
 // z = 1 + 1.0/width
 // w = 1 + 1.0/height
-float4 _ScreenParams;
+half4 _ScreenParams;
 
 // Values used to linearize the Z buffer (http://www.humus.name/temp/Linearize%20depth.txt)
 // x = 1-far/near
@@ -69,31 +69,31 @@ float4 _ScreenParams;
 // y = 1
 // z = x/far
 // w = 1/far
-float4 _ZBufferParams;
+half4 _ZBufferParams;
 
 // x = orthographic camera's width
 // y = orthographic camera's height
 // z = unused
 // w = 1.0 if camera is ortho, 0.0 if perspective
-float4 unity_OrthoParams;
+half4 unity_OrthoParams;
 
 // scaleBias.x = flipSign
 // scaleBias.y = scale
 // scaleBias.z = bias
 // scaleBias.w = unused
-uniform float4 _ScaleBias;
-uniform float4 _ScaleBiasRt;
+uniform half4 _ScaleBias;
+uniform half4 _ScaleBiasRt;
 
-float4 unity_CameraWorldClipPlanes[6];
+half4 unity_CameraWorldClipPlanes[6];
 
 #if !defined(USING_STEREO_MATRICES)
 // Projection matrices of the camera. Note that this might be different from projection matrix
 // that is set right now, e.g. while rendering shadows the matrices below are still the projection
 // of original camera.
-float4x4 unity_CameraProjection;
-float4x4 unity_CameraInvProjection;
-float4x4 unity_WorldToCamera;
-float4x4 unity_CameraToWorld;
+half4x4 unity_CameraProjection;
+half4x4 unity_CameraInvProjection;
+half4x4 unity_WorldToCamera;
+half4x4 unity_CameraToWorld;
 #endif
 
 // ----------------------------------------------------------------------------
@@ -101,9 +101,9 @@ float4x4 unity_CameraToWorld;
 // Block Layout should be respected due to SRP Batcher
 CBUFFER_START(UnityPerDraw)
 // Space block Feature
-float4x4 unity_ObjectToWorld;
-float4x4 unity_WorldToObject;
-float4 unity_LODFade; // x is the fade value ranging within [0,1]. y is x quantized into 16 levels
+half4x4 unity_ObjectToWorld;
+half4x4 unity_WorldToObject;
+half4 unity_LODFade; // x is the fade value ranging within [0,1]. y is x quantized into 16 levels
 real4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
 
 // Light Indices block feature
@@ -111,16 +111,16 @@ real4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative 
 real4 unity_LightData;
 real4 unity_LightIndices[2];
 
-float4 unity_ProbesOcclusion;
+half4 unity_ProbesOcclusion;
 
 // Reflection Probe 0 block feature
 // HDR environment map decode instructions
 real4 unity_SpecCube0_HDR;
 
 // Lightmap block feature
-float4 unity_LightmapST;
-float4 unity_LightmapIndex;
-float4 unity_DynamicLightmapST;
+half4 unity_LightmapST;
+half4 unity_LightmapIndex;
+half4 unity_DynamicLightmapST;
 
 // SH block feature
 real4 unity_SHAr;
@@ -134,24 +134,24 @@ CBUFFER_END
 
 #if defined(USING_STEREO_MATRICES)
 CBUFFER_START(UnityStereoViewBuffer)
-float4x4 unity_StereoMatrixP[2];
-float4x4 unity_StereoMatrixInvP[2];
-float4x4 unity_StereoMatrixV[2];
-float4x4 unity_StereoMatrixInvV[2];
-float4x4 unity_StereoMatrixVP[2];
-float4x4 unity_StereoMatrixInvVP[2];
+half4x4 unity_StereoMatrixP[2];
+half4x4 unity_StereoMatrixInvP[2];
+half4x4 unity_StereoMatrixV[2];
+half4x4 unity_StereoMatrixInvV[2];
+half4x4 unity_StereoMatrixVP[2];
+half4x4 unity_StereoMatrixInvVP[2];
 
-float4x4 unity_StereoCameraProjection[2];
-float4x4 unity_StereoCameraInvProjection[2];
+half4x4 unity_StereoCameraProjection[2];
+half4x4 unity_StereoCameraInvProjection[2];
 
-float3   unity_StereoWorldSpaceCameraPos[2];
-float4   unity_StereoScaleOffset[2];
+half3   unity_StereoWorldSpaceCameraPos[2];
+half4   unity_StereoScaleOffset[2];
 CBUFFER_END
 #endif
 
 #if defined(USING_STEREO_MATRICES) && defined(UNITY_STEREO_MULTIVIEW_ENABLED)
 CBUFFER_START(UnityStereoEyeIndices)
-    float4 unity_StereoEyeIndices[2];
+    half4 unity_StereoEyeIndices[2];
 CBUFFER_END
 #endif
 
@@ -175,7 +175,7 @@ int unity_StereoEyeIndex;
 CBUFFER_END
 #endif
 
-float4x4 glstate_matrix_transpose_modelview0;
+half4x4 glstate_matrix_transpose_modelview0;
 
 // ----------------------------------------------------------------------------
 
@@ -184,17 +184,17 @@ real4 unity_AmbientSky;
 real4 unity_AmbientEquator;
 real4 unity_AmbientGround;
 real4 unity_IndirectSpecColor;
-float4 unity_FogParams;
+half4 unity_FogParams;
 real4  unity_FogColor;
 
 #if !defined(USING_STEREO_MATRICES)
-float4x4 glstate_matrix_projection;
-float4x4 unity_MatrixV;
-float4x4 unity_MatrixInvV;
-float4x4 unity_MatrixInvP;
-float4x4 unity_MatrixVP;
-float4x4 unity_MatrixInvVP;
-float4 unity_StereoScaleOffset;
+half4x4 glstate_matrix_projection;
+half4x4 unity_MatrixV;
+half4x4 unity_MatrixInvV;
+half4x4 unity_MatrixInvP;
+half4x4 unity_MatrixVP;
+half4x4 unity_MatrixInvVP;
+half4 unity_StereoScaleOffset;
 int unity_StereoEyeIndex;
 #endif
 
@@ -226,19 +226,19 @@ SAMPLER(samplerunity_ShadowMasks);
 // TODO: all affine matrices should be 3x4.
 // TODO: sort these vars by the frequency of use (descending), and put commonly used vars together.
 // Note: please use UNITY_MATRIX_X macros instead of referencing matrix variables directly.
-float4x4 _PrevViewProjMatrix;
-float4x4 _ViewProjMatrix;
-float4x4 _NonJitteredViewProjMatrix;
-float4x4 _ViewMatrix;
-float4x4 _ProjMatrix;
-float4x4 _InvViewProjMatrix;
-float4x4 _InvViewMatrix;
-float4x4 _InvProjMatrix;
-float4   _InvProjParam;
-float4   _ScreenSize;       // {w, h, 1/w, 1/h}
-float4   _FrustumPlanes[6]; // {(a, b, c) = N, d = -dot(N, P)} [L, R, T, B, N, F]
+half4x4 _PrevViewProjMatrix;
+half4x4 _ViewProjMatrix;
+half4x4 _NonJitteredViewProjMatrix;
+half4x4 _ViewMatrix;
+half4x4 _ProjMatrix;
+half4x4 _InvViewProjMatrix;
+half4x4 _InvViewMatrix;
+half4x4 _InvProjMatrix;
+half4   _InvProjParam;
+half4   _ScreenSize;       // {w, h, 1/w, 1/h}
+half4   _FrustumPlanes[6]; // {(a, b, c) = N, d = -dot(N, P)} [L, R, T, B, N, F]
 
-float4x4 OptimizeProjectionMatrix(float4x4 M)
+half4x4 OptimizeProjectionMatrix(half4x4 M)
 {
     // Matrix format (x = non-constant value).
     // Orthographic Perspective  Combined(OR)

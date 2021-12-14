@@ -15,20 +15,20 @@
     }
     
     struct StrandSpecularData{
-        float3 tangent;
-        float3 normal;
-        float3 binormal;
-        float tbMask;/*tangent or binormal mask*/
-        float shift; 
-        float3 lightDir;
-        float3 viewDir;
-        float specPower;
+        half3 tangent;
+        half3 normal;
+        half3 binormal;
+        half tbMask;/*tangent or binormal mask*/
+        half shift; 
+        half3 lightDir;
+        half3 viewDir;
+        half specPower;
     };
 
-    inline float3 StrandSpecularColor(StrandSpecularData data){
-        float3 tb = lerp(data.tangent,data.binormal,data.tbMask);
-        float3 t = ShiftTangent(tb,data.normal,data.shift);
-        float spec = StrandSpecular(t,data.viewDir,data.lightDir,data.specPower);
+    inline half3 StrandSpecularColor(StrandSpecularData data){
+        half3 tb = lerp(data.tangent,data.binormal,data.tbMask);
+        half3 t = ShiftTangent(tb,data.normal,data.shift);
+        half spec = StrandSpecular(t,data.viewDir,data.lightDir,data.specPower);
         spec = smoothstep(0.5,0.9,spec);
         return spec;
     }

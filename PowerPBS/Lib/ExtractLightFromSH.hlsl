@@ -110,7 +110,7 @@ Light GetDirLightFromUnityLightProbe()
 
     return light;
 }
-float HasLightProbe()
+half HasLightProbe()
 {
     if (dot(unity_SHAr, unity_SHAr) == 0 && dot(unity_SHAg, unity_SHAg) == 0 && dot (unity_SHBb, unity_SHBb) == 0)
         return 0;

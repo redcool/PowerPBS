@@ -112,6 +112,13 @@ namespace PowerPBS
         /// </summary>
         private void DrawPageDetail(MaterialEditor materialEditor, Material mat)
         {
+            const string WARNING_NO_DETAIL = "No Details";
+            if(selectedTabId >= propNameList.Count)
+            {
+                EditorGUILayout.HelpBox(WARNING_NO_DETAIL, MessageType.Warning, true);
+                return;
+            }
+
             // content's tab 
             EditorGUILayout.HelpBox(tabNames[selectedTabId], MessageType.Warning,true);
 
@@ -154,6 +161,9 @@ namespace PowerPBS
         {
             // read from cache
             selectedTabId = EditorPrefs.GetInt(materialSelectedId, selectedTabId);
+            if (selectedTabId >= tabNamesInConfig.Length)
+                selectedTabId = 0;
+
             toolbarCount = EditorPrefs.GetInt(materialToolbarCount, tabNamesInConfig.Length);
             
             // draw 

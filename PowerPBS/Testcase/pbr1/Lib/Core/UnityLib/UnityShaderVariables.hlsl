@@ -46,26 +46,26 @@
 
 CBUFFER_START(UnityPerCamera)
     // Time (t = time since current level load) values from Unity
-    float4 _Time; // (t/20, t, t*2, t*3)
-    float4 _SinTime; // sin(t/8), sin(t/4), sin(t/2), sin(t)
-    float4 _CosTime; // cos(t/8), cos(t/4), cos(t/2), cos(t)
-    float4 unity_DeltaTime; // dt, 1/dt, smoothdt, 1/smoothdt
+    half4 _Time; // (t/20, t, t*2, t*3)
+    half4 _SinTime; // sin(t/8), sin(t/4), sin(t/2), sin(t)
+    half4 _CosTime; // cos(t/8), cos(t/4), cos(t/2), cos(t)
+    half4 unity_DeltaTime; // dt, 1/dt, smoothdt, 1/smoothdt
 
 #if !defined(USING_STEREO_MATRICES)
-    float3 _WorldSpaceCameraPos;
+    half3 _WorldSpaceCameraPos;
 #endif
 
     // x = 1 or -1 (-1 if projection is flipped)
     // y = near plane
     // z = far plane
     // w = 1/far plane
-    float4 _ProjectionParams;
+    half4 _ProjectionParams;
 
     // x = width
     // y = height
     // z = 1 + 1.0/width
     // w = 1 + 1.0/height
-    float4 _ScreenParams;
+    half4 _ScreenParams;
 
     // Values used to linearize the Z buffer (http://www.humus.name/temp/Linearize%20depth.txt)
     // x = 1-far/near
@@ -77,31 +77,31 @@ CBUFFER_START(UnityPerCamera)
     // y = 1
     // z = x/far
     // w = 1/far
-    float4 _ZBufferParams;
+    half4 _ZBufferParams;
 
     // x = orthographic camera's width
     // y = orthographic camera's height
     // z = unused
     // w = 1.0 if camera is ortho, 0.0 if perspective
-    float4 unity_OrthoParams;
+    half4 unity_OrthoParams;
 #if defined(STEREO_CUBEMAP_RENDER_ON)
     //x-component is the half stereo separation value, which a positive for right eye and negative for left eye. The y,z,w components are unused.
-    float4 unity_HalfStereoSeparation;
+    half4 unity_HalfStereoSeparation;
 #endif
 CBUFFER_END
 
 
 CBUFFER_START(UnityPerCameraRare)
-    float4 unity_CameraWorldClipPlanes[6];
+    half4 unity_CameraWorldClipPlanes[6];
 
 #if !defined(USING_STEREO_MATRICES)
     // Projection matrices of the camera. Note that this might be different from projection matrix
     // that is set right now, e.g. while rendering shadows the matrices below are still the projection
     // of original camera.
-    float4x4 unity_CameraProjection;
-    float4x4 unity_CameraInvProjection;
-    float4x4 unity_WorldToCamera;
-    float4x4 unity_CameraToWorld;
+    half4x4 unity_CameraProjection;
+    half4x4 unity_CameraInvProjection;
+    half4x4 unity_WorldToCamera;
+    half4x4 unity_CameraToWorld;
 #endif
 CBUFFER_END
 
@@ -114,27 +114,27 @@ CBUFFER_START(UnityLighting)
     #ifdef USING_DIRECTIONAL_LIGHT
     half4 _WorldSpaceLightPos0;
     #else
-    float4 _WorldSpaceLightPos0;
+    half4 _WorldSpaceLightPos0;
     #endif
 
-    float4 _LightPositionRange; // xyz = pos, w = 1/range
-    float4 _LightProjectionParams; // for point light projection: x = zfar / (znear - zfar), y = (znear * zfar) / (znear - zfar), z=shadow bias, w=shadow scale bias
+    half4 _LightPositionRange; // xyz = pos, w = 1/range
+    half4 _LightProjectionParams; // for point light projection: x = zfar / (znear - zfar), y = (znear * zfar) / (znear - zfar), z=shadow bias, w=shadow scale bias
 
-    float4 unity_4LightPosX0;
-    float4 unity_4LightPosY0;
-    float4 unity_4LightPosZ0;
+    half4 unity_4LightPosX0;
+    half4 unity_4LightPosY0;
+    half4 unity_4LightPosZ0;
     half4 unity_4LightAtten0;
 
     half4 unity_LightColor[8];
 
 
-    float4 unity_LightPosition[8]; // view-space vertex light positions (position,1), or (-direction,0) for directional lights.
+    half4 unity_LightPosition[8]; // view-space vertex light positions (position,1), or (-direction,0) for directional lights.
     // x = cos(spotAngle/2) or -1 for non-spot
     // y = 1/cos(spotAngle/4) or 1 for non-spot
     // z = quadratic attenuation
     // w = range*range
     half4 unity_LightAtten[8];
-    float4 unity_SpotDirection[8]; // view-space spot light directions, or (0,0,1,0) for non-spot
+    half4 unity_SpotDirection[8]; // view-space spot light directions, or (0,0,1,0) for non-spot
 
 
 
@@ -151,37 +151,37 @@ CBUFFER_END
 // ----------------------------------------------------------------------------
 
 CBUFFER_START(UnityShadows)
-    float4 unity_ShadowSplitSpheres[4];
-    float4 unity_ShadowSplitSqRadii;
-    float4 unity_LightShadowBias;
-    float4 _LightSplitsNear;
-    float4 _LightSplitsFar;
-    float4x4 unity_WorldToShadow[4];
+    half4 unity_ShadowSplitSpheres[4];
+    half4 unity_ShadowSplitSqRadii;
+    half4 unity_LightShadowBias;
+    half4 _LightSplitsNear;
+    half4 _LightSplitsFar;
+    half4x4 unity_WorldToShadow[4];
     half4 _LightShadowData;
-    float4 unity_ShadowFadeCenterAndType;
+    half4 unity_ShadowFadeCenterAndType;
 CBUFFER_END
 
 // ----------------------------------------------------------------------------
  // UnityInput.hlsl
 CBUFFER_START(UnityPerDraw)
-    float4x4 unity_ObjectToWorld;
-    float4x4 unity_WorldToObject;
-    float4 unity_LODFade; // x is the fade value ranging within [0,1]. y is x quantized into 16 levels
-    float4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
-    float4 unity_RenderingLayer;
+    half4x4 unity_ObjectToWorld;
+    half4x4 unity_WorldToObject;
+    half4 unity_LODFade; // x is the fade value ranging within [0,1]. y is x quantized into 16 levels
+    half4 unity_WorldTransformParams; // w is usually 1.0, or -1.0 for odd-negative scale transforms
+    half4 unity_RenderingLayer;
    
     half4 unity_LightData;
     half4 unity_LightIndices[2];
         
-    float4 unity_ProbesOcclusion;
+    half4 unity_ProbesOcclusion;
 
     half4  unity_SpecCube0_HDR;
 
     half4  unity_SpecCube1_HDR;
 
-    float4 unity_LightmapST;
-    float4 unity_LightmapIndex;
-    float4 unity_DynamicLightmapST;
+    half4 unity_LightmapST;
+    half4 unity_LightmapIndex;
+    half4 unity_DynamicLightmapST;
 
     // SH lighting environment
     half4 unity_SHAr;
@@ -196,35 +196,35 @@ CBUFFER_START(UnityPerDraw)
         // x = Disabled(0)/Enabled(1)
         // y = Computation are done in global space(0) or local space(1)
         // z = Texel size on U texture coordinate
-        float4 unity_ProbeVolumeParams;
+        half4 unity_ProbeVolumeParams;
 
-        float4x4 unity_ProbeVolumeWorldToObject;
-        float3 unity_ProbeVolumeSizeInv;
-        float3 unity_ProbeVolumeMin;
+        half4x4 unity_ProbeVolumeWorldToObject;
+        half3 unity_ProbeVolumeSizeInv;
+        half3 unity_ProbeVolumeMin;
     #endif   
 
 CBUFFER_END
 
 #if defined(USING_STEREO_MATRICES)
 GLOBAL_CBUFFER_START(UnityStereoGlobals)
-    float4x4 unity_StereoMatrixP[2];
-    float4x4 unity_StereoMatrixV[2];
-    float4x4 unity_StereoMatrixInvV[2];
-    float4x4 unity_StereoMatrixVP[2];
+    half4x4 unity_StereoMatrixP[2];
+    half4x4 unity_StereoMatrixV[2];
+    half4x4 unity_StereoMatrixInvV[2];
+    half4x4 unity_StereoMatrixVP[2];
 
-    float4x4 unity_StereoCameraProjection[2];
-    float4x4 unity_StereoCameraInvProjection[2];
-    float4x4 unity_StereoWorldToCamera[2];
-    float4x4 unity_StereoCameraToWorld[2];
+    half4x4 unity_StereoCameraProjection[2];
+    half4x4 unity_StereoCameraInvProjection[2];
+    half4x4 unity_StereoWorldToCamera[2];
+    half4x4 unity_StereoCameraToWorld[2];
 
-    float3 unity_StereoWorldSpaceCameraPos[2];
-    float4 unity_StereoScaleOffset[2];
+    half3 unity_StereoWorldSpaceCameraPos[2];
+    half4 unity_StereoScaleOffset[2];
 GLOBAL_CBUFFER_END
 #endif
 
 #if defined(USING_STEREO_MATRICES) && defined(UNITY_STEREO_MULTIVIEW_ENABLED)
 GLOBAL_CBUFFER_START(UnityStereoEyeIndices)
-    float4 unity_StereoEyeIndices[2];
+    half4 unity_StereoEyeIndices[2];
 GLOBAL_CBUFFER_END
 #endif
 
@@ -240,7 +240,7 @@ GLOBAL_CBUFFER_END
 #endif
 
 CBUFFER_START(UnityPerDrawRare)
-    float4x4 glstate_matrix_transpose_modelview0;
+    half4x4 glstate_matrix_transpose_modelview0;
 CBUFFER_END
 
 
@@ -255,10 +255,10 @@ CBUFFER_START(UnityPerFrame)
     half4 unity_IndirectSpecColor;
 
 #if !defined(USING_STEREO_MATRICES)
-    float4x4 glstate_matrix_projection;
-    float4x4 unity_MatrixV;
-    float4x4 unity_MatrixInvV;
-    float4x4 unity_MatrixVP;
+    half4x4 glstate_matrix_projection;
+    half4x4 unity_MatrixV;
+    half4x4 unity_MatrixInvV;
+    half4x4 unity_MatrixVP;
     int unity_StereoEyeIndex;
 #endif
 
@@ -274,7 +274,7 @@ CBUFFER_START(UnityFog)
     // y = density / ln(2), useful for Exp mode
     // z = -1/(end-start), useful for Linear mode
     // w = end/(end-start), useful for Linear mode
-    float4 unity_FogParams;
+    half4 unity_FogParams;
 CBUFFER_END
 
 
@@ -296,8 +296,8 @@ UNITY_DECLARE_TEX2D_NOSAMPLER(unity_DynamicDirectionality);
 UNITY_DECLARE_TEX2D_NOSAMPLER(unity_DynamicNormal);
 
 CBUFFER_START(UnityLightmaps)
-    float4 unity_LightmapST;
-    float4 unity_DynamicLightmapST;
+    half4 unity_LightmapST;
+    half4 unity_DynamicLightmapST;
 CBUFFER_END
 */
 
@@ -308,14 +308,14 @@ TEXTURECUBE(unity_SpecCube0); SAMPLER(samplerunity_SpecCube0);
 // UNITY_DECLARE_TEXCUBE_NOSAMPLER(unity_SpecCube1);
 
 CBUFFER_START(UnityReflectionProbes)
-    float4 unity_SpecCube0_BoxMax;
-    float4 unity_SpecCube0_BoxMin;
-    float4 unity_SpecCube0_ProbePosition;
+    half4 unity_SpecCube0_BoxMax;
+    half4 unity_SpecCube0_BoxMin;
+    half4 unity_SpecCube0_ProbePosition;
 
 
-    float4 unity_SpecCube1_BoxMax;
-    float4 unity_SpecCube1_BoxMin;
-    float4 unity_SpecCube1_ProbePosition;
+    half4 unity_SpecCube1_BoxMax;
+    half4 unity_SpecCube1_BoxMin;
+    half4 unity_SpecCube1_ProbePosition;
 
 CBUFFER_END
 
@@ -327,7 +327,7 @@ CBUFFER_END
 // We need to convert it to 0/1 and doing a second check for safety.
 #ifdef UNITY_LIGHT_PROBE_PROXY_VOLUME
     #undef UNITY_LIGHT_PROBE_PROXY_VOLUME
-    // Requires quite modern graphics support (3D float textures with filtering)
+    // Requires quite modern graphics support (3D half textures with filtering)
     // Note: Keep this in synch with the list from LightProbeProxyVolume::HasHardwareSupport && SurfaceCompiler::IsLPPVAvailableForAnyTargetPlatform
     #if !defined(UNITY_NO_LPPV) && (defined (SHADER_API_D3D11) || defined (SHADER_API_D3D12) || defined (SHADER_API_GLCORE) || defined (SHADER_API_PSSL) || defined(SHADER_API_VULKAN) || defined(SHADER_API_METAL) || defined(SHADER_API_SWITCH) || defined(SHADER_API_GLES3))
         #define UNITY_LIGHT_PROBE_PROXY_VOLUME 1
@@ -339,17 +339,17 @@ CBUFFER_END
 #endif
      
 #if UNITY_LIGHT_PROBE_PROXY_VOLUME
-    // UNITY_DECLARE_TEX3D_FLOAT(unity_ProbeVolumeSH);
+    // UNITY_DECLARE_TEX3D_half(unity_ProbeVolumeSH);
 
     // CBUFFER_START(UnityProbeVolume)
 
     // CBUFFER_END
 #endif
 
-static float4x4 unity_MatrixMVP = mul(unity_MatrixVP, unity_ObjectToWorld);
-static float4x4 unity_MatrixMV = mul(unity_MatrixV, unity_ObjectToWorld);
-static float4x4 unity_MatrixTMV = transpose(unity_MatrixMV);
-static float4x4 unity_MatrixITMV = transpose(mul(unity_WorldToObject, unity_MatrixInvV));
+static half4x4 unity_MatrixMVP = mul(unity_MatrixVP, unity_ObjectToWorld);
+static half4x4 unity_MatrixMV = mul(unity_MatrixV, unity_ObjectToWorld);
+static half4x4 unity_MatrixTMV = transpose(unity_MatrixMV);
+static half4x4 unity_MatrixITMV = transpose(mul(unity_WorldToObject, unity_MatrixInvV));
 // make them macros so that they can be redefined in UnityInstancing.cginc
 #define UNITY_MATRIX_MVP    unity_MatrixMVP
 #define UNITY_MATRIX_MV     unity_MatrixMV
@@ -360,10 +360,10 @@ static float4x4 unity_MatrixITMV = transpose(mul(unity_WorldToObject, unity_Matr
 //  Deprecated
 
 // There used to be half function-like texture matrices, defined as UNITY_MATRIX_TEXTUREn. These are gone now; and are just defined to identity.
-#define UNITY_MATRIX_TEXTURE0 float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1)
-#define UNITY_MATRIX_TEXTURE1 float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1)
-#define UNITY_MATRIX_TEXTURE2 float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1)
-#define UNITY_MATRIX_TEXTURE3 float4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1)
+#define UNITY_MATRIX_TEXTURE0 half4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1)
+#define UNITY_MATRIX_TEXTURE1 half4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1)
+#define UNITY_MATRIX_TEXTURE2 half4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1)
+#define UNITY_MATRIX_TEXTURE3 half4x4(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1)
 
 #include "URP_ShaderVariables.hlsl"
 
