@@ -20,17 +20,53 @@ namespace PowerPBS
         MultiColor_2X
     }
 
+    public class MaterialCodeProps
+    {
+        public const string _PresetBlendMode = "_PresetBlendMode",
+            _RenderQueue = "_RenderQueue";
+
+        public bool hasPresetBlendMode,
+            hasRenderQueue;
+
+        public void Clear()
+        {
+            hasPresetBlendMode = hasRenderQueue = false;
+        }
+
+        private MaterialCodeProps() { }
+        private static MaterialCodeProps instance;
+
+        public static MaterialCodeProps Instance
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new MaterialCodeProps();
+                return instance;
+            }
+        }
+
+        public void InitMaterialCodeVars(string propName)
+        {
+            switch (propName)
+            {
+                case _PresetBlendMode: instance.hasPresetBlendMode = true; break;
+                case _RenderQueue: instance.hasRenderQueue = true; break;
+            }
+        }
+    }
+
+
     public class PowerShaderInspector : ShaderGUI
     {
         // events
         public event Action<MaterialProperty, Material> OnDrawProperty;
-        public event Action<Dictionary<string, MaterialProperty> ,Material> OnDrawPropertyFinish;
+        public event Action<Dictionary<string, MaterialProperty>, Material> OnDrawPropertyFinish;
 
         // properties
         const string SRC_MODE = "_SrcMode", DST_MODE = "_DstMode";
+
         public string shaderName = ""; //子类来指定,用于EditorPrefs读写
-        public int AlphaTabId = 0;  // preset blend mode 显示在 号tab页
-        public int RenderQueueTabId = 0; // render Queue显示的tab页码
 
         string[] tabNames;
         List<string[]> propNameList = new List<string[]>();
@@ -57,6 +93,7 @@ namespace PowerPBS
         int renderQueue = 2000;
         int toolbarCount = 5;
 
+
         public PowerShaderInspector()
         {
             blendModeDict = new Dictionary<PresetBlendMode, BlendMode[]> {
@@ -69,6 +106,9 @@ namespace PowerPBS
                 {PresetBlendMode.MultiColor_2X,new []{ BlendMode.DstColor,BlendMode.SrcColor} },
             };
         }
+
+
+
 
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
@@ -85,8 +125,10 @@ namespace PowerPBS
                 isFirstRunOnGUI = false;
                 OnInit(mat, properties);
             }
+
             // title
-            EditorGUILayout.HelpBox(helpStr, MessageType.Info);
+            if (!string.IsNullOrEmpty(helpStr))
+                EditorGUILayout.HelpBox(helpStr, MessageType.Info);
 
             //show original
             showOriginalPage = GUILayout.Toggle(showOriginalPage, ConfigTool.Text(propNameTextDict, "ShowOriginalPage"));
@@ -107,25 +149,30 @@ namespace PowerPBS
             EditorGUILayout.EndVertical();
         }
 
+
+
         /// <summary>
         /// draw properties
         /// </summary>
         private void DrawPageDetail(MaterialEditor materialEditor, Material mat)
         {
             const string WARNING_NO_DETAIL = "No Details";
-            if(selectedTabId >= propNameList.Count)
+            if (selectedTabId >= propNameList.Count)
             {
                 EditorGUILayout.HelpBox(WARNING_NO_DETAIL, MessageType.Warning, true);
                 return;
             }
 
             // content's tab 
-            EditorGUILayout.HelpBox(tabNames[selectedTabId], MessageType.Warning,true);
+            EditorGUILayout.HelpBox(tabNames[selectedTabId], MessageType.Info, true);
 
+            MaterialCodeProps.Instance.Clear();
             // contents
             var propNames = propNameList[selectedTabId];
             foreach (var propName in propNames)
             {
+                MaterialCodeProps.Instance.InitMaterialCodeVars(propName);
+
                 if (!propDict.ContainsKey(propName))
                     continue;
 
@@ -138,9 +185,10 @@ namespace PowerPBS
             // blend 
             if (IsTargetShader(mat))
             {
-                if (selectedTabId == AlphaTabId)
+                if (MaterialCodeProps.Instance.hasPresetBlendMode)
                     DrawBlendMode(mat);
-                if (selectedTabId == RenderQueueTabId)
+
+                if (MaterialCodeProps.Instance.hasRenderQueue)
                 {
                     // render queue, instanced, double sided gi
                     DrawMaterialProps(mat);
@@ -165,10 +213,10 @@ namespace PowerPBS
                 selectedTabId = 0;
 
             toolbarCount = EditorPrefs.GetInt(materialToolbarCount, tabNamesInConfig.Length);
-            
+
             // draw 
             GUILayout.BeginVertical("Box");
-            toolbarCount = EditorGUILayout.IntSlider("ToolbarCount:",toolbarCount, 3, tabNamesInConfig.Length);
+            toolbarCount = EditorGUILayout.IntSlider("ToolbarCount:", toolbarCount, 3, tabNamesInConfig.Length);
             selectedTabId = GUILayout.SelectionGrid(selectedTabId, tabNamesInConfig, toolbarCount, EditorStyles.miniButton);
             GUILayout.EndVertical();
 
@@ -187,7 +235,7 @@ namespace PowerPBS
 
             propNameTextDict = ConfigTool.ReadI18NConfig(shaderFilePath);
 
-            helpStr = ConfigTool.Text(propNameTextDict, "Help").Replace('|', '\n');
+            helpStr = ConfigTool.Text(propNameTextDict, "").Replace('|', '\n');
 
             tabNamesInConfig = tabNames.Select(item => ConfigTool.Text(propNameTextDict, item)).ToArray();
         }
@@ -239,7 +287,7 @@ namespace PowerPBS
             GUILayout.BeginVertical();
             EditorGUILayout.Space(10);
 
-            GUILayout.Label("Material Props",EditorStyles.boldLabel);
+            GUILayout.Label("Material Props", EditorStyles.boldLabel);
             //mat.renderQueue = EditorGUILayout.IntField(ConfigTool.Text(propNameTextDict, "RenderQueue"), mat.renderQueue);
             materialEditor.RenderQueueField();
             materialEditor.EnableInstancingField();
