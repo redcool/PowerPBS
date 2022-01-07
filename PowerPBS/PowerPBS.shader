@@ -300,7 +300,7 @@ Shader "Character/PowerPBS"
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "Lib/PowerPBSShadowCasterPass.hlsl"
+            #include "Lib/ShadowCasterPass.hlsl"
             ENDHLSL
         }
 

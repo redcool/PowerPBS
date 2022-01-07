@@ -1,8 +1,8 @@
 /**
     MainLight Shadow
 */
-#if !defined(POWER_PBS_SHADOW_HLSL)
-#define POWER_PBS_SHADOW_HLSL
+#if !defined(MAIN_LIGHT_SHADOW_HLSL)
+#define MAIN_LIGHT_SHADOW_HLSL
 
 #if defined(SHADER_API_MOBILE)
     static const int SOFT_SHADOW_COUNT = 2;
@@ -120,4 +120,4 @@ half4 TransformWorldToShadowCoord(half3 positionWS)
         return shadow;
     }
 
-#endif //POWER_PBS_SHADOW_HLSL
+#endif //MAIN_LIGHT_SHADOW_HLSL

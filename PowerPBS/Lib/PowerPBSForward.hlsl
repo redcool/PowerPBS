@@ -3,7 +3,7 @@
 
 #include "PowerPBSCore.hlsl"
 #include "PowerPBSHair.hlsl"
-#include "PowerPBSUrpShadows.hlsl"
+#include "URP_MainLightShadows.hlsl"
 #include "Blur.hlsl"
 #include "ParallaxMapping.hlsl"
 

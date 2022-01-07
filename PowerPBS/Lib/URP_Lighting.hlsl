@@ -9,7 +9,7 @@
 #endif
 
 #include "UnityLib/UnityShaderVariables.hlsl"
-#include "URP_Shadows.hlsl"
+#include "URP_AdditionalLightShadows.hlsl"
 // Input.hlsl
 half4 _MainLightPosition;
 half4 _MainLightColor;

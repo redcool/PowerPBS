@@ -1,9 +1,9 @@
-#if !defined(POWERPBS_SHADOW_CASTER_PASS_HLSL)
-#define POWERPBS_SHADOW_CASTER_PASS_HLSL
+#if !defined(SHADOW_CASTER_PASS_HLSL)
+#define SHADOW_CASTER_PASS_HLSL
 
 #include "CommonUtils.hlsl"
 #include "PowerPBSInput.hlsl"
-#include "PowerPBSUrpShadows.hlsl"
+#include "URP_MainLightShadows.hlsl"
 
 half3 _LightDirection;
 
@@ -48,4 +48,4 @@ half4 frag(v2f input):SV_Target{
     return 0;
 }
 
-#endif //POWERPBS_SHADOW_CASTER_PASS_HLSL
+#endif //SHADOW_CASTER_PASS_HLSL

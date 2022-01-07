@@ -1,5 +1,5 @@
-#if !defined(URP_SHADOWS_HLSL)
-#define URP_SHADOWS_HLSL
+#if !defined(URP_ADDITIONAL_LIGHT_SHADOWS_HLSL)
+#define URP_ADDITIONAL_LIGHT_SHADOWS_HLSL
 
 #define MAX_SHADOW_CASCADES 4
 
@@ -127,4 +127,4 @@ half AdditionalLightShadow(int lightIndex, half3 positionWS, bool isSoftShadow)
     return realtimeShadow;
 }
 
-#endif //URP_SHADOWS_HLSL
+#endif //URP_ADDITIONAL_LIGHT_SHADOWS_HLSL
