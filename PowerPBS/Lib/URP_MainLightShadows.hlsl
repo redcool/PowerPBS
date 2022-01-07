@@ -4,6 +4,8 @@
 #if !defined(MAIN_LIGHT_SHADOW_HLSL)
 #define MAIN_LIGHT_SHADOW_HLSL
 
+TEXTURE2D_SHADOW(_MainLightShadowmapTexture);SAMPLER_CMP(sampler_MainLightShadowmapTexture);
+
 #if defined(SHADER_API_MOBILE)
     static const int SOFT_SHADOW_COUNT = 2;
     static const half SOFT_SHADOW_WEIGHTS[] = {0.2,0.4,0.4};
@@ -103,10 +105,14 @@ half4 TransformWorldToShadowCoord(half3 positionWS)
         return shadow;
     }
 
+    bool MainLightEnabled(){
+        return _MainLightShadowOn;
+    }
+
     half CalcShadow (half4 shadowCoord,half3 worldPos)
     {
         half shadow = 1;
-        if(_MainLightShadowOn){
+        if(MainLightEnabled()){
             //shadow = SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture, shadowCoord.xyz);
             shadow = SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture),shadowCoord,_MainLightShadowSoftScale);
             shadow = lerp(1,shadow,_MainLightShadowParams.x); // shadow intensity

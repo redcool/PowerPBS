@@ -5,15 +5,15 @@
 #include "PowerPBSInput.hlsl"
 #include "URP_MainLightShadows.hlsl"
 
-half3 _LightDirection;
 
 struct v2f{
     half2 uv:TEXCOORD0;
     half4 pos:SV_POSITION;
 };
 
+half3 _LightDirection;
+
 //--------- shadow helpers
-// #if defined(URP_SHADOW)
 half4 GetShadowPositionHClip(appdata_full input){
     half3 worldPos = mul(unity_ObjectToWorld,input.vertex);
     half3 worldNormal = UnityObjectToWorldNormal(input.normal);
@@ -25,7 +25,6 @@ half4 GetShadowPositionHClip(appdata_full input){
     #endif
     return positionCS;
 }
-// #endif
 
 v2f vert(appdata_full input){
     v2f output;

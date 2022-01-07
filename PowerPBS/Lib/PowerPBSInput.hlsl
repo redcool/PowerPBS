@@ -29,8 +29,7 @@ TEXTURE2D(_ScatteringLUT);//SAMPLER(sampler_ScatteringLUT);
 TEXTURE2D(_CameraOpaqueTexture); //SAMPLER(sampler_CameraOpaqueTexture);
 TEXTURE2D(_CustomSpecularMap);
 
-TEXTURE2D_SHADOW(_MainLightShadowmapTexture);SAMPLER_CMP(sampler_MainLightShadowmapTexture);
-TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture);SAMPLER_CMP(sampler_AdditionalLightsShadowmapTexture);
+
 TEXTURE2D(_StrandMaskTex); // xyzw  = shift_specMask_ao_tbMask
 
    //_Detail1_MapOn

@@ -3,8 +3,7 @@
 
 #define MAX_SHADOW_CASCADES 4
 
-
-
+TEXTURE2D_SHADOW(_AdditionalLightsShadowmapTexture);SAMPLER_CMP(sampler_AdditionalLightsShadowmapTexture);
 
 #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
 
