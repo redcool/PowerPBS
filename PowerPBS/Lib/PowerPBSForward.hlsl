@@ -76,7 +76,9 @@ half4 frag (v2f i) : SV_Target
     half4 pbrMask = SAMPLE_TEXTURE2D(_MetallicMap,sampler_MetallicMap ,uv);
     half metallic = pbrMask[_MetallicChannel] * _Metallic;
     // pbrMask'g is smoothness or roughness ?
-    half smoothness = 1 - pbrMask[_SmoothnessChannel] * _Smoothness + lerp(1,0,_InvertSmoothnessOn);
+    half smoothness = pbrMask[_SmoothnessChannel];
+    smoothness = lerp(smoothness , 1 - smoothness,_InvertSmoothnessOn)  * _Smoothness;
+
     half occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
     
     half detailMask=0;
