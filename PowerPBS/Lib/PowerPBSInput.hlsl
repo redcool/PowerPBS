@@ -84,11 +84,13 @@ CBUFFER_START(UnityPerMaterial)
     half _AnisoRough;
     half _AnisoIntensity;
     half4 _AnisoColor;
+    half _AnisoShift;
 
     half _AnisoLayer2On;
     half _Layer2AnisoRough;
     half _Layer2AnisoIntensity;
     half4 _Layer2AnisoColor;
+    // half _Layer2AnisoShift;
     half _AnisoIntensityUseMainTexA;
     half _AnisoIntensityUseSmoothness;
 // ==================================================

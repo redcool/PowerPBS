@@ -91,12 +91,14 @@ Shader "Character/PowerPBS"
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)
         _AnisoIntensity("_AnisoIntensity",range(0,10)) = 1
         _AnisoRough("_AnisoRough",range(0,1)) = 0
+        _AnisoShift("_AnisoShift",float) = 0
         // ---- layer2
         [Header(Aniso2)]
         [LiteToggle]_AnisoLayer2On("_AnisoLayer2On",int) = 0
         _Layer2AnisoColor("_Layer2AnisoColor",color) = (.5,0,0,0)
         _Layer2AnisoIntensity("_Layer2AnisoIntensity",range(0,10)) = 1
         _Layer2AnisoRough("_Layer2AnisoRough",range(0,1)) = 0
+        // _Layer2AnisoShift("_Layer2AnisoShift",float) = 0
         [Header(Mask)]
         [LiteToggle]_AnisoIntensityUseMainTexA("_AnisoIntensityUseMainTexA",float) = 0
         [LiteToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0

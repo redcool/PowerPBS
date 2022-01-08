@@ -27,7 +27,7 @@
 
     inline half3 StrandSpecularColor(StrandSpecularData data){
         half3 tb = lerp(data.tangent,data.binormal,data.tbMask);
-        half3 t = ShiftTangent(tb,data.normal,data.shift);
+        half3 t = ShiftTangent(data.binormal,data.normal,data.shift);
         half spec = StrandSpecular(t,data.viewDir,data.lightDir,data.specPower);
         spec = smoothstep(0.5,0.9,spec);
         return spec;

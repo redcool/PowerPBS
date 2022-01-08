@@ -68,7 +68,7 @@ struct SurfaceData{
 };
 
 struct WorldData{
-    half3 pos,view,reflect,tangent,binormal,normal,vertexNormal;
+    half3 pos,view,reflect,tangent,binormal,normal,vertexNormal,vertexTangent,vertexBinormal;
 };
 
 

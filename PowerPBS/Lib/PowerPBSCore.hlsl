@@ -145,11 +145,11 @@ half3 CalcEmission(half3 albedo,half2 uv){
 #define PBR_MODE_CLOTH 2
 #define PBR_MODE_STRAND 3
 
-inline half3 CalcSpecularTermOnlyStandard(inout PBSData data,half nl,half nv,half nh,half lh,half th,half bh,half3 specColor){
+inline half3 CalcSpecularTermOnlyStandard(inout PBSData data,half nl,half nv,half nh,half lh,half3 specColor){
     return D_GGXTerm(nh,data.roughness2) * specColor;
 }
 
-inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh,half th,half bh,half3 specColor){
+inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh,half3 specColor){
     half V = 1;
     half D = 0;
     half3 specTerm = 0;
@@ -163,6 +163,10 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             // specTerm = V * D * PI;
         break;
         case PBR_MODE_ANISO:
+            half3 tangent = (data.tangent + data.normal * 0);
+            half3 binormal = (data.binormal + data.normal * _AnisoShift);
+            half th = dot(tangent,data.halfDir);
+            half bh = dot(binormal,data.halfDir);
             // half tv = (dot(data.tangent,data.viewDir));
             // half tl = (dot(data.tangent,data.lightDir));
             // half bv = (dot(data.binormal,data.viewDir));
@@ -235,12 +239,12 @@ half3 CalcIndirectApplyClearCoat(half3 indirectColor,ClearCoatData data,half fre
     return indirectColor * (1 - coatFresnel) + coatColor;
 }
 
-half3 CalcDirect(inout PBSData data,half3 diffColor,half3 specColor,half nl,half nv,half nh,half lh,half th,half bh){
+half3 CalcDirect(inout PBSData data,half3 diffColor,half3 specColor,half nl,half nv,half nh,half lh){
     // half3 diffuseTerm = DisneyDiffuse(nl,nv,lh,data.roughness2) * diffColor;
     half3 diffuseTerm = diffColor;
     half3 specularTerm = 0;
     if(_SpecularOn){
-        specularTerm = CalcSpecularTerm(data,nl,nv,nh,lh,th,bh,specColor);
+        specularTerm = CalcSpecularTerm(data,nl,nv,nh,lh,specColor);
     }
     return diffuseTerm + specularTerm;
 }
@@ -267,9 +271,7 @@ half3 CalcDirectApplyClearCoat(half3 directColor,ClearCoatData data,half fresnel
     half nl = saturate(dot(n,l));\
     half nv = saturate(dot(n,v));\
     half lv = saturate(dot(l,v));\
-    half lh = saturate(dot(l,h));\
-    half th = dot(t,h);\
-    half bh = dot(b,h)
+    half lh = saturate(dot(l,h));
 
 inline half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Light light){
     CALC_LIGHT_INFO(light.direction);
@@ -277,7 +279,7 @@ inline half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specCo
     // half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     half3 directColor = diffColor;
     if(_SpecularOn){
-        directColor += CalcSpecularTermOnlyStandard(data,nl,nv,nh,lh,th,bh,specColor);
+        directColor += CalcSpecularTermOnlyStandard(data,nl,nv,nh,lh,specColor);
     }
     return lightAtten *nl * light.color * directColor;
 }
@@ -334,7 +336,7 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     color += (1-nl) * _BackFaceGIDiffuse * diffColor;
 
     // direct
-    half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
+    half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh);
     if(_ClearCoatOn){
         directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,data.fresnelTerm ,nl,nh,lh).xyzx;
     }
@@ -386,15 +388,23 @@ void InitWorldData(half2 uv,half detailMask,half4 tSpace0,half4 tSpace1,half4 tS
         dot(tSpace1.xyz,tn),
         dot(tSpace2.xyz,tn)
     ));
+
     data.pos = half3(tSpace0.w,tSpace1.w,tSpace2.w);
     data.view = (GetWorldViewDir(data.pos));
     data.reflect = (reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
 
     data.vertexNormal = (half3(tSpace0.z,tSpace1.z,tSpace2.z));
-    data.tangent = (cross(data.normal,half3(0,1,0)));
-    data.binormal = (cross(data.tangent,data.normal));
-    // data.tangent = (half3(tSpace0.x,tSpace1.x,tSpace2.x));
-    // data.binormal = (half3(tSpace0.y,tSpace1.y,tSpace2.y));
+    data.vertexTangent = (half3(tSpace0.x,tSpace1.x,tSpace2.x));
+    data.vertexBinormal = (half3(tSpace0.y,tSpace1.y,tSpace2.y));
+
+
+    half3 t = cross(data.normal,data.vertexBinormal);
+    data.tangent = normalize(t - dot(t,data.normal) * data.normal);
+    data.binormal =(cross(data.tangent,data.normal));
+
+    // data.binormal = data.vertexBinormal;
+    // data.tangent = data.vertexTangent;
+    // data.normal = data.vertexNormal;
 }
 
 #endif // end of POWER_PBS_CORE_HLSL
