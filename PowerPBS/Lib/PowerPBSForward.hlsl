@@ -38,8 +38,10 @@ v2f vert (appdata v)
     o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
     float4 worldPos = mul(unity_ObjectToWorld,v.vertex);
-    half3 n = UnityObjectToWorldNormal(v.normal);
-    half3 t = UnityObjectToWorldDir(v.tangent.xyz);
+    half3 n = normalize(UnityObjectToWorldNormal(v.normal));
+    half3 t = normalize(UnityObjectToWorldDir(v.tangent.xyz));
+    t = normalize(t - dot(t,n) * n);
+    
     half tangentSign = v.tangent.w * unity_WorldTransformParams.w;
     half3 b = cross(n,t) * tangentSign;
     o.tSpace0 = half4(t.x,b.x,n.x,worldPos.x);
@@ -118,7 +120,7 @@ half4 frag (v2f i) : SV_Target
     if(_PBRMode == PBR_MODE_STRAND){
         half4 ao_shift_specMask_tbMask = SAMPLE_TEXTURE2D(_StrandMaskTex,sampler_linear_repeat,i.uv);
 		half hairAo = ao_shift_specMask_tbMask.x;
-        pbsData.hairSpecColor = CalcHairSpecColor(worldData.tangent,worldData.normal,worldData.binormal,light.dir,worldData.view,ao_shift_specMask_tbMask.yzw);
+        pbsData.hairSpecColor = CalcHairSpecColor(worldData.vertexTangent,worldData.normal,worldData.vertexBinormal,light.dir,worldData.view,ao_shift_specMask_tbMask.yzw);
 		surfaceData.diffColor *= lerp(1, hairAo, _HairAoIntensity);
     }
 
