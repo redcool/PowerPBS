@@ -114,7 +114,7 @@ Shader "Character/PowerPBS"
         [LiteToggle]_AdditionalLightCalcScatter("_AdditionalLightCalcScatter",int) = 0
 
         [Header(Diffuse Profile ScreenSpace)]
-        [LiteToggle]_DiffuseProfileOn("_DiffuseProfileOn",int) = 0
+        [Toggle(_SSSS)]_DiffuseProfileOn("_DiffuseProfileOn",int) = 0
         _BlurSize("_BlurSize",range(0,20)) = 1
         [LiteToggle]_DiffuseProfileMaskUserMainTexA("_DiffuseProfileMaskUserMainTexA",int) = 1
 // ==================================================
@@ -270,6 +270,8 @@ Shader "Character/PowerPBS"
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma shader_feature_local_fragment _ALPHA_TEST
             #pragma shader_feature_local_fragment _PBRMODE_STANDRAD _PBRMODE_ANISO _PBRMODE_CLOTH _PBRMODE_STRANDSPEC
+            #pragma shader_feature_local_fragment _SSSS
+            #pragma shader_feature_local_fragment _PRESSS
 
             #include "Lib/PowerPBSForward.hlsl"
            

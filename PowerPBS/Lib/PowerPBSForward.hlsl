@@ -141,11 +141,15 @@ half4 frag (v2f i) : SV_Target
     col.a = surfaceData.finalAlpha;
 
     //for preintegrated lut
+    #if defined(_PRESSS)
     if(_ScatteringLUTOn){
         half3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
         half3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity);
         col.rgb += scatteredColor;
     }
+    #endif
+    
+    #if defined(_SSSS)
     if(_DiffuseProfileOn){
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
@@ -156,13 +160,15 @@ half4 frag (v2f i) : SV_Target
         // col = originalColor + horizontalGasussianColor + verticalGausssianColor
         col.rgb *= 0.333;
     }
+    #endif
+
+    if(_SSSOn){
+        col.rgb += CalcSSS(light.dir,worldData.view,heightClothSSSMask.zw);
+    }
+
     //for emission
     if(_EmissionOn){
         col.rgb += CalcEmission(surfaceData.diffColor,uv);
-    }
-    
-    if(_SSSOn){
-        col.rgb += CalcSSS(light.dir,worldData.view,heightClothSSSMask.zw);
     }
     if(_FresnelAlphaOn){
         col.a *= saturate(smoothstep(_FresnelMin,_FresnelMax,pbsData.nv));
