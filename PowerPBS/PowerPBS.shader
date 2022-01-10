@@ -121,7 +121,7 @@ Shader "Character/PowerPBS"
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)
         _ClothDMin("_ClothDMin",range(0,1)) = 0
         _ClothDMax("_ClothDMax",range(0,1)) = 1
-        [LiteToggle]_ClothGGXUseMainTexA("_ClothGGXUseMainTexA",int) = 0
+        [LiteToggle]_ClothGGXUseMainTexA("_ClothGGXUseMainTexA(a,1 : Cloth,0:Standard)",int) = 0
 
 // ==================================================
         // [LiteToggle]_Detail4_MapOn("_Detail4_MapOn",int) = 0
