@@ -265,7 +265,7 @@ Shader "Character/PowerPBS"
             #pragma target 3.0
 
         //     #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-        //     #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
         //     #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
             #include "Lib/PowerPBSForward.hlsl"
