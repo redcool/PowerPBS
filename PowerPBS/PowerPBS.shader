@@ -177,7 +177,7 @@ Shader "Character/PowerPBS"
         _LightColor("_LightColor",color) = (1,1,1,1)
 // ==================================================
         [Space(10)][Header(AlphaTest)]
-        [LiteToggle]_AlphaTestOn("_AlphaTestOn",int) = 0
+        [Toggle(_ALPHA_TEST)]_AlphaTestOn("_AlphaTestOn",int) = 0
         _Cutoff("_Cutoff",range(0,1)) = 0.5
 
         [Space(10)][Header(AlphaBlendMode)]
@@ -253,8 +253,8 @@ Shader "Character/PowerPBS"
 
         Pass
         {
-            // Tags{"LightMode"="ForwardBase" } // drp need this, otherwise shadow out
             Name "PowerPBS"
+            // Tags{"LightMode"="ForwardBase" } // drp need this, otherwise shadow out
             //Tags { "LightMode" = "UniversalForward" }
             HLSLPROGRAM
             // #pragma multi_compile_fwdbase
@@ -265,8 +265,9 @@ Shader "Character/PowerPBS"
             #pragma target 3.0
 
         //     #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
         //     #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma shader_feature_local_fragment _ALPHA_TEST
 
             #include "Lib/PowerPBSForward.hlsl"
            
@@ -288,6 +289,8 @@ Shader "Character/PowerPBS"
             #pragma vertex DepthOnlyVertex
             #pragma fragment DepthOnlyFragment
 
+            #pragma shader_feature_local_fragment _ALPHA_TEST
+
             #include "Lib/PowerPBSForward.hlsl"
             ENDHLSL
         }
@@ -301,6 +304,7 @@ Shader "Character/PowerPBS"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma shader_feature_local_fragment _ALPHA_TEST
 
             #include "Lib/ShadowCasterPass.hlsl"
             ENDHLSL

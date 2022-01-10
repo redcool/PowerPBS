@@ -40,10 +40,12 @@ v2f vert(appdata_full input){
 }
 
 half4 frag(v2f input):SV_Target{
+    #if defined(_ALPHA_TEST)
     if(_AlphaTestOn){
         half4 tex = SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,input.uv);
         clip(tex.a - _Cutoff);
     }
+    #endif
     return 0;
 }
 

@@ -91,8 +91,10 @@ half4 frag (v2f i) : SV_Target
     // albedo.rgb *= occlusion; // more dark than urp'lit
     half alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a * _Color.a;
 
+    #if defined(_ALPHA_TEST)
     if(_AlphaTestOn)
         clip(alpha - _Cutoff);
+    #endif
 
     WorldData worldData;
     InitWorldData(uv,detailMask,i.tSpace0,i.tSpace1,i.tSpace2,worldData/**/);
@@ -181,12 +183,13 @@ v2f DepthOnlyVertex (appdata v)
 
 half4 DepthOnlyFragment (v2f i) : SV_Target
 {
-    half detailMask = 0;
-    half4 mainTex = CalcAlbedo(i.uv.xy,detailMask/*out*/);
-
-    if(_AlphaTestOn)
+    #if defined(_ALPHA_TEST)
+    if(_AlphaTestOn){
+        half detailMask = 0;
+        half4 mainTex = CalcAlbedo(i.uv.xy,detailMask/*out*/);
         clip(mainTex.a - _Cutoff);
-
+    }
+    #endif
     return 0;
 }
 
