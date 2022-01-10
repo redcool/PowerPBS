@@ -93,7 +93,7 @@ Shader "Hidden/pbr1"
                 float metallic = _Metallic;
 
                 half4 mainTex = tex2D(_MainTex, i.uv);
-                half albedo = mainTex.xyz;
+                half3 albedo = mainTex.xyz;
                 half alpha = mainTex.w;
 
                 half3 diffColor = albedo * (1-metallic);
