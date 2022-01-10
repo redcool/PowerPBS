@@ -64,7 +64,8 @@ Shader "Character/PowerPBS"
         [LiteToggle]_VertexColorRAttenOn("_VertexColorRAttenOn(R)",int) = 1
 // ================================================== Settings
         [Header(PBR Mode)]
-        [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
+        // [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
+        [KeywordEnum(Standard,Aniso,Cloth,StrandSpec)]_PBRMode("_PBRMode",int) = 0
 
         [Header(Specular Options)]
         [LiteToggle]_SpecularOn("_SpecularOn",float) = 1
@@ -268,6 +269,7 @@ Shader "Character/PowerPBS"
         //     #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma shader_feature_local_fragment _ALPHA_TEST
+            #pragma shader_feature_local_fragment _PBRMODE_STANDRAD _PBRMODE_ANISO _PBRMODE_CLOTH _PBRMODE_STRANDSPEC
 
             #include "Lib/PowerPBSForward.hlsl"
            

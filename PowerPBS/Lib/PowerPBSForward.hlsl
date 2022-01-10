@@ -119,12 +119,14 @@ half4 frag (v2f i) : SV_Target
     pbsData.mainTex = mainTex;
 
     // calc strand specular
+    #if defined(_PBRMODE_STRANDSPEC)
     if(_PBRMode == PBR_MODE_STRAND){
         half4 ao_shift_specMask_tbMask = SAMPLE_TEXTURE2D(_StrandMaskTex,sampler_linear_repeat,i.uv);
 		half hairAo = ao_shift_specMask_tbMask.x;
         pbsData.hairSpecColor = CalcHairSpecColor(worldData.vertexTangent,worldData.normal,worldData.vertexBinormal,light.dir,worldData.view,ao_shift_specMask_tbMask.yzw);
 		surfaceData.diffColor *= lerp(1, hairAo, _HairAoIntensity);
     }
+    #endif
 
     UnityIndirect indirect = CalcGI(surfaceData.diffColor,uv,worldData.reflect,worldData.normal,occlusion,pbsData.perceptualRoughness);
 

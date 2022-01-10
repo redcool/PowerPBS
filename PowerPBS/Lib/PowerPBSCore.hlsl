@@ -155,14 +155,17 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
     half3 specTerm = 0;
     switch(_PBRMode){
         case PBR_MODE_STANDARD :
+        #if defined(_PBRMODE_STANDRAD)
             specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
             // specTerm = D_GGXTerm(nh,data.roughness2);
             specTerm *= specColor;
             // V = SmithJointGGXTerm(nl,nv,roughness);
             // D = D_GGXTerm(nh,roughness);
             // specTerm = V * D * PI;
+        #endif
         break;
         case PBR_MODE_ANISO:
+        #if defined(_PBRMODE_STANDRAD)
             half3 tangent = (data.tangent + data.normal * 0);
             half3 binormal = (data.binormal + data.normal * _AnisoShift);
             half th = dot(tangent,data.halfDir);
@@ -189,8 +192,10 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             specTerm *= lerp(1,data.mainTex.a,_AnisoIntensityUseMainTexA);
             specTerm *= lerp(1,data.roughness,_AnisoIntensityUseSmoothness);
             specTerm *= specColor;
+        #endif
         break;
         case PBR_MODE_CLOTH:
+        #if defined(_PBRMODE_CLOTH)
             // V = AshikhminV(nv,nl);
             D = CharlieD(data.roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
@@ -201,6 +206,7 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
                 sheenColor = lerp(standardColor,sheenColor,data.mainTex.a);
             }
             specTerm = sheenColor;
+        #endif
         break;
         case PBR_MODE_STRAND:
             specTerm = data.hairSpecColor;
