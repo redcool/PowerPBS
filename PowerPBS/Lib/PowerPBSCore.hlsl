@@ -194,14 +194,13 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             // V = AshikhminV(nv,nl);
             D = CharlieD(data.roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
-            half3 sheenColor = _ClothSheenColor;
+            half3 sheenColor = D * PI * _ClothSheenColor;
             // extra calc ggx
             if(_ClothGGXUseMainTexA){
-                sheenColor = lerp(sheenColor,1,data.mainTex.a);
-                half3 DF = D_GGXTerm(nh,data.roughness);// * FresnelTerm(specColor,lh);
-                D = lerp(D*2,DF,data.mainTex.a);
+                half3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
+                sheenColor = lerp(standardColor,sheenColor,data.mainTex.a);
             }
-            specTerm = V * D * PI * sheenColor ;
+            specTerm = sheenColor;
         break;
         case PBR_MODE_STRAND:
             specTerm = data.hairSpecColor;
