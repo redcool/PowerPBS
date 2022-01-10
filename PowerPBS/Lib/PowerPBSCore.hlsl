@@ -165,7 +165,7 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
         #endif
         break;
         case PBR_MODE_ANISO:
-        #if defined(_PBRMODE_STANDRAD)
+        #if defined(_PBRMODE_ANISO)
             half3 tangent = (data.tangent + data.normal * 0);
             half3 binormal = (data.binormal + data.normal * _AnisoShift);
             half th = dot(tangent,data.halfDir);
