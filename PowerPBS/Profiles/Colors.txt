@@ -1,0 +1,10 @@
+// PowerVFX 颜色配置文件
+// 为注释行
+
+// hard calculate
+_AlphaTestOn=#FF0000
+_DiffuseProfileOn=#FF0000
+
+
+// new features
+_AnisoShift=#00ff00

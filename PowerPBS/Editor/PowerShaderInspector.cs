@@ -79,19 +79,20 @@ namespace PowerPBS
         Dictionary<PresetBlendMode, BlendMode[]> blendModeDict;
         Dictionary<string, MaterialProperty> propDict;
         Dictionary<string, string> propNameTextDict;
+        Dictionary<string, string> colorTextDict;
 
         bool isFirstRunOnGUI = true;
         string helpStr;
         string[] tabNamesInConfig;
 
         Shader lastShader;
-
         MaterialEditor materialEditor;
         MaterialProperty[] materialProperties;
         PresetBlendMode presetBlendMode;
         int languageId;
         int renderQueue = 2000;
         int toolbarCount = 5;
+        Color defaultContentColor;
 
 
         public PowerShaderInspector()
@@ -121,6 +122,7 @@ namespace PowerPBS
             if (isFirstRunOnGUI || lastShader != mat.shader)
             {
                 lastShader = mat.shader;
+                defaultContentColor = GUI.contentColor;
 
                 isFirstRunOnGUI = false;
                 OnInit(mat, properties);
@@ -176,8 +178,19 @@ namespace PowerPBS
                 if (!propDict.ContainsKey(propName))
                     continue;
 
+                // found color
+                var contentColor = defaultContentColor;
+                string colorString;
+                if (colorTextDict.TryGetValue(propName, out colorString))
+                {
+                    ColorUtility.TryParseHtmlString(colorString, out contentColor);
+                }
+                //show color
+                GUI.contentColor = contentColor;
                 var prop = propDict[propName];
                 materialEditor.ShaderProperty(prop, ConfigTool.Text(propNameTextDict, prop.name));
+
+                GUI.contentColor = defaultContentColor;
 
                 if (OnDrawProperty != null)
                     OnDrawProperty(prop, mat);
@@ -233,11 +246,13 @@ namespace PowerPBS
             var shaderFilePath = AssetDatabase.GetAssetPath(mat.shader);
             SetupLayout(shaderFilePath);
 
-            propNameTextDict = ConfigTool.ReadI18NConfig(shaderFilePath);
+            propNameTextDict = ConfigTool.ReadConfig(shaderFilePath, ConfigTool.I18N_PROFILE_PATH);
 
             helpStr = ConfigTool.Text(propNameTextDict, "").Replace('|', '\n');
 
             tabNamesInConfig = tabNames.Select(item => ConfigTool.Text(propNameTextDict, item)).ToArray();
+
+            colorTextDict = ConfigTool.ReadConfig(shaderFilePath, ConfigTool.COLOR_PROFILE_PATH);
         }
 
         private void SetupLayout(string shaderFilePath)
