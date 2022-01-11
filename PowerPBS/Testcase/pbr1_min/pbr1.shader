@@ -17,7 +17,7 @@ Shader "Hidden/pbr1"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-
+#pragma target 3.0
             #include "UnityLib.hlsl"
 
             struct appdata
@@ -30,27 +30,29 @@ Shader "Hidden/pbr1"
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
-                float4 vertex : SV_POSITION;
+                half2 uv : TEXCOORD0;
+                half4 vertex : SV_POSITION;
                 float4 tSpace0:TEXCOORD1;
                 float4 tSpace1:TEXCOORD2;
                 float4 tSpace2:TEXCOORD3;
+
+                half3 tangent:TEXCOORD4;
             };
 
             v2f vert (appdata v)
             {
                 v2f o;
-                float3 worldPos = TransformObjectToWorld(v.vertex);
-                float3 n = TransformObjectToWorldNormal(v.normal);
+                half3 worldPos = TransformObjectToWorld(v.vertex.xyz);
                 o.vertex = TransformWorldToHClip(worldPos);
                 o.uv = v.uv;
 
-                float3 t = TransformObjectToWorld(v.tangent);
-                float3 b = cross(n,t) * v.tangent.w;
+                half3 n = normalize(TransformObjectToWorldNormal(v.normal));
+                half3 t = normalize(TransformObjectToWorldDir(v.tangent.xyz));
+                half3 b = normalize(cross(n,t)) * v.tangent.w;
 
-                o.tSpace0 = float4(t.x,b.x,n.x,worldPos.x);
-                o.tSpace1 = float4(t.y,b.y,n.y,worldPos.y);
-                o.tSpace2 = float4(t.z,b.z,n.z,worldPos.z);
+                o.tSpace0 = half4(t.x,b.x,n.x,worldPos.x);
+                o.tSpace1 = half4(t.y,b.y,n.y,worldPos.y);
+                o.tSpace2 = half4(t.z,b.z,n.z,worldPos.z);
                 return o;
             }
 
@@ -62,35 +64,36 @@ Shader "Hidden/pbr1"
             half4 unity_SpecCube0_HDR;
 
             sampler2D _NormalMap;
-            float _NormalScale;
+            half _NormalScale;
 
             half4 frag (v2f i) : SV_Target
             {
-                float3 vertexNormal = normalize(float3(i.tSpace0.z,i.tSpace1.z,i.tSpace2.z));
-                
-                float3 tn = UnpackScaleNormal(tex2D(_NormalMap,i.uv),_NormalScale);
-                float3 n = normalize(float3(
-                    dot(half3(i.tSpace0.xyz),tn),
-                    dot(half3(i.tSpace1.xyz),tn),
-                    dot(half3(i.tSpace2.xyz),tn)
+                half3 vertexTangent = (half3(i.tSpace0.x,i.tSpace1.x,i.tSpace2.x));
+                half3 vertexBinormal = normalize(half3(i.tSpace0.y,i.tSpace1.y,i.tSpace2.y));
+                half3 vertexNormal = normalize(half3(i.tSpace0.z,i.tSpace1.z,i.tSpace2.z));
+                half3 tn = UnpackScaleNormal(tex2D(_NormalMap,i.uv),_NormalScale);
+ 
+                half3 n = normalize(half3(
+                    dot(i.tSpace0.xyz,tn),
+                    dot(i.tSpace1.xyz,tn),
+                    dot(i.tSpace2.xyz,tn)
                 ));
 
+                half3 worldPos = half3(i.tSpace0.w,i.tSpace1.w,i.tSpace2.w);
+                half3 l = GetWorldSpaceLightDir(worldPos);
+                half3 v = normalize(GetWorldSpaceViewDir(worldPos));
+                half3 h = normalize(l+v);
+                half nl = saturate(dot(n,l));
+                half nv = saturate(dot(n,v));
+                half nh = saturate(dot(n,h));
+                half lh = saturate(dot(l,h));
 
-                float3 worldPos = float3(i.tSpace0.w,i.tSpace1.w,i.tSpace2.w);
-                float3 l = GetWorldSpaceLightDir(worldPos);
-                float3 v = normalize(GetWorldSpaceViewDir(worldPos));
-                float3 h = normalize(l+v);
-                float nl = saturate(dot(n,l));
-                float nv = saturate(dot(n,v));
-                float nh = saturate(dot(n,h));
-                float lh = saturate(dot(l,h));
+                half smoothness = _Smoothness;
+                half roughness = 1 - smoothness;
+                half a = max(roughness * roughness, HALF_MIN_SQRT);
+                half a2 = max(a * a ,HALF_MIN);
 
-                float smoothness = _Smoothness;
-                float roughness = 1 - smoothness;
-                float a = max(roughness * roughness, HALF_MIN_SQRT);
-                float a2 = max(a * a ,HALF_MIN);
-
-                float metallic = _Metallic;
+                half metallic = _Metallic;
 
                 half4 mainTex = tex2D(_MainTex, i.uv);
                 half3 albedo = mainTex.xyz;
@@ -113,10 +116,10 @@ Shader "Hidden/pbr1"
                 half fresnelTerm = Pow4(1-nv);
                 half3 giSpec = surfaceReduction * envColor.xyz * lerp(specColor,grazingTerm,fresnelTerm);
 
-                float4 col = 0;
+                half4 col = 0;
                 col.xyz = giDiff + giSpec;
 
-                half3 radiance = nl * _MainLightColor;
+                half3 radiance = nl * _MainLightColor.xyz;
                 half specTerm = MinimalistCookTorrance(nh,lh,a,a2);
                 col.xyz += (diffColor + specColor * specTerm) * radiance;
                 

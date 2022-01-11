@@ -67,7 +67,8 @@ Shader "Lit/pbr1_"
                 float4 fogFactor:TEXCOORD5;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
-
+#define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_Float_Formats
+#define HALF_MIN_SQRT 0.0078125  // 2^-7 == sqrt(HALF_MIN), useful for ensuring HALF_MIN after x^2
             v2f vert (appdata v)
             {
                 v2f o;
@@ -107,8 +108,8 @@ Shader "Lit/pbr1_"
                 float lh = saturate(dot(l,h));
                 float nh = saturate(dot(n,h));
                 float nl = saturate(dot(n,l));
-                float a = roughness * roughness;
-                float a2 = a * a;
+                float a = max(roughness * roughness, HALF_MIN_SQRT);
+                float a2 = max(a * a ,HALF_MIN);
 
                 float nv = saturate(dot(n,v));
 // return v.xyzx;
@@ -127,8 +128,8 @@ Shader "Lit/pbr1_"
                     #if defined(_PBRMODE_NONE)
 
                     #elif defined(_PBRMODE_PBR)
-                        // specTerm = MinimalistCookTorrance(nh,lh,a,a2);
-                        specTerm = D_GGXNoPI(nh,a2);
+                        specTerm = MinimalistCookTorrance(nh,lh,a,a2);
+                        // specTerm = D_GGXNoPI(nh,a2);
                     // }else if(_PbrMode == 1){
                     #elif defined(_PBRMODE_ANISO)
                         float3 t = tangent;//(cross(n,float3(0,1,0)));

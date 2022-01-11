@@ -44,8 +44,13 @@ int unity_StereoEyeIndex;
 #define UNITY_MATRIX_MVP   mul(UNITY_MATRIX_VP, UNITY_MATRIX_M)
 
 float3 TransformObjectToWorld(float3 objectPos){
-    return mul(UNITY_MATRIX_M,float4(objectPos,1));
+    return mul(unity_ObjectToWorld,float4(objectPos,1)).xyz;
 }
+
+float3 TransformObjectToWorldDir(float3 objectDir){
+    return normalize( mul((float3x3)UNITY_MATRIX_M,objectDir) );
+}
+
 float4 TransformObjectToHClip(float3 objectPos){
     return mul(UNITY_MATRIX_VP,mul(UNITY_MATRIX_M,float4(objectPos,1)));
 }
@@ -55,7 +60,7 @@ float4 TransformWorldToHClip(float3 worldPos){
 }
 
 float3 TransformObjectToWorldNormal(float3 normal){
-    return mul(float4(normal,1),UNITY_MATRIX_I_M);
+    return mul(float4(normal,1),UNITY_MATRIX_I_M).xyz;
 }
 
 float3 GetWorldSpaceViewDir(float3 worldPos){
