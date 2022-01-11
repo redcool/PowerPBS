@@ -153,8 +153,8 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
     half V = 1;
     half D = 0;
     half3 specTerm = 0;
-    switch(_PBRMode){
-        case PBR_MODE_STANDARD :
+    // switch(_PBRMode){
+    //     case PBR_MODE_STANDARD :
         #if defined(_PBRMODE_STANDRAD)
             specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
             // specTerm = D_GGXTerm(nh,data.roughness2);
@@ -163,8 +163,8 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             // D = D_GGXTerm(nh,roughness);
             // specTerm = V * D * PI;
         #endif
-        break;
-        case PBR_MODE_ANISO:
+        // break;
+        // case PBR_MODE_ANISO:
         #if defined(_PBRMODE_ANISO)
             half3 tangent = (data.tangent + data.normal * 0);
             half3 binormal = (data.binormal + data.normal * _AnisoShift);
@@ -193,8 +193,8 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             specTerm *= lerp(1,data.roughness,_AnisoIntensityUseSmoothness);
             specTerm *= specColor;
         #endif
-        break;
-        case PBR_MODE_CLOTH:
+        // break;
+        // case PBR_MODE_CLOTH:
         #if defined(_PBRMODE_CLOTH)
             // V = AshikhminV(nv,nl);
             D = CharlieD(data.roughness,nh);
@@ -207,20 +207,13 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             }
             specTerm = sheenColor;
         #endif
-        break;
-        case PBR_MODE_STRAND:
+        // break;
+        // case PBR_MODE_STRAND:
+        #if defined(_PBRMODE_STRANDSPEC)
             specTerm = data.hairSpecColor;
-        break;
-    }
-    // specTerm = max(0,specTerm * nl);
-    // specTerm *= any(specColor)? 1 : 0;
-    // calc F
-    // half3 F =1;
-    // if(_PBRMode != PBR_MODE_CLOTH && _PBRMode != PBR_MODE_STANDARD)
-    //     F = FresnelTerm(specColor,lh);
-
-    // specTerm *= F;
-
+        #endif
+        // break;
+    // }
     specTerm = min(specTerm, _MaxSpecularIntensity); // eliminate large value in HDR
     return specTerm;
 }
@@ -275,8 +268,8 @@ half3 CalcDirectApplyClearCoat(half3 directColor,ClearCoatData data,half fresnel
     half nh = saturate(dot(n,h));\
     half nl = saturate(dot(n,l));\
     half nv = saturate(dot(n,v));\
-    half lv = saturate(dot(l,v));\
     half lh = saturate(dot(l,h));
+    // half lv = saturate(dot(l,v));\
 
 inline half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Light light){
     CALC_LIGHT_INFO(light.direction);
@@ -310,7 +303,7 @@ half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor)
 }
 
 half3 CalcIndirectApplySHDirLight(half3 indirectColor,PBSData data,half3 diffColor,half3 specColor){
-    if (_DirectionalLightFromSHOn  && HasLightProbe() > 0)
+    if (HasLightProbe() > 0)
     {
         Light light = GetDirLightFromUnityLightProbe();
         half3 lightColor = CalcDirectAdditionalLight(data, diffColor, specColor, light);
@@ -331,26 +324,36 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     data.fresnelTerm = Pow4(1-nv);
     // indirect
     half3 color = CalcIndirect(data,gi.diffuse,gi.specular,diffColor,specColor,data.fresnelTerm );
-    if(_ClearCoatOn){
+    #if defined(_CLEARCOAT)
+    // if(_ClearCoatOn){
         color = CalcIndirectApplyClearCoat(color,coatData,data.fresnelTerm );
-    }
+    // }
+    #endif
     // apply sh dir light
-    color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
+    #if defined(_DIRECTIONAL_LIGHT_FROM_SH)
+    // if(_DirectionalLightFromSHOn){
+        color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
+    // }
+    #endif
 
     // back face gi compensate.
     color += (1-nl) * _BackFaceGIDiffuse * diffColor;
 
     // direct
     half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh);
-    if(_ClearCoatOn){
+    #if defined(_CLEARCOAT)
+    // if(_ClearCoatOn){
         directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,data.fresnelTerm ,nl,nh,lh).xyzx;
-    }
+    // }
+    #endif
     // apply main light atten 
     directColor *= mainLight.color * nl;
     color += directColor;
 
     // additional lights
+    #if defined(_ADDITIONAL_LIGHT)
     color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
+    #endif
 
     return half4(color,1);
 }

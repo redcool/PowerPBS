@@ -53,7 +53,7 @@ Shader "Character/PowerPBS"
         _CustomSpecularIntensity("_CustomSpecularIntensity",float) = 1
         
         [Header(Clear Coat)]
-        [LiteToggle]_ClearCoatOn("_ClearCoatOn",int) = 0
+        [Toggle(_CLEARCOAT)]_ClearCoatOn("_ClearCoatOn",int) = 0
         _ClearCoatSpecColor("_ClearCoatSpecColor",color) = (1,1,1,1)
         _CoatSmoothness("_CoatSmoothness",range(0,1)) = 0.5
         _CoatIndirectSpecularIntensity("_CoatIndirectSpecularIntensity",float) = 1
@@ -79,12 +79,12 @@ Shader "Character/PowerPBS"
         _CustomShadowBias("_CustomShadowBias(x: depth bias, y: normal bias)",vector) = (0,0,0,0)
 
         [Header(URP Additional Lights)]
-        [LiteToggle]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
+        [Toggle(_ADDITIONAL_LIGHT)]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
         [LiteToggle]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
         [LiteToggle]_AdditionalLightSoftShadowOn("_AdditionalLightSoftShadowOn",int) = 0
 
         [Header(Spherical Harmonics)]
-        [LiteToggle]_DirectionalLightFromSHOn("_DirectionalLightFromSHOn",int) = 0
+        [Toggle(_DIRECTIONAL_LIGHT_FROM_SH)]_DirectionalLightFromSHOn("_DirectionalLightFromSHOn",int) = 0
         _AmbientSHIntensity("_AmbientSHIntensity",range(0,1)) = 0.5
         _DirectionalSHIntensity("_DirectionalSHIntensity", range(0, 1)) = 0.5
 // ==================================================
@@ -272,6 +272,9 @@ Shader "Character/PowerPBS"
             #pragma shader_feature_local_fragment _PBRMODE_STANDRAD _PBRMODE_ANISO _PBRMODE_CLOTH _PBRMODE_STRANDSPEC
             #pragma shader_feature_local_fragment _SSSS
             #pragma shader_feature_local_fragment _PRESSS
+            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT
+            #pragma shader_feature_local_fragment _CLEARCOAT
+            #pragma shader_feature_local_fragment _DIRECTIONAL_LIGHT_FROM_SH
 
             #include "Lib/PowerPBSForward.hlsl"
            
