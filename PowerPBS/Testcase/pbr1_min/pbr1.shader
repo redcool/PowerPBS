@@ -107,8 +107,9 @@ Shader "Hidden/pbr1"
                 half4 envColor = texCUBElod(unity_SpecCube0,half4(reflectDir,mip));
                 envColor.xyz = DecodeHDREnvironment(envColor,unity_SpecCube0_HDR);
 
-                half surfaceReduction = saturate(smoothness + metallic);
-                half grazingTerm = 1/(a2+1);
+                half surfaceReduction = 1/(a2+1);
+                
+                half grazingTerm = saturate(smoothness + metallic);
                 half fresnelTerm = Pow4(1-nv);
                 half3 giSpec = surfaceReduction * envColor.xyz * lerp(specColor,grazingTerm,fresnelTerm);
 
