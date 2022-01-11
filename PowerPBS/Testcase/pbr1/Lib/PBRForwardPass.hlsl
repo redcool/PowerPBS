@@ -3,9 +3,9 @@
 #include "Lib/Core/CommonUtils.hlsl"
 #include "Lib/Core/TangentLib.hlsl"
 #include "Lib/Core/BSDF.hlsl"
-#include "Lib/Core/Shadows.hlsl"
-#include "Lib/PBRInput.hlsl"
 #include "Lib/Core/Fog.hlsl"
+#include "Lib/PBRInput.hlsl"
+#include "Lib/URP_MainLightShadows.hlsl"
 
 half3 CalcIBL(half3 viewDir, half3 n,half a){
     a = a* (1.7 - a * 0.7);

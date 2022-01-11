@@ -115,7 +115,7 @@ Shader "Lit/pbr1_"
 // return v.xyzx;
 
 
-                float shadowAtten = MainLightShadow(i.shadowCoord,worldPos);
+                float shadowAtten = CalcShadow(i.shadowCoord,worldPos);
                 // return shadowAtten;
 //--------- lighting
                 float4 albedo = tex2D(_MainTex, mainUV);
@@ -132,8 +132,8 @@ Shader "Lit/pbr1_"
                         // specTerm = D_GGXNoPI(nh,a2);
                     // }else if(_PbrMode == 1){
                     #elif defined(_PBRMODE_ANISO)
-                        float3 t = tangent;//(cross(n,float3(0,1,0)));
-                        float3 b = binormal;//cross(t,n);
+                        float3 t = vertexTangent;//(cross(n,float3(0,1,0)));
+                        float3 b = vertexBinormal;//cross(t,n);
                         if(_CalcTangent){
                             t = cross(n,float3(0,1,0));
                             b = cross(t,n);
@@ -173,6 +173,20 @@ Shader "Lit/pbr1_"
                 col.rgb = MixFog(col.xyz,i.fogFactor.x);
                 return col;
             }
+            ENDHLSL
+        }
+
+        Pass{
+            Tags{"LightMode" = "ShadowCaster"}
+
+            ZWrite On
+            ZTest LEqual
+            ColorMask 0
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag 
+            #include "Lib/ShadowCasterPass.hlsl"
+
             ENDHLSL
         }
     }

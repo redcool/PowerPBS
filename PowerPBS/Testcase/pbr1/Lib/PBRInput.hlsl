@@ -19,5 +19,9 @@ half _AnisoRough;
 int _PbrMode;
 bool _CalcTangent;
 
+// custom shadow 
+half _MainLightShadowSoftScale;
+half2 _CustomShadowBias;
+
 CBUFFER_END
 #endif //PBR_INPUT_HLSL

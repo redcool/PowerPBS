@@ -3,17 +3,6 @@
 
 #include "Lib/Core/CommonUtils.hlsl"
 
-half MinimalistCookTorrance(half nh,half lh,half rough,half rough2){
-    half d = nh * nh * (rough2-1) + 1.00001f;
-    half lh2 = lh * lh;
-    half spec = rough2/((d*d) * max(0.1,lh2) * (rough*4+2)); // approach sqrt(rough2)
-    
-    #if defined (SHADER_API_MOBILE) || defined (SHADER_API_SWITCH)
-        spec = clamp(spec,0,100);
-    #endif
-    return spec;
-}
-
 struct BRDFData{
     half reflectivity; // metallic
     half3 diffuse;
