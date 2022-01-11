@@ -17,7 +17,7 @@ Shader "Hidden/pbr1"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-#pragma target 3.0
+
             #include "UnityLib.hlsl"
 
             struct appdata
