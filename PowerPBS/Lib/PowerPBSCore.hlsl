@@ -83,12 +83,14 @@ inline half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflect
 inline half3 CalcNormal(half2 uv, half detailMask ){
     half3 tn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,uv),_NormalMapScale);
 	
-	if (_Detail_MapOn) {
+	// if (_Detail_MapOn) {
+    #if defined(_DETAIL_MAP)
         half2 dnUV = uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw;
 		half3 dn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_Detail_NormalMap,sampler_linear_repeat, dnUV), _Detail_NormalMapScale);
 		dn = normalize(half3(tn.xy + dn.xy, tn.z*dn.z));
 		tn = lerp(tn, dn, detailMask);
-	}
+	// }
+    #endif
     return tn;
 }
 
@@ -112,12 +114,15 @@ inline half CalcDetailAlbedo(inout half4 mainColor, TEXTURE2D(texObj),half2 uv, 
 
 inline half4 CalcAlbedo(half2 uv,out half detailMask) 
 {
+    detailMask = 1;
     half4 albedo = SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,uv) ;
-    detailMask = CALC_DETAIL_ALBEDO();
-    CALC_DETAIL_ALBEDO(1);
-    // CALC_DETAIL_ALBEDO(2);
-    // CALC_DETAIL_ALBEDO(3);
-    // CALC_DETAIL_ALBEDO(4);
+    #if defined(_DETAIL_MAP)
+        detailMask = CALC_DETAIL_ALBEDO();
+        CALC_DETAIL_ALBEDO(1);
+        // CALC_DETAIL_ALBEDO(2);
+        // CALC_DETAIL_ALBEDO(3);
+        // CALC_DETAIL_ALBEDO(4);
+    #endif
     return albedo;
 }
 

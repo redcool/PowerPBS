@@ -149,7 +149,7 @@ Shader "Character/PowerPBS"
         _Detail1_MapIntensity("_Detail1_MapIntensity",range(0,1)) = 1
 
         [Space(10)][Header(DetailMap)]
-        [LiteToggle]_Detail_MapOn("_Detail_MapOn",int) = 0
+        [Toggle(_DETAIL_MAP)]_Detail_MapOn("_Detail_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail_MapMode("_Detail_MapMode",int) = 0
         _Detail_Map("_Detail_Map(RGB),DetailMask(A)",2d) = "white"{}
         _Detail_MapIntensity("_Detail_MapIntensity",range(0,1)) = 1
@@ -275,6 +275,7 @@ Shader "Character/PowerPBS"
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT
             #pragma shader_feature_local_fragment _CLEARCOAT
             #pragma shader_feature_local_fragment _DIRECTIONAL_LIGHT_FROM_SH
+            #pragma shader_feature_local_fragment _DETAIL_MAP
 
             #include "Lib/PowerPBSForward.hlsl"
            

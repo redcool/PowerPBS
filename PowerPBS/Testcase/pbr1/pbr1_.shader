@@ -24,7 +24,7 @@ Shader "Lit/pbr1_"
         _Smoothness("_Smoothness",range(0,1)) = 0.5
         _Occlusion("_Occlusion",range(0,1)) = 0
 
-        [Toggle]_SpecularOn("_SpecularOn",int) = 1
+        // [Toggle]_SpecularOn("_SpecularOn",int) = 1
 
         // [Enum(PBR,0,Aniso,1,Charlie,2)]_PbrMode("_PbrMode",int) = 0
         [KeywordEnum(None,PBR,Aniso,Charlie)]_PbrMode("_PbrMode",int) = 0
@@ -140,7 +140,7 @@ Shader "Lit/pbr1_"
                         }
                         float th = dot(t,h);
                         float bh = dot(b,h);
-                        float anisoRough = roughness;//_AnisoRough + 0.5;
+                        float anisoRough = _AnisoRough + 0.5;
                         specTerm = D_GGXAnisoNoPI(th,bh,nh,anisoRough,1 - anisoRough);
                     #elif defined(_PBRMODE_CHARLIE)
                     // }else if(_PbrMode == 2){
