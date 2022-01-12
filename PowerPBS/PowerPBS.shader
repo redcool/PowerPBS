@@ -48,7 +48,7 @@ Shader "Character/PowerPBS"
         [Enum(R,0,G,1,B,2,A,3)]_OcclusionChannel("_OcclusionChannel",float) = 2
 
         [Header(Custom Specular)]
-        [LiteToggle]_CustomSpecularMapOn("_CustomSpecularMapOn",int) = 0
+        [Toggle(_SPECULAR_MAP_FLOW)]_CustomSpecularMapOn("_CustomSpecularMapOn",int) = 0
         _CustomSpecularMap("_CustomSpecularMap(a:Mask(0:DielectricSpec,1:CustomSpecColor))",2d) ="white"{}
         _CustomSpecularIntensity("_CustomSpecularIntensity",float) = 1
         
@@ -276,6 +276,7 @@ Shader "Character/PowerPBS"
             #pragma shader_feature_local_fragment _CLEARCOAT
             #pragma shader_feature_local_fragment _DIRECTIONAL_LIGHT_FROM_SH
             #pragma shader_feature_local_fragment _DETAIL_MAP
+            #pragma shader_feature_local_fragment _SPECULAR_MAP_FLOW
 
             #include "Lib/PowerPBSForward.hlsl"
            

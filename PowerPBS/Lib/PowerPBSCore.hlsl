@@ -269,7 +269,7 @@ half3 CalcDirectApplyClearCoat(half3 directColor,ClearCoatData data,half fresnel
     half3 h = SafeNormalize(l + v);\
     half3 t = (data.tangent);\
     half3 b = (data.binormal);\
-    half3 n = SafeNormalize(data.normal);\
+    half3 n = (data.normal);\
     half nh = saturate(dot(n,h));\
     half nl = saturate(dot(n,l));\
     half nv = saturate(dot(n,v));\
@@ -295,10 +295,13 @@ half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor)
             Light light1 = GetAdditionalLight(lightId,data.worldPos);
             
             color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
+
+            #if defined(_PRESSS)
             if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
                 half3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity);
                 color.rgb += scatteredColor ;
             }
+            #endif
             if(_SSSOn && _AdditionalLightCalcFastSSS){
                 color.rgb += CalcSSS(light1.direction,data.viewDir,data.heightClothFastSSSMask.zw);
             }
@@ -379,16 +382,19 @@ half ReflectivitySpecular(half3 specColor){
 
 void InitSurfaceData(half2 uv,half3 albedo,half alpha,half metallic,out SurfaceData data){
     // --- specular map flow
-    if(_CustomSpecularMapOn){
+    // if(_CustomSpecularMapOn){
+    #if defined(_SPECULAR_MAP_FLOW)
         half2 specUV = TRANSFORM_TEX(uv,_CustomSpecularMap);
         half4 customSpecColor = SAMPLE_TEXTURE2D(_CustomSpecularMap,sampler_linear_repeat,specUV);
         data.specColor = lerp(unity_ColorSpaceDielectricSpec.xyz,customSpecColor.xyz,_Metallic) * customSpecColor.w * _CustomSpecularIntensity;
         data.oneMinusReflectivity = 1.0 - ReflectivitySpecular(data.specColor);
         data.diffColor = albedo * (1 - data.specColor);
-    }else{
+    // }else{
+    #else 
         // metallic flow
         data.diffColor = DiffuseAndSpecularFromMetallic (albedo, metallic, /*inout*/ data.specColor, /*out*/ data.oneMinusReflectivity);
-    }
+    // }
+    #endif
     
     data.diffColor = AlphaPreMultiply (data.diffColor, alpha, data.oneMinusReflectivity, /*out*/ data.finalAlpha);
 }
@@ -396,7 +402,7 @@ void InitSurfaceData(half2 uv,half3 albedo,half alpha,half metallic,out SurfaceD
 void InitWorldData(half2 uv,half detailMask,half4 tSpace0,half4 tSpace1,half4 tSpace2,out WorldData data ){
     half2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
     half3 tn = CalcNormal(normalMapUV,detailMask);
-    data.normal = (half3(
+    data.normal = SafeNormalize(half3(
         dot(tSpace0.xyz,tn),
         dot(tSpace1.xyz,tn),
         dot(tSpace2.xyz,tn)
@@ -411,7 +417,7 @@ void InitWorldData(half2 uv,half detailMask,half4 tSpace0,half4 tSpace1,half4 tS
     data.vertexBinormal = (half3(tSpace0.y,tSpace1.y,tSpace2.y));
 
 
-    half3 t = cross(data.normal,data.vertexBinormal);
+    half3 t = cross(data.normal,data.vertexBinormal); // schmidt orthogonal
     data.tangent = normalize(t - dot(t,data.normal) * data.normal);
     data.binormal =(cross(data.tangent,data.normal));
 
