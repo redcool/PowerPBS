@@ -409,7 +409,7 @@ void InitWorldData(half2 uv,half detailMask,half4 tSpace0,half4 tSpace1,half4 tS
     ));
 
     data.pos = half3(tSpace0.w,tSpace1.w,tSpace2.w);
-    data.view = (GetWorldViewDir(data.pos));
+    data.view = normalize(GetWorldViewDir(data.pos));
     data.reflect = (reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
 
     data.vertexNormal = (half3(tSpace0.z,tSpace1.z,tSpace2.z));
