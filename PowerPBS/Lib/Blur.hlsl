@@ -44,11 +44,11 @@ half3 DiffuseProfile(half4 mainColor,TEXTURE2D_PARAM(tex,sampler_tex),half2 uv,h
         half4 k = CalcKernel(i);
         half2 sssuv = uv + k.w * UVOffset;
         half3 sssColor = SAMPLE_TEXTURE2D(tex,sampler_tex,sssuv);
-        sssColor = lerp(mainColor,sssColor,saturate(sssMask));
+        // sssColor = lerp(mainColor,sssColor,saturate(sssMask));
 
         blurColor += k.xyz * sssColor;
     }
-    return blurColor;
+    return lerp(mainColor,blurColor,sssMask);
 }
 
 #endif //BLUR_HLSL
