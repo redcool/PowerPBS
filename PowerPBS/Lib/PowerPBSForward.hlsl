@@ -150,7 +150,7 @@ half4 frag (v2f i) : SV_Target
     #endif
     
     #if defined(_SSSS)
-    if(_DiffuseProfileOn){
+    // if(_DiffuseProfileOn){
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
         half2 screenUV = i.screenPos.xy/i.screenPos.w;
@@ -159,7 +159,7 @@ half4 frag (v2f i) : SV_Target
         col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
         // col = originalColor + horizontalGasussianColor + verticalGausssianColor
         col.rgb *= 0.333;
-    }
+    // }
     #endif
 
     if(_SSSOn){

@@ -7,8 +7,14 @@ namespace PowerPBS
     [ExecuteInEditMode]
     public class DiffuseProfileSetter : MonoBehaviour
     {
+        [Header("Main")]
         public Color strength = Color.white;
+        [Min(0.1f)]public float strengthIntensity = 0.1f;
+        
+        [Header("Falloff")]
         public Color falloff = Color.red;
+        [Min(0.01f)]public float falloffIntensity = 0.1f;
+
         private void OnEnable()
         {
             SendKernels();
@@ -16,7 +22,7 @@ namespace PowerPBS
         public void SendKernels()
         {
             var kernels = new List<Vector4>();
-            SSSSKernel.CalculateKernel(kernels, 25, strength, falloff);
+            SSSSKernel.CalculateKernel(kernels, 25, strength * strengthIntensity, falloff * falloffIntensity);
             Shader.SetGlobalVectorArray("_Kernel", kernels);
         }
 
