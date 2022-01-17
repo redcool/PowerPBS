@@ -105,7 +105,7 @@ Shader "Character/PowerPBS"
         [LiteToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0
 // ==================================================
         [Header(Pre Integral Scatter)]
-        [LiteToggle]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
+        [Toggle(_PRESSS)]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
         [NoScaleOffset]_ScatteringLUT("_ScatteringLUT",2d) = ""{}
         _ScatteringIntensity("_ScatteringIntensity",range(0,3)) = 1
         _CurvatureScale("_CurvatureScale (MainTex.a)",range(0.01,0.99)) = 1

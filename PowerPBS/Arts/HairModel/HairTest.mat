@@ -124,12 +124,12 @@ Material:
     - _AlphaPreMultiply: 0
     - _AlphaTestOn: 0
     - _AmbientSHIntensity: 0.5
-    - _AnisoIntensity: 2.08
+    - _AnisoIntensity: 1.46
     - _AnisoIntensityUseMainTexA: 0
     - _AnisoIntensityUseSmoothness: 0
     - _AnisoLayer2On: 1
     - _AnisoRough: 0.875
-    - _AnisoShift: 0.04
+    - _AnisoShift: 0.4
     - _ApplyShadowOn: 1
     - _BackFaceGIDiffuse: 0
     - _BackSSSIntensity: 1
@@ -172,7 +172,7 @@ Material:
     - _EnvIntensity: 1
     - _EnvironmentReflections: 1
     - _FresnelAlphaOn: 0
-    - _FresnelIntensity: 1
+    - _FresnelIntensity: 0.33
     - _FresnelMax: 1
     - _FresnelMin: 0
     - _FrontSSSIntensity: 1
@@ -183,7 +183,7 @@ Material:
     - _HeightScale: 0
     - _IndirectSpecularIntensity: 1
     - _InvertSmoothnessOn: 0
-    - _Layer2AnisoIntensity: 2.03
+    - _Layer2AnisoIntensity: 1.92
     - _Layer2AnisoRough: 0.623
     - _LightColorNoAtten: 1
     - _MainLightShadowSoftScale: 1
@@ -231,7 +231,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClearCoatSpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClothSheenColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.16981131, g: 0.16981131, b: 0.16981131, a: 1}
+    - _Color: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 1}
     - _CustomShadowBias: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FrontSSSColor: {r: 1, g: 0, b: 0, a: 0}
