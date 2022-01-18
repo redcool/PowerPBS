@@ -15,7 +15,7 @@ Shader "Character/Cartoon_pbr1"
 
         [Header(Ambient)]
         _DiffuseMin("_DiffuseMin",range(0,1)) = 0.1
-        
+
         [Header(Diffuse Step)]
         _DiffuseStepMin("_DiffuseStepMin",range(0,1)) = 0
         _DiffuseStepMax("_DiffuseStepMax",range(0,1)) = 1
@@ -129,6 +129,7 @@ Shader "Character/Cartoon_pbr1"
                 half3 v = normalize(GetWorldSpaceViewDir(worldPos) + _ViewDirOffset);
                 half3 h = normalize(l+v);
                 half nl = saturate(dot(n,l));
+                half originalNL = nl;
                 nl = smoothstep(_DiffuseStepMin,_DiffuseStepMax,nl);
                 nl = max(_DiffuseMin,nl);
 
@@ -184,7 +185,7 @@ Shader "Character/Cartoon_pbr1"
                 half rim = 1 - nv;
                 rim = rim * rim;
                 rim = smoothstep(_RimStepMin,_RimStepMax,rim);
-                half3 rimColor =  rim * nl * _RimColor;
+                half3 rimColor =  rim * originalNL * _RimColor;
                 col.xyz += rimColor;
                 #endif
 
