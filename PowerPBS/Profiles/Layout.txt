@@ -1,5 +1,4 @@
-// PowerVFXLayout, when edit this file need reselect material
-// _PresetBlendMode , _RenderQueue
+// Layout, when edit this file need reselect material
 
 // Tabs
 tabNames = Settings, Main,Vertex,Aniso,Cloth,Scatter,Alpha,Details,Parallal_SSS,Env,Emission,Strand

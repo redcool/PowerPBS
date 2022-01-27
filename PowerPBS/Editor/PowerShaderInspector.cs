@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using System.Linq;
 using System;
+using PowerUtilities;
 
 namespace PowerPBS
 {
@@ -20,8 +21,10 @@ namespace PowerPBS
         MultiColor_2X
     }
 
-    public class MaterialCodeProps
-    {
+    /// <summary>
+    /// 管理材质上代码绘制的属性
+    /// </summary>
+    public class MaterialCodeProps {
         public const string _PresetBlendMode = "_PresetBlendMode",
             _RenderQueue = "_RenderQueue";
 
@@ -61,7 +64,7 @@ namespace PowerPBS
     {
         // events
         public event Action<MaterialProperty, Material> OnDrawProperty;
-        public event Action<Dictionary<string, MaterialProperty>, Material> OnDrawPropertyFinish;
+        public event Action<Dictionary<string, MaterialProperty> ,Material> OnDrawPropertyFinish;
 
         // properties
         const string SRC_MODE = "_SrcMode", DST_MODE = "_DstMode";
@@ -69,11 +72,19 @@ namespace PowerPBS
         public string shaderName = ""; //子类来指定,用于EditorPrefs读写
 
         string[] tabNames;
+        bool[] tabToggles;
+        List<int> tabSelectedIds = new List<int>();
+
         List<string[]> propNameList = new List<string[]>();
         string materialSelectedId => shaderName + "_SeletectedId";
         string materialToolbarCount => shaderName + "_ToolbarCount";
 
-        int selectedTabId;
+        string GetMaterialSelectionIdKey(string matName)
+        {
+            return matName + shaderName + "_SeletectedId";
+        }
+
+        //int selectedTabId;
         bool showOriginalPage;
 
         Dictionary<PresetBlendMode, BlendMode[]> blendModeDict;
@@ -86,12 +97,11 @@ namespace PowerPBS
         string[] tabNamesInConfig;
 
         Shader lastShader;
+
         MaterialEditor materialEditor;
-        MaterialProperty[] materialProperties;
         PresetBlendMode presetBlendMode;
-        int languageId;
-        int renderQueue = 2000;
         int toolbarCount = 5;
+
         Color defaultContentColor;
 
 
@@ -108,13 +118,9 @@ namespace PowerPBS
             };
         }
 
-
-
-
         public override void OnGUI(MaterialEditor materialEditor, MaterialProperty[] properties)
         {
             this.materialEditor = materialEditor;
-            materialProperties = properties;
 
             var mat = materialEditor.target as Material;
             propDict = ConfigTool.CacheProperties(properties);
@@ -122,14 +128,14 @@ namespace PowerPBS
             if (isFirstRunOnGUI || lastShader != mat.shader)
             {
                 lastShader = mat.shader;
-                defaultContentColor = GUI.contentColor;
 
+                defaultContentColor = GUI.contentColor;
                 isFirstRunOnGUI = false;
                 OnInit(mat, properties);
             }
 
             // title
-            if (!string.IsNullOrEmpty(helpStr))
+            if(!string.IsNullOrEmpty(helpStr))
                 EditorGUILayout.HelpBox(helpStr, MessageType.Info);
 
             //show original
@@ -145,7 +151,7 @@ namespace PowerPBS
                 DrawPageTabs();
 
                 EditorGUILayout.BeginVertical("Box");
-                DrawPageDetail(materialEditor, mat);
+                DrawPageDetails(materialEditor, mat);
                 EditorGUILayout.EndVertical();
             }
             EditorGUILayout.EndVertical();
@@ -156,21 +162,21 @@ namespace PowerPBS
         /// <summary>
         /// draw properties
         /// </summary>
-        private void DrawPageDetail(MaterialEditor materialEditor, Material mat)
+        private void DrawPageDetail(MaterialEditor materialEditor, Material mat,string tabName,string[] propNames)
         {
             const string WARNING_NO_DETAIL = "No Details";
-            if (selectedTabId >= propNameList.Count)
+            if(propNames == null || propNames.Length == 0)
             {
                 EditorGUILayout.HelpBox(WARNING_NO_DETAIL, MessageType.Warning, true);
                 return;
             }
 
             // content's tab 
-            EditorGUILayout.HelpBox(tabNames[selectedTabId], MessageType.Info, true);
+            EditorGUILayout.HelpBox(tabName, MessageType.Info, true);
 
             MaterialCodeProps.Instance.Clear();
             // contents
-            var propNames = propNameList[selectedTabId];
+
             foreach (var propName in propNames)
             {
                 MaterialCodeProps.Instance.InitMaterialCodeVars(propName);
@@ -212,30 +218,59 @@ namespace PowerPBS
                 OnDrawPropertyFinish(propDict, mat);
         }
 
+        void DrawPageDetails(MaterialEditor materialEditor, Material mat)
+        {
+            if (tabSelectedIds.Count == 0) {
+                EditorGUILayout.LabelField("No Selected");
+            }
+            foreach (var tabId in tabSelectedIds)
+            {
+                var tabName = tabNames[tabId];
+                var propNames = propNameList[tabId];
+
+                DrawPageDetail(materialEditor, mat, tabName, propNames);
+            }
+        }
+
 
         private bool IsTargetShader(Material mat)
         {
             return mat.shader.name.Contains(shaderName);
         }
+        void ReadFromCache()
+        {
+            // read from cache
+            tabSelectedIds.Clear();
+            EditorPrefTools.GetList(GetMaterialSelectionIdKey(materialEditor.target.name), ref tabSelectedIds, ",", (idStr) => Convert.ToInt32(idStr));
+
+            foreach (var selectedId in tabSelectedIds)
+            {
+                tabToggles[selectedId] = true;
+            }
+
+            toolbarCount = EditorPrefs.GetInt(materialToolbarCount, tabNamesInConfig.Length);
+        }
+
+        void SaveToCache()
+        {
+            //cache selectedId
+            //EditorPrefs.SetInt(materialSelectedId, selectedTabId);
+            EditorPrefTools.SetList(GetMaterialSelectionIdKey(materialEditor.target.name), tabSelectedIds, ",");
+            EditorPrefs.SetInt(materialToolbarCount, toolbarCount);
+        }
 
         private void DrawPageTabs()
         {
-            // read from cache
-            selectedTabId = EditorPrefs.GetInt(materialSelectedId, selectedTabId);
-            if (selectedTabId >= tabNamesInConfig.Length)
-                selectedTabId = 0;
-
-            toolbarCount = EditorPrefs.GetInt(materialToolbarCount, tabNamesInConfig.Length);
+            ReadFromCache();
 
             // draw 
             GUILayout.BeginVertical("Box");
             toolbarCount = EditorGUILayout.IntSlider("ToolbarCount:", toolbarCount, 3, tabNamesInConfig.Length);
-            selectedTabId = GUILayout.SelectionGrid(selectedTabId, tabNamesInConfig, toolbarCount, EditorStyles.miniButton);
+            //selectedTabId = GUILayout.SelectionGrid(selectedTabId, tabNamesInConfig, toolbarCount, EditorStyles.miniButton);
+            EditorGUITools.MultiSelectionGrid(tabNamesInConfig, tabToggles, tabSelectedIds, toolbarCount);
             GUILayout.EndVertical();
 
-            //cache selectedId
-            EditorPrefs.SetInt(materialSelectedId, selectedTabId);
-            EditorPrefs.SetInt(materialToolbarCount, toolbarCount);
+            SaveToCache();
         }
 
         private void OnInit(Material mat, MaterialProperty[] properties)
@@ -248,9 +283,10 @@ namespace PowerPBS
 
             propNameTextDict = ConfigTool.ReadConfig(shaderFilePath, ConfigTool.I18N_PROFILE_PATH);
 
-            helpStr = ConfigTool.Text(propNameTextDict, "").Replace('|', '\n');
+            helpStr = ConfigTool.Text(propNameTextDict, "Help").Replace('|', '\n');
 
             tabNamesInConfig = tabNames.Select(item => ConfigTool.Text(propNameTextDict, item)).ToArray();
+            tabToggles = new bool[tabNamesInConfig.Length];
 
             colorTextDict = ConfigTool.ReadConfig(shaderFilePath, ConfigTool.COLOR_PROFILE_PATH);
         }
@@ -302,7 +338,7 @@ namespace PowerPBS
             GUILayout.BeginVertical();
             EditorGUILayout.Space(10);
 
-            GUILayout.Label("Material Props", EditorStyles.boldLabel);
+            GUILayout.Label("Material Props",EditorStyles.boldLabel);
             //mat.renderQueue = EditorGUILayout.IntField(ConfigTool.Text(propNameTextDict, "RenderQueue"), mat.renderQueue);
             materialEditor.RenderQueueField();
             materialEditor.EnableInstancingField();
