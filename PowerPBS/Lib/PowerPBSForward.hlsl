@@ -7,6 +7,10 @@
 #include "Blur.hlsl"
 #include "ParallaxMapping.hlsl"
 
+#if defined(_POWER_DEBUG)
+#include "PowerPBSDebug.hlsl"
+#endif
+
 struct appdata
 {
     half4 vertex : POSITION;
@@ -129,7 +133,9 @@ half4 frag (v2f i) : SV_Target
     #endif
 
     UnityIndirect indirect = CalcGI(surfaceData.diffColor,uv,worldData.reflect,worldData.normal,occlusion,pbsData.perceptualRoughness);
-
+    #if defined(_POWER_DEBUG)
+        return ShowGI(indirect);
+    #endif
     // calc coat data
     ClearCoatData coatData;
     InitCoatData(_CoatSmoothness,_ClearCoatSpecColor * surfaceData.specColor,unity_ColorSpaceDielectricSpec.x,coatData/**/);

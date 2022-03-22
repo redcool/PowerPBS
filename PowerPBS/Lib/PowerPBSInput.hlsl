@@ -161,6 +161,9 @@ CBUFFER_START(UnityPerMaterial)
     half _HairAoIntensity;
 // ================================================== custom shadow caster params
     half4 _CustomShadowBias; // x: depth bias, y: normal bias
+// ================================================== debug data
+    half _ShowGIDiff;
+    half _ShowGISpec;
 
 CBUFFER_END
 

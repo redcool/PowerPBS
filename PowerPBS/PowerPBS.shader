@@ -233,6 +233,10 @@ Shader "Character/PowerPBS"
         _SpecColor2("_SpecColor2",color) = (1,1,1,1)
         _SpecIntensity2("_SpecIntensity2",float) = 10
 
+        [Header(Debug Info)]
+        [Toggle(_POWER_DEBUG)]_ShowGIDiff("_ShowGIDiff",float) = 0
+        [Toggle(_POWER_DEBUG)]_ShowGISpec("_ShowGISpec",float) = 0
+
         // [Header(Stencil)]
         // _StencilRef("_StencilRef",int) = 2
         // [UnityEngine.Rendering.CompareFunction]_StencilComp("_StencilComp",float) = 0
@@ -277,6 +281,7 @@ Shader "Character/PowerPBS"
             #pragma shader_feature_local_fragment _DIRECTIONAL_LIGHT_FROM_SH
             #pragma shader_feature_local_fragment _DETAIL_MAP
             #pragma shader_feature_local_fragment _SPECULAR_MAP_FLOW
+            #pragma shader_feature_local_fragment _POWER_DEBUG
 
             #include "Lib/PowerPBSForward.hlsl"
            
