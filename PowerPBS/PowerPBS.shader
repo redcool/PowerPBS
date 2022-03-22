@@ -236,7 +236,11 @@ Shader "Character/PowerPBS"
         [Header(Debug Info)]
         [Toggle(_POWER_DEBUG)]_ShowGIDiff("_ShowGIDiff",float) = 0
         [Toggle(_POWER_DEBUG)]_ShowGISpec("_ShowGISpec",float) = 0
-
+        [Toggle(_POWER_DEBUG)]_ShowNormal("_ShowNormal",float) = 0
+        [Header(Debug Info PBRMask)]
+        [Toggle(_POWER_DEBUG)]_ShowMetallic("_ShowMetallic",float) = 0
+        [Toggle(_POWER_DEBUG)]_ShowSmoothness("_ShowSmoothness",float) = 0
+        [Toggle(_POWER_DEBUG)]_ShowOcclusion("_ShowOcclusion",float) = 0
         // [Header(Stencil)]
         // _StencilRef("_StencilRef",int) = 2
         // [UnityEngine.Rendering.CompareFunction]_StencilComp("_StencilComp",float) = 0

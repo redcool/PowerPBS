@@ -134,7 +134,7 @@ half4 frag (v2f i) : SV_Target
 
     UnityIndirect indirect = CalcGI(surfaceData.diffColor,uv,worldData.reflect,worldData.normal,occlusion,pbsData.perceptualRoughness);
     #if defined(_POWER_DEBUG)
-        return ShowGI(indirect);
+        return ShowDebug(indirect,worldData,surfaceData,metallic,smoothness,occlusion);
     #endif
     // calc coat data
     ClearCoatData coatData;

@@ -164,6 +164,7 @@ CBUFFER_START(UnityPerMaterial)
 // ================================================== debug data
     half _ShowGIDiff;
     half _ShowGISpec;
+    half _ShowNormal,_ShowOcclusion,_ShowMetallic,_ShowSmoothness;
 
 CBUFFER_END
 
