@@ -61,7 +61,8 @@ _DiffuseProfileMaskUserMainTexA=_DiffuseProfileMaskUserMainTexA?
 _ClothSheenColor=_ClothSheenColor
 _ClothDMin=_ClothDMin
 _ClothDMax=_ClothDMax
-_ClothGGXUseMainTexA=_ClothGGXUseMainTexA(a,1 : Cloth,0:Standard)
+_ClothMaskFrom=_ClothMaskFrom
+_ClothMaskUsage=_ClothMaskUsage
 // ==================================================
 
 _ApplyShadowOn=_ApplyShadowOn

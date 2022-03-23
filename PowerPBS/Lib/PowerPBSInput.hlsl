@@ -91,12 +91,15 @@ CBUFFER_START(UnityPerMaterial)
     half _Layer2AnisoIntensity;
     half4 _Layer2AnisoColor;
     // half _Layer2AnisoShift;
-    half _AnisoIntensityUseMainTexA;
+    half _AnisoMaskFrom;
     half _AnisoIntensityUseSmoothness;
+    half _AnisoMaskUsage;
+    half _AnisoMaskBlendStandardAniso;
 // ==================================================
     half4 _ClothSheenColor;
     half _ClothDMax,_ClothDMin;
-    half _ClothGGXUseMainTexA;
+    half _ClothMaskFrom;
+    half _ClothMaskUsage;
 // ==================================================
     half _ApplyShadowOn;
     half _MainLightShadowSoftScale;

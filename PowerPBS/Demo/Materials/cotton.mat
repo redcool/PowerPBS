@@ -132,7 +132,7 @@ Material:
     - _AmbientSHIntensity: 0.5
     - _AnisoIntensity: 1
     - _AnisoLayer2On: 0
-    - _AnisoIntensityUseMainTexA: 0
+    - _AnisoMaskFrom: 0
     - _AnisoRough: 0
     - _ApplyShadowOn: 1
     - _BackFaceGIDiffuse: 0
@@ -145,7 +145,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _ClothDMax: 0
     - _ClothDMin: 0.54
-    - _ClothGGXUseMainTexA: 0
+    - _ClothMaskFrom: 0
     - _CoatSmoothness: 0.5
     - _Cull: 2
     - _CullMode: 2

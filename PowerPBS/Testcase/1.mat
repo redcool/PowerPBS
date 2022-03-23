@@ -104,7 +104,7 @@ Material:
     - _AlphaTestOn: 0
     - _AmbientSHIntensity: 0.5
     - _AnisoIntensity: 1
-    - _AnisoIntensityUseMainTexA: 0
+    - _AnisoMaskFrom: 0
     - _AnisoIntensityUseSmoothness: 0
     - _AnisoLayer2On: 0
     - _AnisoRough: 0
@@ -117,7 +117,7 @@ Material:
     - _ClearCoatOn: 0
     - _ClothDMax: 1
     - _ClothDMin: 0
-    - _ClothGGXUseMainTexA: 0
+    - _ClothMaskFrom: 0
     - _CoatIndirectSpecularIntensity: 1
     - _CoatSmoothness: 0.5
     - _CullMode: 2

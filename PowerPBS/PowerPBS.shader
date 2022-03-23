@@ -101,7 +101,8 @@ Shader "Character/PowerPBS"
         _Layer2AnisoRough("_Layer2AnisoRough",range(0,1)) = 0
         // _Layer2AnisoShift("_Layer2AnisoShift",float) = 0
         [Header(Mask)]
-        [LiteToggle]_AnisoIntensityUseMainTexA("_AnisoIntensityUseMainTexA",float) = 0
+        [Enum(None,0,MainTexA,1,PbrMaskA,2)]_AnisoMaskFrom("_AnisoMaskFrom",float) = 0
+        [Enum(None,0,Intensity,1,BlendStardard,2)]_AnisoMaskUsage("_AnisoMaskUsage",float)=0
         [LiteToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0
 // ==================================================
         [Header(Pre Integral Scatter)]
@@ -122,8 +123,9 @@ Shader "Character/PowerPBS"
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)
         _ClothDMin("_ClothDMin",range(0,1)) = 0
         _ClothDMax("_ClothDMax",range(0,1)) = 1
-        [LiteToggle]_ClothGGXUseMainTexA("_ClothGGXUseMainTexA(a,1 : Cloth,0:Standard)",int) = 0
-
+        [Header(Mask)]
+        [Enum(None,0,MainTexA,1,PbrMaskA,2)]_ClothMaskFrom("_ClothMaskFrom",int) = 0
+        [Enum(None,0,Intensity,1,BlendStandard,2)]_ClothMaskUsage("_ClothMaskUsage",int) = 0
 // ==================================================
         // [LiteToggle]_Detail4_MapOn("_Detail4_MapOn",int) = 0
         // [Enum(Multiply,0,Replace,1)]_Detail4_MapMode("_Detail4_MapMode",int) = 0

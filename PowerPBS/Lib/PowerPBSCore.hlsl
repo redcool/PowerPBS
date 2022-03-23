@@ -193,10 +193,16 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
                 // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
                 specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor;
             }
+            half anisoMask = data.none_mainTexA_pbrMaskA[_AnisoMaskFrom];
             specTerm *= V * PI;
-            specTerm *= lerp(1,data.mainTex.a,_AnisoIntensityUseMainTexA);
-            specTerm *= lerp(1,data.roughness,_AnisoIntensityUseSmoothness);
+            specTerm *= lerp(1,anisoMask,_AnisoMaskUsage == ANISO_MASK_FOR_INTENSITY);
+            specTerm *= lerp(1,1 - data.roughness,_AnisoIntensityUseSmoothness);
             specTerm *= specColor;
+
+            if(_AnisoMaskUsage == ANISO_MASK_FOR_BLEND_STANDARD){
+                half3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
+                specTerm = lerp(specTerm,standardColor,anisoMask);
+            }
         #endif
         // break;
         // case PBR_MODE_CLOTH:
@@ -205,10 +211,13 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             D = CharlieD(data.roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
             half3 sheenColor = D * PI * _ClothSheenColor;
-            // extra calc ggx
-            if(_ClothGGXUseMainTexA){
+            half clothMask = data.none_mainTexA_pbrMaskA[_ClothMaskFrom];
+            // mask control intensity
+            sheenColor *= lerp(1,clothMask,_ClothMaskUsage == CLOTH_MASK_FOR_INTENSITY);
+            //mask control blend
+            if(_ClothMaskUsage == CLOTH_MASK_FOR_BLEND_STANDARD){
                 half3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
-                sheenColor = lerp(standardColor,sheenColor,data.mainTex.a);
+                sheenColor = lerp(sheenColor,standardColor,clothMask);
             }
             specTerm = sheenColor;
         #endif

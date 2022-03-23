@@ -3,6 +3,12 @@
 
 #include "PowerPBSInput.hlsl"
 
+// aniso mask usage
+#define ANISO_MASK_FOR_INTENSITY 1
+#define ANISO_MASK_FOR_BLEND_STANDARD 2
+
+#define CLOTH_MASK_FOR_INTENSITY 1
+#define CLOTH_MASK_FOR_BLEND_STANDARD 2
 
 struct PBSData{
     half3 tangent;
@@ -22,6 +28,7 @@ struct PBSData{
     half nl;
     half nv;
     half fresnelTerm;
+    half3 none_mainTexA_pbrMaskA;
 };
 
 void InitPBSData(half3 tangent,half3 binormal,half3 normal,half3 viewDir,

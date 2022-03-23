@@ -121,6 +121,7 @@ half4 frag (v2f i) : SV_Target
     PBSData pbsData;
     InitPBSData(worldData.tangent,worldData.binormal,worldData.normal,worldData.view,surfaceData.oneMinusReflectivity, smoothness,heightClothSSSMask,worldData.pos,pbsData/**/);
     pbsData.mainTex = mainTex;
+    pbsData.none_mainTexA_pbrMaskA = half3(1,mainTex.a,pbrMask.a);
 
     // calc strand specular
     #if defined(_PBRMODE_STRANDSPEC)

@@ -125,7 +125,7 @@ Material:
     - _AlphaTestOn: 0
     - _AmbientSHIntensity: 0.5
     - _AnisoIntensity: 1.46
-    - _AnisoIntensityUseMainTexA: 0
+    - _AnisoMaskFrom: 0
     - _AnisoIntensityUseSmoothness: 0
     - _AnisoLayer2On: 1
     - _AnisoRough: 0.875
@@ -141,7 +141,7 @@ Material:
     - _ClearCoatSmoothness: 0
     - _ClothDMax: 1
     - _ClothDMin: 0
-    - _ClothGGXUseMainTexA: 1
+    - _ClothMaskFrom: 1
     - _CoatIndirectSpecularIntensity: 1
     - _CoatSmoothness: 0.5
     - _Cull: 2
