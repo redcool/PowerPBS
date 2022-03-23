@@ -15,7 +15,10 @@ half4 ShowDebug(UnityIndirect gi,WorldData worldData,SurfaceData surfaceData,hal
         return smoothness;
     if(_ShowOcclusion)
         return occlusion;
-        
+    if(_ShowSpecular)
+        return surfaceData.specColor.xyzx;
+    if(_ShowDiffuse)
+        return surfaceData.diffColor.xyzx;
     return half4(.1,.2,.3,1);
 }
 

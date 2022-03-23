@@ -162,9 +162,9 @@ CBUFFER_START(UnityPerMaterial)
 // ================================================== custom shadow caster params
     half4 _CustomShadowBias; // x: depth bias, y: normal bias
 // ================================================== debug data
-    half _ShowGIDiff;
-    half _ShowGISpec;
-    half _ShowNormal,_ShowOcclusion,_ShowMetallic,_ShowSmoothness;
+    half _ShowGIDiff,_ShowGISpec,_ShowNormal,_ShowOcclusion;
+    half _ShowMetallic,_ShowSmoothness,_ShowSpecular,_ShowDiffuse;
+    half _EnableDebug;
 
 CBUFFER_END
 
