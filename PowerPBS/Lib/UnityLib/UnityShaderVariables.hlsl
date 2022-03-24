@@ -7,6 +7,7 @@
 #define UNITY_SHADER_VARIABLES_INCLUDED
 
 #include "../Common.hlsl"
+#include "../URP_Input.hlsl"
 
 #if defined (DIRECTIONAL_COOKIE) || defined (DIRECTIONAL)
 #define USING_DIRECTIONAL_LIGHT
@@ -106,13 +107,6 @@ CBUFFER_END
 // ----------------------------------------------------------------------------
 
 CBUFFER_START(UnityLighting)
-
-    #ifdef USING_DIRECTIONAL_LIGHT
-    half4 _WorldSpaceLightPos0;
-    #else
-    half4 _WorldSpaceLightPos0;
-    #endif
-
     half4 _LightPositionRange; // xyz = pos, w = 1/range
     half4 _LightProjectionParams; // for point light projection: x = zfar / (znear - zfar), y = (znear * zfar) / (znear - zfar), z=shadow bias, w=shadow scale bias
 
@@ -149,7 +143,7 @@ CBUFFER_END
 CBUFFER_START(UnityShadows)
     half4 unity_ShadowSplitSpheres[4];
     half4 unity_ShadowSplitSqRadii;
-    half4 unity_LightShadowBias;
+    // half4 unity_LightShadowBias;
     half4 _LightSplitsNear;
     half4 _LightSplitsFar;
     half4x4 unity_WorldToShadow[4];

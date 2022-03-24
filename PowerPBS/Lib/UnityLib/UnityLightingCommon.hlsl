@@ -3,7 +3,7 @@
 #ifndef UNITY_LIGHTING_COMMON_INCLUDED
 #define UNITY_LIGHTING_COMMON_INCLUDED
 
-half4 _LightColor0;
+// half4 _LightColor0;
 half4 _SpecColor;
 
 struct UnityLight

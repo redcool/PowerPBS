@@ -23,6 +23,10 @@
 #define unity_ColorSpaceDielectricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04) // standard dielectric reflectivity coef at incident angle (= 4%)
 #define unity_ColorSpaceLuminance half4(0.0396819152, 0.458021790, 0.00609653955, 1.0) // Legacy: alpha is set to 1.0 to specify linear mode
 #endif
+
+// for urp adapter
+#define _WorldSpaceLightPos0 _MainLightPosition
+
 struct appdata_base {
     half4 vertex : POSITION;
     half3 normal : NORMAL;
@@ -49,7 +53,9 @@ struct appdata_full {
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-
+half3 LinearToGammaSpace(half3 linearRGB){
+    return max(0,pow(linearRGB,0.45));
+}
 
 // Tranforms position from world to homogenous space
 inline half4 UnityWorldToClipPos( in half3 pos )

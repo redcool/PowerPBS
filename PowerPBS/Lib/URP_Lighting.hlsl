@@ -10,10 +10,7 @@
 
 #include "UnityLib/UnityShaderVariables.hlsl"
 #include "URP_AdditionalLightShadows.hlsl"
-// Input.hlsl
-half4 _MainLightPosition;
-half4 _MainLightColor;
-half4 _MainLightOcclusionProbes;
+
 
 //-------------------- urp Lighting.cginc
 half4 _AdditionalLightsCount;

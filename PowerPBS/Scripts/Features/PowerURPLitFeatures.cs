@@ -13,45 +13,43 @@ namespace PowerUtilities.PowerPBS
     {
 
         // drp light datas
-        public static readonly int _LightColor0;
-        public static readonly int _WorldSpaceLightPos0;
-        public static readonly int _MainLightShadowmapTexture;
-        public static readonly int _ShadowBias;
+        // public static readonly int _LightColor0;
+        // public static readonly int _WorldSpaceLightPos0;
+        //public static readonly int _MainLightShadowmapTexture;
+        // public static readonly int _ShadowBias;
         public static readonly int _MainLightShadowOn;
 
         static DrpLightShaderVarables()
         {
-            _LightColor0 = Shader.PropertyToID("_LightColor0");
-            _WorldSpaceLightPos0 = Shader.PropertyToID("_WorldSpaceLightPos0");
-            _MainLightShadowmapTexture = Shader.PropertyToID("_MainLightShadowmapTexture");
+            // _LightColor0 = Shader.PropertyToID("_LightColor0");
+            // _WorldSpaceLightPos0 = Shader.PropertyToID("_WorldSpaceLightPos0");
+            //_MainLightShadowmapTexture = Shader.PropertyToID("_MainLightShadowmapTexture");
 
-            _ShadowBias = Shader.PropertyToID("unity_LightShadowBias");
+            // _ShadowBias = Shader.PropertyToID("unity_LightShadowBias");
             _MainLightShadowOn = Shader.PropertyToID("_MainLightShadowOn");
         }
 
         public static void SendLight(CommandBuffer cmd, RenderingData renderingData)
         {
-            var lightData = renderingData.lightData;
-            if (lightData.mainLightIndex < 0)
-                return;
-
-
+            //var lightData = renderingData.lightData;
+            //if (lightData.mainLightIndex < 0)
+            //    return;
 
             // light
-            var vLight = lightData.visibleLights[lightData.mainLightIndex];
-            cmd.SetGlobalVector(_WorldSpaceLightPos0, -vLight.localToWorldMatrix.GetColumn(2));
-            cmd.SetGlobalColor(_LightColor0, vLight.finalColor);
+            // var vLight = lightData.visibleLights[lightData.mainLightIndex];
+            //cmd.SetGlobalVector(_WorldSpaceLightPos0, -vLight.localToWorldMatrix.GetColumn(2));
+            //cmd.SetGlobalColor(_LightColor0, vLight.finalColor);
 
             // shadow bias
-            var shadowData = renderingData.shadowData;
-            var shadowResolution = ShadowUtils.GetMaxTileResolutionInAtlas(shadowData.mainLightShadowmapWidth, shadowData.mainLightShadowmapHeight, shadowData.mainLightShadowCascadesCount);
-            Matrix4x4 viewMat, projMat;
-            ShadowSplitData shadowSplitData;
-            renderingData.cullResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(lightData.mainLightIndex, 0, shadowData.mainLightShadowCascadesCount, shadowData.mainLightShadowCascadesSplit, shadowResolution, vLight.light.shadowNearPlane, out viewMat, out projMat, out shadowSplitData);
+            // var shadowData = renderingData.shadowData;
+            // var shadowResolution = ShadowUtils.GetMaxTileResolutionInAtlas(shadowData.mainLightShadowmapWidth, shadowData.mainLightShadowmapHeight, shadowData.mainLightShadowCascadesCount);
+            // Matrix4x4 viewMat, projMat;
+            // ShadowSplitData shadowSplitData;
+            // renderingData.cullResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(lightData.mainLightIndex, 0, shadowData.mainLightShadowCascadesCount, shadowData.mainLightShadowCascadesSplit, shadowResolution, vLight.light.shadowNearPlane, out viewMat, out projMat, out shadowSplitData);
 
-            Vector4 shadowBias = ShadowUtils.GetShadowBias(ref vLight, lightData.mainLightIndex, ref renderingData.shadowData, projMat, shadowResolution);
+            // Vector4 shadowBias = ShadowUtils.GetShadowBias(ref vLight, lightData.mainLightIndex, ref renderingData.shadowData, projMat, shadowResolution);
 
-            cmd.SetGlobalVector(_ShadowBias, shadowBias);
+            //cmd.SetGlobalVector(_ShadowBias, shadowBias);
 
             var asset = UniversalRenderPipeline.asset;
             cmd.SetGlobalFloat(_MainLightShadowOn, asset.supportsMainLightShadows ? 1 : 0);
