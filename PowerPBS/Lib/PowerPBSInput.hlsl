@@ -113,12 +113,15 @@ CBUFFER_START(UnityPerMaterial)
     half _ScatteringLUTOn;
     half _ScatteringIntensity;
     half _CurvatureScale;
-    half _PreScatterMaskUseMainTexA;
+    half _PreScatterMaskFrom;
+    half _PreScatterMaskUsage;
+
     half _LightColorNoAtten;
     half _AdditionalLightCalcScatter;
     half _DiffuseProfileOn;
     half _BlurSize;
-    half _DiffuseProfileMaskUserMainTexA;
+    half _SSSSMaskFrom;
+    half _SSSSMaskUsage;
 // ================================================== detail maps
     // main detail normalMap
     half4 _Detail_NormalMap_ST;

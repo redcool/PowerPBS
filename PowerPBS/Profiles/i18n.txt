@@ -50,12 +50,12 @@ _ScatteringLUTOn=_ScatteringLUTOn
 _ScatteringLUT=_ScatteringLUT
 _ScatteringIntensity=_ScatteringIntensity
 _CurvatureScale=_CurvatureScale
-_PreScatterMaskUseMainTexA=_PreScatterMaskUseMainTexA
+_PreScatterMaskFrom=_PreScatterMaskFrom
 _LightColorNoAtten = _LightColorNoAtten?
 _AdditionalLightCalcScatter=_AdditionalLightCalcScatter
 _DiffuseProfileOn=_DiffuseProfileOn ?需要DiffuseProfileSetter
 _BlurSize=_BlurSize
-_DiffuseProfileMaskUserMainTexA=_DiffuseProfileMaskUserMainTexA?
+_SSSSMaskFrom=_SSSSMaskFrom?
 // ==================================================
 
 _ClothSheenColor=_ClothSheenColor
@@ -133,7 +133,7 @@ _ZWriteOn=_ZWriteOn?
 _ZTestMode = _ZTestMode?
 _CullMode=_CullMode
 // ==================================================
-_HeightClothSSSMask=_Height(R) , Cloth(G) , SSSMask(B,A)
+_HeightClothSSSMask=_Height(R) , None(G) , SSSMask(B,A)
 
 _SSSOn=_SSSOn
 _FrontSSSIntensity=_FrontSSSIntensity

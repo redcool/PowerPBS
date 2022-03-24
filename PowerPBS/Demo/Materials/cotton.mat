@@ -167,7 +167,7 @@ Material:
     - _Detail_MapMode: 0
     - _Detail_MapOn: 0
     - _Detail_NormalMapScale: 1
-    - _DiffuseProfileMaskUserMainTexA: 1
+    - _SSSSMaskFrom: 1
     - _DiffuseProfileOn: 0
     - _DirectionalLightFromSHOn: 0
     - _DirectionalSHIntensity: 0.5
@@ -201,7 +201,7 @@ Material:
     - _PBRMode: 2
     - _ParallalOn: 0
     - _Parallax: 0.005
-    - _PreScatterMaskUseMainTexA: 1
+    - _PreScatterMaskFrom: 1
     - _QueueOffset: 0
     - _ReceiveAdditionalLightsOn: 1
     - _ReceiveAdditionalLightsShadowOn: 1

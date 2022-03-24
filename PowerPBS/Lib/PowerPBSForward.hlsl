@@ -151,7 +151,7 @@ half4 frag (v2f i) : SV_Target
     #if defined(_PRESSS)
     if(_ScatteringLUTOn){
         half3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
-        half3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity);
+        half3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.none_mainTexA_pbrMaskA);
         col.rgb += scatteredColor;
     }
     #endif
@@ -161,7 +161,8 @@ half4 frag (v2f i) : SV_Target
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
         half2 screenUV = i.screenPos.xy/i.screenPos.w;
-        half profileMask = _DiffuseProfileMaskUserMainTexA ? mainTex.a : 1;
+        half profileMask = GetMaskForIntensity(pbsData.none_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
+
         col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
         col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
         // col = originalColor + horizontalGasussianColor + verticalGausssianColor

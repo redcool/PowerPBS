@@ -110,19 +110,28 @@ Shader "Character/PowerPBS"
         [NoScaleOffset]_ScatteringLUT("_ScatteringLUT",2d) = ""{}
         _ScatteringIntensity("_ScatteringIntensity",range(0,3)) = 1
         _CurvatureScale("_CurvatureScale (MainTex.a)",range(0.01,0.99)) = 1
-        [LiteToggle]_PreScatterMaskUseMainTexA("_PreScatterMaskUseMainTexA",int) = 1
+
+        [Header(Mask)]
+        [Enum(None,0,MainTexA,1,PbrMaskA,2)]_PreScatterMaskFrom("_AnisoMaskFrom",float) = 0
+        [Enum(None,0,Intensity,1)]_PreScatterMaskUsage("_AnisoMaskUsage",float)=0
+
+        [Header(Light Ops)]
         [LiteToggle]_LightColorNoAtten("_LightColorNoAtten",int) = 1
         [LiteToggle]_AdditionalLightCalcScatter("_AdditionalLightCalcScatter",int) = 0
 
         [Header(Diffuse Profile ScreenSpace)]
         [Toggle(_SSSS)]_DiffuseProfileOn("_DiffuseProfileOn",int) = 0
         _BlurSize("_BlurSize",range(0,20)) = 1
-        [LiteToggle]_DiffuseProfileMaskUserMainTexA("_DiffuseProfileMaskUserMainTexA",int) = 1
+
+        [Header(SSSS Mask)]
+        [Enum(None,0,MainTexA,1,PbrMaskA,2)]_SSSSMaskFrom("_SSSSMaskFrom",float) = 0
+        [Enum(None,0,Intensity,1)]_SSSSMaskUsage("_SSSSMaskUsage",float)=0
 // ==================================================
         [Header(Cloth Spec)]
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)
         _ClothDMin("_ClothDMin",range(0,1)) = 0
         _ClothDMax("_ClothDMax",range(0,1)) = 1
+        
         [Header(Mask)]
         [Enum(None,0,MainTexA,1,PbrMaskA,2)]_ClothMaskFrom("_ClothMaskFrom",int) = 0
         [Enum(None,0,Intensity,1,BlendStandard,2)]_ClothMaskUsage("_ClothMaskUsage",int) = 0

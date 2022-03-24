@@ -3,12 +3,31 @@
 
 #include "PowerPBSInput.hlsl"
 
-// aniso mask usage
+// Mask System
 #define ANISO_MASK_FOR_INTENSITY 1
 #define ANISO_MASK_FOR_BLEND_STANDARD 2
 
 #define CLOTH_MASK_FOR_INTENSITY 1
 #define CLOTH_MASK_FOR_BLEND_STANDARD 2
+
+#define PRESSS_MASK_FOR_INTENSITY 1
+
+#define SSSS_MASK_FOR_INTENSITY 1
+
+
+/**
+    Get Target Mask
+*/
+half GetMaskForIntensity(half3 maskData,half maskFrom,half maskUsage,half maskExpectUsage){
+    half mask = maskData[maskFrom];
+    return lerp(1,mask,maskUsage == maskExpectUsage);
+}
+
+half GetMask(half3 maskData,half maskFrom){
+    return maskData[maskFrom];
+}
+
+
 
 struct PBSData{
     half3 tangent;
@@ -77,6 +96,7 @@ struct SurfaceData{
 struct WorldData{
     half3 pos,view,reflect,tangent,binormal,normal,vertexNormal,vertexTangent,vertexBinormal;
 };
+
 
 
 #endif //POWER_PBS_DATA_HLSL

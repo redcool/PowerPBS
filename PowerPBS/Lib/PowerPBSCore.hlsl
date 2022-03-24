@@ -38,15 +38,17 @@ inline half3 GetWorldViewDir(half3 worldPos){
     return dir;
 }
 
-inline half3 PreScattering(half3 normal,half3 lightDir,half3 lightColor,half nl,half4 mainTex,half3 worldPos,half curveScale,half scatterIntensity){
+inline half3 PreScattering(half3 normal,half3 lightDir,half3 lightColor,half nl,half4 mainTex,half3 worldPos,half curveScale,half scatterIntensity,half3 maskData){
     half wnl = dot(normal,(lightDir)) * 0.5 + 0.5;
     // half deltaNormal = length(fwidth(normal))*10;
     // half deltaPos = length(fwidth(worldPos));
     // half curvature = deltaNormal/1 * curveScale;
     half atten = 1-wnl;//smoothstep(0.,0.5,nl);
     half3 scattering = SAMPLE_TEXTURE2D(_ScatteringLUT,sampler_linear_repeat,half2(wnl,curveScale ));
-    half scatterMask = lerp(1,mainTex.w,_PreScatterMaskUseMainTexA);
-    return scattering * lightColor * mainTex.xyz * atten * scatterIntensity * scatterMask;
+
+    half mask = GetMaskForIntensity(maskData,_PreScatterMaskFrom,_PreScatterMaskUsage,PRESSS_MASK_FOR_INTENSITY);
+
+    return scattering * lightColor * mainTex.xyz * atten * scatterIntensity * mask;
 }
 
 inline half3 GetIndirectSpecular(half3 reflectDir,half rough){
@@ -193,7 +195,8 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
                 // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
                 specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor;
             }
-            half anisoMask = data.none_mainTexA_pbrMaskA[_AnisoMaskFrom];
+            half anisoMask = GetMask(data.none_mainTexA_pbrMaskA,_AnisoMaskFrom);
+
             specTerm *= V * PI;
             specTerm *= lerp(1,anisoMask,_AnisoMaskUsage == ANISO_MASK_FOR_INTENSITY);
             specTerm *= lerp(1,1 - data.roughness,_AnisoIntensityUseSmoothness);
@@ -211,7 +214,7 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             D = CharlieD(data.roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
             half3 sheenColor = D * PI * _ClothSheenColor;
-            half clothMask = data.none_mainTexA_pbrMaskA[_ClothMaskFrom];
+            half clothMask = GetMask(data.none_mainTexA_pbrMaskA,_ClothMaskFrom);
             // mask control intensity
             sheenColor *= lerp(1,clothMask,_ClothMaskUsage == CLOTH_MASK_FOR_INTENSITY);
             //mask control blend
@@ -307,7 +310,7 @@ half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor)
 
             #if defined(_PRESSS)
             if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
-                half3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity);
+                half3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity,data.none_mainTexA_pbrMaskA);
                 color.rgb += scatteredColor ;
             }
             #endif
