@@ -13,33 +13,30 @@ namespace PowerUtilities.PowerPBS
     {
 
         // drp light datas
-        // public static readonly int _LightColor0;
-        // public static readonly int _WorldSpaceLightPos0;
-        //public static readonly int _MainLightShadowmapTexture;
-        // public static readonly int _ShadowBias;
+        public static readonly int _LightColor0;
+        public static readonly int _WorldSpaceLightPos0;
+        public static readonly int _ShadowBias;
         public static readonly int _MainLightShadowOn;
 
         static DrpLightShaderVarables()
         {
-            // _LightColor0 = Shader.PropertyToID("_LightColor0");
-            // _WorldSpaceLightPos0 = Shader.PropertyToID("_WorldSpaceLightPos0");
-            //_MainLightShadowmapTexture = Shader.PropertyToID("_MainLightShadowmapTexture");
+            _LightColor0 = Shader.PropertyToID("_LightColor0");
+            _WorldSpaceLightPos0 = Shader.PropertyToID("_WorldSpaceLightPos0");
 
-            // _ShadowBias = Shader.PropertyToID("unity_LightShadowBias");
+            _ShadowBias = Shader.PropertyToID("unity_LightShadowBias");
             _MainLightShadowOn = Shader.PropertyToID("_MainLightShadowOn");
         }
 
         public static void SendLight(CommandBuffer cmd, RenderingData renderingData)
         {
-            //var lightData = renderingData.lightData;
-            //if (lightData.mainLightIndex < 0)
-            //    return;
-
-            // light
-            // var vLight = lightData.visibleLights[lightData.mainLightIndex];
-            //cmd.SetGlobalVector(_WorldSpaceLightPos0, -vLight.localToWorldMatrix.GetColumn(2));
-            //cmd.SetGlobalColor(_LightColor0, vLight.finalColor);
-
+            var lightData = renderingData.lightData;
+            if (lightData.mainLightIndex > 0)
+            {
+                // light
+                var vLight = lightData.visibleLights[lightData.mainLightIndex];
+                cmd.SetGlobalVector(_WorldSpaceLightPos0, -vLight.localToWorldMatrix.GetColumn(2));
+                cmd.SetGlobalColor(_LightColor0, vLight.finalColor);
+            }
             // shadow bias
             // var shadowData = renderingData.shadowData;
             // var shadowResolution = ShadowUtils.GetMaxTileResolutionInAtlas(shadowData.mainLightShadowmapWidth, shadowData.mainLightShadowmapHeight, shadowData.mainLightShadowCascadesCount);
