@@ -8,9 +8,7 @@
     #define MAX_VISIBLE_LIGHTS 256
 #endif
 
-#include "UnityLib/UnityShaderVariables.hlsl"
 #include "URP_AdditionalLightShadows.hlsl"
-
 
 //-------------------- urp Lighting.cginc
 half4 _AdditionalLightsCount;

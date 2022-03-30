@@ -2,10 +2,10 @@
 #define POWER_PBS_CORE_HLSL
 #include "UnityLib/UnityLightingCommon.hlsl"
 #include "PowerPBSData.hlsl"
-#include "BSDF.hlsl"
-#include "CommonUtils.hlsl"
-#include "URP_Lighting.hlsl"
-#include "ExtractLightFromSH.hlsl"
+#include "Tools/BSDF.hlsl"
+#include "Tools/CommonUtils.hlsl"
+#include "UrpLib/URP_Lighting.hlsl"
+#include "Tools/ExtractLightFromSH.hlsl"
 
 inline UnityLight GetLight(){
     half3 dir = _MainLightPosition;
@@ -195,7 +195,7 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
                 // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
                 specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor;
             }
-            half anisoMask = GetMask(data.none_mainTexA_pbrMaskA,_AnisoMaskFrom);
+            half anisoMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_AnisoMaskFrom);
 
             specTerm *= V * PI;
             specTerm *= lerp(1,anisoMask,_AnisoMaskUsage == ANISO_MASK_FOR_INTENSITY);
@@ -214,7 +214,7 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             D = CharlieD(data.roughness,nh);
             D = smoothstep(_ClothDMin,_ClothDMax,D);
             half3 sheenColor = D * PI * _ClothSheenColor;
-            half clothMask = GetMask(data.none_mainTexA_pbrMaskA,_ClothMaskFrom);
+            half clothMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_ClothMaskFrom);
             // mask control intensity
             sheenColor *= lerp(1,clothMask,_ClothMaskUsage == CLOTH_MASK_FOR_INTENSITY);
             //mask control blend
@@ -229,6 +229,7 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
         #if defined(_PBRMODE_STRANDSPEC)
             specTerm = data.hairSpecColor;
         #endif
+
         // break;
     // }
     specTerm = min(specTerm, _MaxSpecularIntensity); // eliminate large value in HDR
@@ -310,7 +311,7 @@ half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor)
 
             #if defined(_PRESSS)
             if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
-                half3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity,data.none_mainTexA_pbrMaskA);
+                half3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity,data.maskData_None_mainTexA_pbrMaskA);
                 color.rgb += scatteredColor ;
             }
             #endif
@@ -332,9 +333,21 @@ half3 CalcIndirectApplySHDirLight(half3 indirectColor,PBSData data,half3 diffCol
     return indirectColor;
 }
 
+void ApplyThinFilm(half invertNV,half3 maskData,inout half3 specColor){
+    #if defined(_THIN_FILM_ON)
+        half tfMask = GetMaskForIntensity(maskData,_TFMaskFrom,_TFMaskUsage,THIN_FILE_MASK_FOR_INTENSITY);
+        // half tfMask =  (_TFMaskUsage == THIN_FILE_MASK_FOR_INTENSITY) ? tfMaskData : 1;
+        half3 thinFilm = ThinFilm(invertNV,_TFScale,_TFOffset,_TFSaturate,_TFBrightness);
+
+        half3 tfSpecColor = (specColor + 1) * thinFilm ;
+        specColor = lerp(specColor,tfSpecColor,tfMask);
+    #endif
+}
+
 half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,ClearCoatData coatData,inout PBSData data){
     CALC_LIGHT_INFO(mainLight.dir);
 
+    ApplyThinFilm(1-nv,data.maskData_None_mainTexA_pbrMaskA,specColor/**/);
     // set pbsdata for others flow.
     data.nl = nl;
     data.nv = nv;
@@ -374,6 +387,11 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     #if defined(_ADDITIONAL_LIGHT)
     color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
     #endif
+
+    // #if defined(_THIN_FILM_ON)
+    //     half3 thinFilm = ThinFilm(1-nv,_TFScale,_TFOffset,_TFSaturate,_TFBrightness);
+    //     color.rgb = (color.rgb +1) * thinFilm;
+    // #endif
 
     return half4(color,1);
 }

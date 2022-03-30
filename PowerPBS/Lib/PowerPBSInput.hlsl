@@ -1,7 +1,7 @@
 #if !defined(POWER_PBS_INPUT_HLSL)
 #define POWER_PBS_INPUT_HLSL
-#include "Common.hlsl"
-#include "StrandSpecLib.hlsl"
+#include "Tools/Common.hlsl"
+#include "Tools/StrandSpecLib.hlsl"
 
 #define MAX_SPECULAR 25
 // detail map mode id
@@ -167,6 +167,9 @@ CBUFFER_START(UnityPerMaterial)
     half _HairAoIntensity;
 // ================================================== custom shadow caster params
     half4 _CustomShadowBias; // x: depth bias, y: normal bias
+// ================================================== Thin Film
+    half _TFScale,_TFOffset,_TFSaturate,_TFBrightness;
+    half _TFMaskFrom,_TFMaskUsage;
 // ================================================== debug data
     half _ShowGIDiff,_ShowGISpec,_ShowNormal,_ShowOcclusion;
     half _ShowMetallic,_ShowSmoothness,_ShowSpecular,_ShowDiffuse;

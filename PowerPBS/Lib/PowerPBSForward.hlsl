@@ -3,9 +3,9 @@
 
 #include "PowerPBSCore.hlsl"
 #include "PowerPBSHair.hlsl"
-#include "URP_MainLightShadows.hlsl"
-#include "Blur.hlsl"
-#include "ParallaxMapping.hlsl"
+#include "UrpLib/URP_MainLightShadows.hlsl"
+#include "Tools/Blur.hlsl"
+#include "Tools/ParallaxMapping.hlsl"
 
 #if defined(_POWER_DEBUG)
 #include "PowerPBSDebug.hlsl"
@@ -121,7 +121,7 @@ half4 frag (v2f i) : SV_Target
     PBSData pbsData;
     InitPBSData(worldData.tangent,worldData.binormal,worldData.normal,worldData.view,surfaceData.oneMinusReflectivity, smoothness,heightClothSSSMask,worldData.pos,pbsData/**/);
     pbsData.mainTex = mainTex;
-    pbsData.none_mainTexA_pbrMaskA = half3(1,mainTex.a,pbrMask.a);
+    pbsData.maskData_None_mainTexA_pbrMaskA = half3(1,mainTex.a,pbrMask.a);
 
     // calc strand specular
     #if defined(_PBRMODE_STRANDSPEC)
@@ -151,7 +151,7 @@ half4 frag (v2f i) : SV_Target
     #if defined(_PRESSS)
     if(_ScatteringLUTOn){
         half3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
-        half3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.none_mainTexA_pbrMaskA);
+        half3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.maskData_None_mainTexA_pbrMaskA);
         col.rgb += scatteredColor;
     }
     #endif
@@ -161,7 +161,7 @@ half4 frag (v2f i) : SV_Target
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
         // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
         half2 screenUV = i.screenPos.xy/i.screenPos.w;
-        half profileMask = GetMaskForIntensity(pbsData.none_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
+        half profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
 
         col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
         col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);

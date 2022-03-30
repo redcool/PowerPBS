@@ -1,6 +1,7 @@
 #if !defined(BSDF_HLSL)
 #define BSDF_HLSL
 #include "CommonUtils.hlsl"
+#include "Colors.hlsl"
 
 inline half FastSSS(half3 l,half3 v){
     return saturate(dot(l,v));
@@ -163,5 +164,12 @@ half MinimalistCookTorrance(half nh,half lh,half rough,half rough2){
         spec = clamp(spec,0,100);
     #endif
     return spec;
+}
+
+half3 ThinFilm(half invertNV,half scale,half offset,half saturate,half brightness){
+    half h = invertNV * scale + offset;
+    half s = saturate;
+    half v = brightness;
+    return HSVToRGB(half3(h,s,v));
 }
 #endif //BSDF_HLSL

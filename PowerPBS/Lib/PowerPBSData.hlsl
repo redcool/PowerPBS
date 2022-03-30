@@ -13,6 +13,7 @@
 #define PRESSS_MASK_FOR_INTENSITY 1
 
 #define SSSS_MASK_FOR_INTENSITY 1
+#define THIN_FILE_MASK_FOR_INTENSITY 1
 
 
 /**
@@ -26,7 +27,6 @@ half GetMaskForIntensity(half3 maskData,half maskFrom,half maskUsage,half maskEx
 half GetMask(half3 maskData,half maskFrom){
     return maskData[maskFrom];
 }
-
 
 
 struct PBSData{
@@ -43,11 +43,11 @@ struct PBSData{
     half3 lightDir;
     half3 halfDir;
     half perceptualRoughness,roughness,roughness2;
+    half3 maskData_None_mainTexA_pbrMaskA;
     // output params
     half nl;
     half nv;
     half fresnelTerm;
-    half3 none_mainTexA_pbrMaskA;
 };
 
 void InitPBSData(half3 tangent,half3 binormal,half3 normal,half3 viewDir,

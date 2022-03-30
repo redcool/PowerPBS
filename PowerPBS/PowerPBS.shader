@@ -226,7 +226,7 @@ Shader "Character/PowerPBS"
         [Space(10)][Header(ParallelOffset)]
         [LiteToggle]_ParallalOn("_ParallalOn",int) = 0
         _HeightScale("_HeightScale",range(0.005,0.08)) = 0
-// ==================================================
+// ================================================== kajiya kay
         [Space(10)][Header(Hair)]
         [Header(Strand Spec Mask)]
         _StrandMaskTex("_StrandMaskTex(ao_shift_specMask_tbMask)",2d) = ""{}
@@ -243,7 +243,17 @@ Shader "Character/PowerPBS"
         _SpecPower2("_SpecPower2",range(0.01,1)) = 1
         _SpecColor2("_SpecColor2",color) = (1,1,1,1)
         _SpecIntensity2("_SpecIntensity2",float) = 10
-
+// ================================================== ThinFilm
+        [Header(Thin Film)]
+        [Toggle(_THIN_FILM_ON)]_ThinFilmOn("_ThinFilmOn",float) = 0
+        _TFScale("_TFScale",float) = 1
+        _TFOffset("_TFOffset",float) = 0
+        _TFSaturate("_TFSaturate",range(0,1)) = 1
+        _TFBrightness("_TFBrightness",range(0,1)) = 1
+        [Header(Mask)]
+        [Enum(None,0,MainTexA,1,PbrMaskA,2)]_TFMaskFrom("_TFMaskFrom",int) = 0
+        [Enum(None,0,Intensity,1)]_TFMaskUsage("_TFMaskUsage",int) = 0
+// ================================================== Debug
         [Header(Debug Info)]
         [Toggle(_POWER_DEBUG)]_EnableDebug("_EnableDebug",float) = 0
         [Header(Debug GI)]
@@ -280,7 +290,7 @@ Shader "Character/PowerPBS"
         {
             Name "PowerPBS"
             // Tags{"LightMode"="ForwardBase" } // drp need this, otherwise shadow out
-            //Tags { "LightMode" = "UniversalForward" }
+            Tags { "LightMode" = "UniversalForward" }
             HLSLPROGRAM
             // #pragma multi_compile_fwdbase
             #pragma vertex vert
@@ -301,6 +311,7 @@ Shader "Character/PowerPBS"
             #pragma shader_feature_local_fragment _DIRECTIONAL_LIGHT_FROM_SH
             #pragma shader_feature_local_fragment _DETAIL_MAP
             #pragma shader_feature_local_fragment _SPECULAR_MAP_FLOW
+            #pragma shader_feature_local_fragment _THIN_FILM_ON
             #pragma shader_feature_local_fragment _POWER_DEBUG
 
             #include "Lib/PowerPBSForward.hlsl"

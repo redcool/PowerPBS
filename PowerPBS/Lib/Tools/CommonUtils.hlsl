@@ -6,8 +6,8 @@
 #define COMMON_UTILS_HLSL
 #include "Common.hlsl"
 
-#include "UnityLib/UnityShaderUtilities.hlsl"
-#include "UnityLib/UnityInstancing.hlsl"
+#include "../UnityLib/UnityShaderUtilities.hlsl"
+#include "../UnityLib/UnityInstancing.hlsl"
 
 // ----------------------- UnityCG.cginc 
 #if !defined(UNITY_CG_INCLUDED)

@@ -1,9 +1,9 @@
 #if !defined(SHADOW_CASTER_PASS_HLSL)
 #define SHADOW_CASTER_PASS_HLSL
 
-#include "CommonUtils.hlsl"
+#include "Tools/CommonUtils.hlsl"
 #include "PowerPBSInput.hlsl"
-#include "URP_MainLightShadows.hlsl"
+#include "UrpLib/URP_MainLightShadows.hlsl"
 
 
 struct v2f{

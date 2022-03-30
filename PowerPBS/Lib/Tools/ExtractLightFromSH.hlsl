@@ -1,7 +1,7 @@
 #if !defined (EXTRACT_LIGHT_FROM_SH_HLSL)
 #define EXTRACT_LIGHT_FROM_SH_HLSL
 
-#include "UnityLib/UnityShaderVariables.hlsl"
+#include "../UnityLib/UnityShaderVariables.hlsl"
 
 // #define PI 3.1415926
 // #define BAND0_FACTOR 0.5 / sqrt(PI) 

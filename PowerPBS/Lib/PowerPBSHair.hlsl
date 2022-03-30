@@ -1,6 +1,6 @@
 #if !defined(SIMPLE_PBS_HAIR_HLSL)
 #define SIMPLE_PBS_HAIR_HLSL
-#include "StrandSpecLib.hlsl"
+#include "Tools/StrandSpecLib.hlsl"
 #include "PowerPBSInput.hlsl"
 
 /**

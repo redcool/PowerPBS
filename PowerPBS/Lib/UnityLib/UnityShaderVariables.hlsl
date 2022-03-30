@@ -6,8 +6,8 @@
 #ifndef UNITY_SHADER_VARIABLES_INCLUDED
 #define UNITY_SHADER_VARIABLES_INCLUDED
 
-#include "../Common.hlsl"
-#include "../URP_Input.hlsl"
+#include "../Tools/Common.hlsl"
+#include "../UrpLib/URP_Input.hlsl"
 
 #if defined (DIRECTIONAL_COOKIE) || defined (DIRECTIONAL)
 #define USING_DIRECTIONAL_LIGHT
