@@ -173,8 +173,8 @@ Material:
     - _EnvironmentReflections: 1
     - _FresnelAlphaOn: 0
     - _FresnelIntensity: 0.33
-    - _FresnelMax: 1
-    - _FresnelMin: 0
+    - _FresnelAlphaMax: 1
+    - _FresnelAlphaMin: 0
     - _FrontSSSIntensity: 1
     - _GlossMapScale: 0
     - _Glossiness: 0

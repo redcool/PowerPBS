@@ -239,8 +239,12 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
 half3 CalcIndirect(half smoothness,half roughness2,half oneMinusReflectivity,half3 giDiffColor,half3 giSpecColor,half3 diffColor,half3 specColor,half fresnelTerm){
     half3 indirectDiffuse = giDiffColor * diffColor;
     half surfaceReduction =1 /(roughness2 + 1); // [1,0.5]
-    half grazingTerm = saturate(smoothness + 1 - oneMinusReflectivity) * _FresnelIntensity; //smoothness + metallic
-    half3 indirectSpecular = surfaceReduction * giSpecColor * lerp(specColor,grazingTerm,fresnelTerm);
+    half grazingTerm = saturate(smoothness + 1 - oneMinusReflectivity); //smoothness + metallic
+
+    half3 fresnelColor = _FresnelIntensity * grazingTerm * _FresnelColor;
+    fresnelTerm = smoothstep(0,_FresnelWidth,fresnelTerm);
+
+    half3 indirectSpecular = surfaceReduction * giSpecColor * lerp(specColor,fresnelColor,fresnelTerm);
     return indirectDiffuse + indirectSpecular;
 }
 
@@ -262,7 +266,7 @@ half3 CalcDirect(inout PBSData data,half3 diffColor,half3 specColor,half nl,half
     if(_SpecularOn){
         specularTerm = CalcSpecularTerm(data,nl,nv,nh,lh,specColor);
     }
-    return diffuseTerm + specularTerm;
+    return diffuseTerm + specularTerm * _SpecularIntensity;
 }
 
 half3 CalcDirectApplyClearCoat(half3 directColor,ClearCoatData data,half fresnelTerm,half nl,half nh,half lh){
@@ -365,7 +369,7 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     // apply sh dir light
     #if defined(_DIRECTIONAL_LIGHT_FROM_SH)
     // if(_DirectionalLightFromSHOn){
-        color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
+        // color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
     // }
     #endif
 

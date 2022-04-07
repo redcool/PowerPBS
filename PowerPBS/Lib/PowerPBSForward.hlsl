@@ -117,6 +117,7 @@ half4 frag (v2f i) : SV_Target
 
     SurfaceData surfaceData;
     InitSurfaceData(i.uv.zw,albedo,alpha,metallic,surfaceData/**/);
+    surfaceData.specColor *= _SpecularColorScale;
 
     PBSData pbsData;
     InitPBSData(worldData.tangent,worldData.binormal,worldData.normal,worldData.view,surfaceData.oneMinusReflectivity, smoothness,heightClothSSSMask,worldData.pos,pbsData/**/);
@@ -179,7 +180,7 @@ half4 frag (v2f i) : SV_Target
         col.rgb += CalcEmission(surfaceData.diffColor,uv);
     }
     if(_FresnelAlphaOn){
-        col.a *= saturate(smoothstep(_FresnelMin,_FresnelMax,pbsData.nv));
+        col.a *= saturate(smoothstep(_FresnelAlphaMin,_FresnelAlphaMax,pbsData.nv));
     }
     // apply fog
     // UNITY_APPLY_FOG(i.fogCoord, col);

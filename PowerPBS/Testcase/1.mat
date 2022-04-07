@@ -95,6 +95,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _AdditionalLightCalcFastSSS: 0
     - _AdditionalLightCalcScatter: 0
@@ -104,9 +105,10 @@ Material:
     - _AlphaTestOn: 0
     - _AmbientSHIntensity: 0.5
     - _AnisoIntensity: 1
-    - _AnisoMaskFrom: 0
     - _AnisoIntensityUseSmoothness: 0
     - _AnisoLayer2On: 0
+    - _AnisoMaskFrom: 0
+    - _AnisoMaskUsage: 0
     - _AnisoRough: 0
     - _AnisoShift: 0
     - _ApplyShadowOn: 1
@@ -118,6 +120,7 @@ Material:
     - _ClothDMax: 1
     - _ClothDMin: 0
     - _ClothMaskFrom: 0
+    - _ClothMaskUsage: 0
     - _CoatIndirectSpecularIntensity: 1
     - _CoatSmoothness: 0.5
     - _CullMode: 2
@@ -135,7 +138,6 @@ Material:
     - _Detail_MapMode: 0
     - _Detail_MapOn: 0
     - _Detail_NormalMapScale: 1
-    - _SSSSMaskFrom: 1
     - _DiffuseProfileOn: 0
     - _DirectionalLightFromSHOn: 0
     - _DirectionalSHIntensity: 0.5
@@ -143,11 +145,13 @@ Material:
     - _DstMode: 0
     - _Emission: 1
     - _EmissionOn: 0
+    - _EnableDebug: 0
     - _EnvIntensity: 1
+    - _FresnelAlphaMax: 1
+    - _FresnelAlphaMin: 0
     - _FresnelAlphaOn: 0
     - _FresnelIntensity: 1
-    - _FresnelMax: 1
-    - _FresnelMin: 0
+    - _FresnelWidth: 1
     - _FrontSSSIntensity: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -161,7 +165,7 @@ Material:
     - _LightColorNoAtten: 1
     - _MainLightShadowSoftScale: 1
     - _MaxSpecularIntensity: 5
-    - _Metallic: 0
+    - _Metallic: 1
     - _MetallicChannel: 0
     - _Mode: 0
     - _NormalMapScale: 1
@@ -172,14 +176,25 @@ Material:
     - _ParallalOn: 0
     - _Parallax: 0.02
     - _PreScatterMaskFrom: 1
+    - _PreScatterMaskUsage: 0
     - _ReceiveAdditionalLightsOn: 1
     - _ReceiveAdditionalLightsShadowOn: 1
     - _SSSOn: 0
+    - _SSSSMaskFrom: 1
+    - _SSSSMaskUsage: 0
     - _ScatteringIntensity: 1
     - _ScatteringLUTOn: 0
     - _Shift1: 0
     - _Shift2: 0
-    - _Smoothness: 0
+    - _ShowDiffuse: 0
+    - _ShowGIDiff: 0
+    - _ShowGISpec: 0
+    - _ShowMetallic: 0
+    - _ShowNormal: 0
+    - _ShowOcclusion: 0
+    - _ShowSmoothness: 0
+    - _ShowSpecular: 0
+    - _Smoothness: 1
     - _SmoothnessChannel: 1
     - _SmoothnessTextureChannel: 0
     - _SpecIntensity1: 10
@@ -190,6 +205,13 @@ Material:
     - _SpecularOn: 1
     - _SrcBlend: 1
     - _SrcMode: 1
+    - _TFBrightness: 1
+    - _TFMaskFrom: 0
+    - _TFMaskUsage: 0
+    - _TFOffset: 0
+    - _TFSaturate: 1
+    - _TFScale: 1
+    - _ThinFilmOn: 0
     - _UVSec: 0
     - _VertexColorRAttenOn: 1
     - _VertexScale: 0
@@ -201,9 +223,10 @@ Material:
     - _BackSSSColor: {r: 1, g: 0, b: 0, a: 0}
     - _ClearCoatSpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClothSheenColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 1}
     - _CustomShadowBias: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
     - _FrontSSSColor: {r: 1, g: 0, b: 0, a: 0}
     - _Layer2AnisoColor: {r: 0.5, g: 0, b: 0, a: 0}
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}

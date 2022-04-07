@@ -60,7 +60,13 @@ CBUFFER_START(UnityPerMaterial)
     half _InvertSmoothnessOn;
     half _PBRMode; // standard,aniso,fabric,strand
     half _SpecularOn;
+    half _SpecularColorScale;
+    half _SpecularIntensity;
+
     half _FresnelIntensity;
+    half _FresnelWidth;
+    half3 _FresnelColor;
+
     half _MetallicChannel;
     half _SmoothnessChannel;
     half _OcclusionChannel;
@@ -76,7 +82,7 @@ CBUFFER_START(UnityPerMaterial)
 
     half _AlphaFrom;
     half _FresnelAlphaOn;
-    half _FresnelMin,_FresnelMax;
+    half _FresnelAlphaMin,_FresnelAlphaMax;
 // ==================================================
     half _VertexScale;
     half _VertexColorRAttenOn;

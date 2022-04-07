@@ -69,8 +69,14 @@ Shader "Character/PowerPBS"
 
         [Header(Specular Options)]
         [LiteToggle]_SpecularOn("_SpecularOn",float) = 1
-        _FresnelIntensity("_FresnelIntensity",range(0,3)) = 1
         _MaxSpecularIntensity("_MaxSpecularIntensity", range(0, 10)) = 5
+        _SpecularColorScale("_SpecularColorScale",range(1,5)) = 1
+        _SpecularIntensity("_SpecularIntensity",range(1,5)) = 1
+
+        [Header(Fresnel Options)]
+        _FresnelIntensity("_FresnelIntensity",range(0,3)) = 1
+        _FresnelColor("_FresnelColor",Color) = (1,1,1,1)
+        _FresnelWidth("_FresnelWidth",range(0.01,1)) = 1
 // ==================================================
         [Space(10)][Header(Shadow)]
         [LiteToggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
@@ -201,8 +207,8 @@ Shader "Character/PowerPBS"
 
         [Header(Fresnel affect)]
         [LiteToggle]_FresnelAlphaOn("_FresnelAlphaOn",int) = 0
-        _FresnelMin("_FresnelMin",range(0,1)) = 0
-        _FresnelMax("_FresnelMax",range(0,1)) = 1
+        _FresnelAlphaMin("_FresnelAlphaMin",range(0,1)) = 0
+        _FresnelAlphaMax("_FresnelAlphaMax",range(0,1)) = 1
 // ==================================================
         [Space(10)][Header(DepthMode)]
         [LiteToggle]_ZWriteOn("_ZWriteOn?",int) = 1
