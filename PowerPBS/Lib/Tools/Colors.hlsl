@@ -26,17 +26,25 @@ float3 LMSToLinear(float3 x)
     return mul(LMS_2_LIN_MAT, x);
 }
 
-half3 HUEToRGB(half h){
-    h = frac(h);
-    half r = abs(h * 6 -3) - 1;
-    half g = 2 - abs(h * 6 - 2);
-    half b = 2 - abs(h * 6 -4);
-    return saturate(half3(r,g,b));
+// Hue, Saturation, Value
+// Ranges:
+//  Hue [0.0, 1.0]
+//  Sat [0.0, 1.0]
+//  Lum [0.0, HALF_MAX]
+half3 RgbToHsv(half3 c)
+{
+    const half4 K = half4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    half4 p = lerp(half4(c.bg, K.wz), half4(c.gb, K.xy), step(c.b, c.g));
+    half4 q = lerp(half4(p.xyw, c.r), half4(c.r, p.yzx), step(p.x, c.r));
+    half d = q.x - min(q.w, q.y);
+    const half e = 1.0e-4;
+    return half3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
 }
 
-half3 HSVToRGB(half3 hsv){
-    half3 rgb = HUEToRGB(hsv.x);
-    // return ((rgb-1) * hsv.y + 1) * hsv.z;
-    return lerp(1,rgb,hsv.y) * hsv.z;
+half3 HsvToRgb(half3 c)
+{
+    const half4 K = half4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    half3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * lerp(K.xxx, saturate(p - K.xxx), c.y);
 }
 #endif //COLORS_HLSL

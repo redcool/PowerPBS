@@ -3,6 +3,13 @@
 #include "CommonUtils.hlsl"
 #include "Colors.hlsl"
 
+half F_Schlick(half f0,half f90,half t){
+    half x = 1-t;
+    half x2 = x*x;
+    half x5 = x*x2*x2;
+    return (f90-f0) * x5+f0;
+}
+
 inline half FastSSS(half3 l,half3 v){
     return saturate(dot(l,v));
 }
@@ -170,6 +177,6 @@ half3 ThinFilm(half invertNV,half scale,half offset,half saturate,half brightnes
     half h = invertNV * scale + offset;
     half s = saturate;
     half v = brightness;
-    return HSVToRGB(half3(h,s,v));
+    return HsvToRgb(half3(h,s,v));
 }
 #endif //BSDF_HLSL
