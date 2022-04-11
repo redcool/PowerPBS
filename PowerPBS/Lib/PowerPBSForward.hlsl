@@ -41,7 +41,7 @@ v2f vert (appdata v)
     o.pos = UnityObjectToClipPos(v.vertex);
     o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
-    float4 worldPos = mul(unity_ObjectToWorld,v.vertex);
+    float3 worldPos = mul(unity_ObjectToWorld,v.vertex).xyz;
     half3 n = normalize(UnityObjectToWorldNormal(v.normal));
     half3 t = normalize(UnityObjectToWorldDir(v.tangent.xyz));
     t = normalize(t - dot(t,n) * n);
@@ -140,7 +140,7 @@ half4 frag (v2f i) : SV_Target
     #endif
     // calc coat data
     ClearCoatData coatData;
-    InitCoatData(_CoatSmoothness,_ClearCoatSpecColor * surfaceData.specColor,unity_ColorSpaceDielectricSpec.x,coatData/**/);
+    InitCoatData(_CoatSmoothness,_ClearCoatSpecColor.xyz * surfaceData.specColor,unity_ColorSpaceDielectricSpec.x,coatData/**/);
 
     coatData.reflectDir = worldData.reflect;
     coatData.occlusion = occlusion;
@@ -184,7 +184,7 @@ half4 frag (v2f i) : SV_Target
     }
     // apply fog
     // UNITY_APPLY_FOG(i.fogCoord, col);
-    col.rgb = MixFog(col,i.fogCoord.x);
+    col.rgb = MixFog(col.xyz,i.fogCoord.x);
     return col;
 }
 

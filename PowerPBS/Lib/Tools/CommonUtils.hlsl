@@ -238,7 +238,7 @@ inline half3 DecodeHDR (half4 data, half4 decodeInstructions)
     #   if defined(UNITY_USE_NATIVE_HDR)
             return decodeInstructions.x * data.rgb; // Multiplier for future HDRI relative to absolute conversion.
     #   else
-            return (decodeInstructions.x * pow(alpha, decodeInstructions.y)) * data.rgb;
+            return (decodeInstructions.x * pow(abs(alpha), decodeInstructions.y)) * data.rgb;
     #   endif
     #endif
 }

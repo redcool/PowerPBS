@@ -38,17 +38,17 @@ half3 DiffuseProfile(half4 mainColor,TEXTURE2D_PARAM(tex,sampler_tex),half2 uv,h
     half BlurLength = DistanceToProjectionWindow;
     half2 UVOffset = BlurLength*offset;
 
-    half3 blurColor = mainColor * CalcKernel(0);
+    half3 blurColor = mainColor.xyz * CalcKernel(0).xyz;
     UNITY_LOOP
     for(int i=1;i<KERNEL_SIZE;i++){
         half4 k = CalcKernel(i);
         half2 sssuv = uv + k.w * UVOffset;
-        half3 sssColor = SAMPLE_TEXTURE2D(tex,sampler_tex,sssuv);
+        half3 sssColor = SAMPLE_TEXTURE2D(tex,sampler_tex,sssuv).xyz;
         // sssColor = lerp(mainColor,sssColor,saturate(sssMask));
 
         blurColor += k.xyz * sssColor;
     }
-    return lerp(mainColor,blurColor,sssMask);
+    return lerp(mainColor.xyz,blurColor,sssMask);
 }
 
 #endif //BLUR_HLSL

@@ -20,11 +20,11 @@ half3 CalcStrandSpec(half3 tangent,half3 normal,half3 binormal,half3 lightDir,ha
     data.specPower = _SpecPower1 * 128;
     data.tbMask = tbMask;
 
-    half spec1 = StrandSpecularColor(data);
+    half3 spec1 = StrandSpecularColor(data);
 
     data.specPower = _SpecPower2 * 128;
     data.shift = tangentShift + _Shift2;
-    half spec2 = StrandSpecularColor(data);
+    half3 spec2 = StrandSpecularColor(data);
     half3 specColor = spec1 * _SpecIntensity1 * _SpecColor1 * specMask.x + spec2 * _SpecIntensity2 * _SpecColor2 * specMask.y;
     return specColor;
 }

@@ -8,13 +8,13 @@
 #include "Tools/ExtractLightFromSH.hlsl"
 
 inline UnityLight GetLight(){
-    half3 dir = _MainLightPosition;
-    half3 color = _MainLightColor;
+    half3 dir = _MainLightPosition.xyz;
+    half3 color = _MainLightColor.xyz;
 
     // ---- 改变主光源,方向,颜色.
     dir.xyz += _CustomLightOn > 0 ? _LightDir.xyz : 0;
-    color += _CustomLightOn > 0 ?_LightColor : 0;
-    dir = (dir);
+    color += _CustomLightOn > 0 ?_LightColor.xyz : 0;
+    dir = normalize(dir);
 
     UnityLight l = {color.rgb,dir.xyz,0};
     return l;
@@ -44,11 +44,11 @@ inline half3 PreScattering(half3 normal,half3 lightDir,half3 lightColor,half nl,
     // half deltaPos = length(fwidth(worldPos));
     // half curvature = deltaNormal/1 * curveScale;
     half atten = 1-wnl;//smoothstep(0.,0.5,nl);
-    half3 scattering = SAMPLE_TEXTURE2D(_ScatteringLUT,sampler_linear_repeat,half2(wnl,curveScale ));
+    half4 scattering = SAMPLE_TEXTURE2D(_ScatteringLUT,sampler_linear_repeat,half2(wnl,curveScale ));
 
     half mask = GetMaskForIntensity(maskData,_PreScatterMaskFrom,_PreScatterMaskUsage,PRESSS_MASK_FOR_INTENSITY);
 
-    return scattering * lightColor * mainTex.xyz * atten * scatterIntensity * mask;
+    return scattering.xyz * lightColor * mainTex.xyz * atten * scatterIntensity * mask;
 }
 
 inline half3 GetIndirectSpecular(half3 reflectDir,half rough){
@@ -106,7 +106,7 @@ inline half CalcDetailAlbedo(inout half4 mainColor, TEXTURE2D(texObj),half2 uv, 
         if(detailMapMode == DETAIL_MAP_MODE_MULTIPLY){
             mainColor.rgb *= lerp(1,detailAlbedo * unity_ColorSpaceDouble.rgb,mask);
         }else if(detailMapMode == DETAIL_MAP_MODE_REPLACE){
-            mainColor.rgb = lerp(mainColor,detailAlbedo,mask);
+            mainColor.rgb = lerp(mainColor.xyz,detailAlbedo,mask);
         }
     }
     return detailMask;
@@ -144,7 +144,7 @@ inline UnityIndirect CalcGI(half3 albedo,half2 uv,half3 reflectDir,half3 normal,
 */
 half3 CalcEmission(half3 albedo,half2 uv){
     half4 tex = SAMPLE_TEXTURE2D(_EmissionMap,sampler_linear_repeat,uv);
-    return albedo * tex.rgb * _EmissionColor * (tex.a * _Emission);
+    return albedo * tex.rgb * _EmissionColor.xyz * (tex.a * _Emission);
 }
 
 #define PBR_MODE_STANDARD 0
@@ -187,13 +187,13 @@ inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh
             // V = SmithJointGGXTerm(nl,nv,data.roughness);
             D = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
             // D = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough);
-            specTerm = D * _AnisoIntensity * _AnisoColor;
+            specTerm = D * _AnisoIntensity * _AnisoColor.xyz;
             
             if(_AnisoLayer2On){
                 anisoRough = saturate(_Layer2AnisoRough);
                 D = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
                 // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
-                specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor;
+                specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor.xyz;
             }
             half anisoMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_AnisoMaskFrom);
 
