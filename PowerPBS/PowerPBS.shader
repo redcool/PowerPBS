@@ -363,6 +363,6 @@ Shader "Character/PowerPBS"
 
 
     }
-    CustomEditor "PowerPBS.PowerPBSInspector"
+    CustomEditor "PowerUtilities.PowerPBSInspector"
     FallBack "Diffuse"
 }
