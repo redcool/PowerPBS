@@ -156,84 +156,73 @@ inline half3 CalcSpecularTermOnlyStandard(inout PBSData data,half nl,half nv,hal
     return D_GGXTerm(nh,data.roughness2) * specColor;
 }
 
-inline half3 CalcSpecularTerm(inout PBSData data,half nl,half nv,half nh,half lh,half3 specColor){
+inline half3 CalcDirectSpecColor(inout PBSData data,half nl,half nv,half nh,half lh,half3 specColor){
     half V = 1;
-    half D = 0;
-    half3 specTerm = 0;
-    // switch(_PBRMode){
-    //     case PBR_MODE_STANDARD :
-        #if defined(_PBRMODE_STANDRAD)
-            specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
-            // specTerm = D_GGXTerm(nh,data.roughness2);
-            specTerm *= specColor;
-            // V = SmithJointGGXTerm(nl,nv,roughness);
-            // D = D_GGXTerm(nh,roughness);
-            // specTerm = V * D * PI;
-        #endif
-        // break;
-        // case PBR_MODE_ANISO:
-        #if defined(_PBRMODE_ANISO)
-            half3 tangent = (data.tangent + data.normal * 0);
-            half3 binormal = (data.binormal + data.normal * _AnisoShift);
-            half th = dot(tangent,data.halfDir);
-            half bh = dot(binormal,data.halfDir);
-            // half tv = (dot(data.tangent,data.viewDir));
-            // half tl = (dot(data.tangent,data.lightDir));
-            // half bv = (dot(data.binormal,data.viewDir));
-            // half bl = (dot(data.binormal,data.lightDir));
+    half specTerm = 0;
+    half3 directSpecColor = 0;
 
-            half anisoRough = saturate(_AnisoRough) ;
+    #if defined(_PBRMODE_STANDRAD)
+        specTerm = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2);
+        // specTerm = D_GGXTerm(nh,data.roughness2);
+        directSpecColor = specTerm * specColor;
+    #endif
+
+    #if defined(_PBRMODE_ANISO)
+        half3 tangent = (data.tangent + data.normal * 0.1);
+        half3 binormal = (data.binormal + data.normal * _AnisoShift);
+        half th = dot(tangent,data.halfDir);
+        half bh = dot(binormal,data.halfDir);
+        // half tv = (dot(data.tangent,data.viewDir));
+        // half tl = (dot(data.tangent,data.lightDir));
+        // half bv = (dot(data.binormal,data.viewDir));
+        // half bl = (dot(data.binormal,data.lightDir));
+
+        half anisoRough = saturate(_AnisoRough) ;
+        // specTerm = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
+        // V = SmithJointGGXTerm(nl,nv,data.roughness);
+        specTerm = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
+        // specTerm = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough);
+        directSpecColor = specTerm * _AnisoIntensity * _AnisoColor.xyz;
+        
+        if(_AnisoLayer2On){
+            anisoRough = saturate(_Layer2AnisoRough);
+            specTerm = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
             // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
-            // V = SmithJointGGXTerm(nl,nv,data.roughness);
-            D = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
-            // D = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough);
-            specTerm = D * _AnisoIntensity * _AnisoColor.xyz;
-            
-            if(_AnisoLayer2On){
-                anisoRough = saturate(_Layer2AnisoRough);
-                D = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
-                // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
-                specTerm += D * _Layer2AnisoIntensity * _Layer2AnisoColor.xyz;
-            }
-            half anisoMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_AnisoMaskFrom);
+            directSpecColor += specTerm * _Layer2AnisoIntensity * _Layer2AnisoColor.xyz;
+        }
+        half anisoMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_AnisoMaskFrom);
 
-            specTerm *= V * PI;
-            specTerm *= lerp(1,anisoMask,_AnisoMaskUsage == ANISO_MASK_FOR_INTENSITY);
-            specTerm *= lerp(1,1 - data.roughness,_AnisoIntensityUseSmoothness);
-            specTerm *= specColor;
+        directSpecColor *= V * PI;
+        directSpecColor *= lerp(1,anisoMask,_AnisoMaskUsage == ANISO_MASK_FOR_INTENSITY);
+        directSpecColor *= lerp(1,1 - data.roughness,_AnisoIntensityUseSmoothness);
+        directSpecColor *= specColor;
 
-            if(_AnisoMaskUsage == ANISO_MASK_FOR_BLEND_STANDARD){
-                half3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
-                specTerm = lerp(specTerm,standardColor,anisoMask);
-            }
-        #endif
-        // break;
-        // case PBR_MODE_CLOTH:
-        #if defined(_PBRMODE_CLOTH)
-            // V = AshikhminV(nv,nl);
-            D = CharlieD(data.roughness,nh);
-            D = smoothstep(_ClothDMin,_ClothDMax,D);
-            half3 sheenColor = D * PI * _ClothSheenColor;
-            half clothMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_ClothMaskFrom);
-            // mask control intensity
-            sheenColor *= lerp(1,clothMask,_ClothMaskUsage == CLOTH_MASK_FOR_INTENSITY);
-            //mask control blend
-            if(_ClothMaskUsage == CLOTH_MASK_FOR_BLEND_STANDARD){
-                half3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
-                sheenColor = lerp(sheenColor,standardColor,clothMask);
-            }
-            specTerm = sheenColor;
-        #endif
-        // break;
-        // case PBR_MODE_STRAND:
-        #if defined(_PBRMODE_STRANDSPEC)
-            specTerm = data.hairSpecColor;
-        #endif
+        if(_AnisoMaskUsage == ANISO_MASK_FOR_BLEND_STANDARD){
+            half3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
+            directSpecColor = lerp(directSpecColor,standardColor,anisoMask);
+        }
+    #endif
 
-        // break;
-    // }
-    specTerm = min(specTerm, _MaxSpecularIntensity); // eliminate large value in HDR
-    return specTerm;
+    #if defined(_PBRMODE_CLOTH)
+        // V = AshikhminV(nv,nl);
+        specTerm = CharlieD(data.roughness,nh);
+        specTerm = smoothstep(_ClothDMin,_ClothDMax,specTerm);
+        directSpecColor = specTerm * PI * _ClothSheenColor;
+        half clothMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_ClothMaskFrom);
+        // mask control intensity
+        directSpecColor *= lerp(1,clothMask,_ClothMaskUsage == CLOTH_MASK_FOR_INTENSITY);
+        //mask control blend
+        if(_ClothMaskUsage == CLOTH_MASK_FOR_BLEND_STANDARD){
+            half3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
+            directSpecColor = lerp(directSpecColor,standardColor,clothMask);
+        }
+    #endif
+
+    #if defined(_PBRMODE_STRANDSPEC)
+        directSpecColor = data.hairSpecColor;
+    #endif
+
+    return min(directSpecColor * _SpecularIntensity, _MaxSpecularIntensity); // eliminate large value in HDR
 }
 
 half3 CalcIndirect(half smoothness,half roughness2,half oneMinusReflectivity,half3 giDiffColor,half3 giSpecColor,half3 diffColor,half3 specColor,half fresnelTerm){
@@ -261,12 +250,12 @@ half3 CalcIndirectApplyClearCoat(half3 indirectColor,ClearCoatData data,half fre
 
 half3 CalcDirect(inout PBSData data,half3 diffColor,half3 specColor,half nl,half nv,half nh,half lh){
     // half3 diffuseTerm = DisneyDiffuse(nl,nv,lh,data.roughness2) * diffColor;
-    half3 diffuseTerm = diffColor;
-    half3 specularTerm = 0;
+    half3 directDiffuseColor = diffColor;
+    half3 directSpecColor = 0;
     if(_SpecularOn){
-        specularTerm = CalcSpecularTerm(data,nl,nv,nh,lh,specColor);
+        directSpecColor = CalcDirectSpecColor(data,nl,nv,nh,lh,specColor);
     }
-    return diffuseTerm + specularTerm * _SpecularIntensity;
+    return directDiffuseColor + directSpecColor ;
 }
 
 half3 CalcDirectApplyClearCoat(half3 directColor,ClearCoatData data,half fresnelTerm,half nl,half nh,half lh){
@@ -337,9 +326,9 @@ half3 CalcIndirectApplySHDirLight(half3 indirectColor,PBSData data,half3 diffCol
     return indirectColor;
 }
 
-void ApplyThinFilm(half invertNV,half3 maskData,inout half3 specColor){
+void ApplyThinFilm(half invertNV,half3 maskData,half baseMask,inout half3 specColor){
     #if defined(_THIN_FILM_ON)
-        half tfMask = GetMaskForIntensity(maskData,_TFMaskFrom,_TFMaskUsage,THIN_FILE_MASK_FOR_INTENSITY);
+        half tfMask = GetMaskForIntensity(maskData,_TFMaskFrom,_TFMaskUsage,THIN_FILE_MASK_FOR_INTENSITY) * baseMask;
         // half tfMask =  (_TFMaskUsage == THIN_FILE_MASK_FOR_INTENSITY) ? tfMaskData : 1;
         half3 thinFilm = ThinFilm(invertNV,_TFScale,_TFOffset,_TFSaturate,_TFBrightness);
 
@@ -351,7 +340,7 @@ void ApplyThinFilm(half invertNV,half3 maskData,inout half3 specColor){
 half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,ClearCoatData coatData,inout PBSData data){
     CALC_LIGHT_INFO(mainLight.dir);
 
-    ApplyThinFilm(1-nv,data.maskData_None_mainTexA_pbrMaskA,specColor/**/);
+    ApplyThinFilm(1-nv,data.maskData_None_mainTexA_pbrMaskA,_TFSpecMask ? nh : 1,specColor/**/);
     // set pbsdata for others flow.
     data.nl = nl;
     data.nv = nv;
@@ -366,6 +355,7 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
         color = CalcIndirectApplyClearCoat(color,coatData,data.fresnelTerm );
     // }
     #endif
+
     // apply sh dir light
     #if defined(_DIRECTIONAL_LIGHT_FROM_SH)
     // if(_DirectionalLightFromSHOn){
@@ -378,6 +368,7 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
 
     // direct
     half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh);
+
     #if defined(_CLEARCOAT)
     // if(_ClearCoatOn){
         directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,data.fresnelTerm ,nl,nh,lh).xyzx;
@@ -391,11 +382,6 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     #if defined(_ADDITIONAL_LIGHT)
     color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
     #endif
-
-    // #if defined(_THIN_FILM_ON)
-    //     half3 thinFilm = ThinFilm(1-nv,_TFScale,_TFOffset,_TFSaturate,_TFBrightness);
-    //     color.rgb = (color.rgb +1) * thinFilm;
-    // #endif
 
     return half4(color,1);
 }
