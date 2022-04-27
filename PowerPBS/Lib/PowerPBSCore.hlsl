@@ -152,7 +152,7 @@ half3 CalcEmission(half3 albedo,half2 uv){
 #define PBR_MODE_CLOTH 2
 #define PBR_MODE_STRAND 3
 
-inline half3 CalcSpecularTermOnlyStandard(inout PBSData data,half nl,half nv,half nh,half lh,half3 specColor){
+inline half3 CalcSpecularTermOnlyStandard(inout PBSData data,half nh,half3 specColor){
     return D_GGXTerm(nh,data.roughness2) * specColor;
 }
 
@@ -283,12 +283,16 @@ half3 CalcDirectApplyClearCoat(half3 directColor,ClearCoatData data,half fresnel
     // half lv = saturate(dot(l,v));\
 
 inline half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Light light){
-    CALC_LIGHT_INFO(light.direction);
+    // CALC_LIGHT_INFO(light.direction);
+    half3 h = SafeNormalize(light.direction + data.viewDir);
+    half nl = saturate(dot(data.normal,light.direction));
+    half nh = saturate(dot(data.normal,h));
+
     half lightAtten = light.distanceAttenuation * light.shadowAttenuation;
     // half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     half3 directColor = diffColor;
     if(_SpecularOn){
-        directColor += CalcSpecularTermOnlyStandard(data,nl,nv,nh,lh,specColor);
+        directColor += CalcSpecularTermOnlyStandard(data,nh,specColor);
     }
     return lightAtten *nl * light.color * directColor;
 }
