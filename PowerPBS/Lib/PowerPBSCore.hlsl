@@ -299,7 +299,7 @@ inline half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specCo
 
 half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor){
     half3 color = 0;
-    if(_ReceiveAdditionalLightsOn){
+    // if(_ReceiveAdditionalLightsOn){
         int lightCount = GetAdditionalLightsCount();
         for(int lightId = 0 ; lightId <lightCount;lightId++){
             Light light1 = GetAdditionalLight(lightId,data.worldPos);
@@ -316,7 +316,7 @@ half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor)
                 color.rgb += CalcSSS(light1.direction,data.viewDir,data.heightClothFastSSSMask.zw);
             }
         }
-    }
+    // }
     return color;
 }
 
