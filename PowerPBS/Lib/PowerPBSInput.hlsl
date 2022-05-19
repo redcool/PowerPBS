@@ -175,7 +175,7 @@ CBUFFER_START(UnityPerMaterial)
     half4 _CustomShadowBias; // x: depth bias, y: normal bias
 // ================================================== Thin Film
     half _TFScale,_TFOffset,_TFSaturate,_TFBrightness;
-    half _TFMaskFrom,_TFMaskUsage;
+    half _TFMaskFrom,_TFMaskUsage,_TFSpecMask;
 // ================================================== debug data
     half _ShowGIDiff,_ShowGISpec,_ShowNormal,_ShowOcclusion;
     half _ShowMetallic,_ShowSmoothness,_ShowSpecular,_ShowDiffuse;

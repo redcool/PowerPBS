@@ -95,7 +95,6 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Ints: []
     m_Floats:
     - _AdditionalLightCalcFastSSS: 0
     - _AdditionalLightCalcScatter: 0
@@ -165,7 +164,7 @@ Material:
     - _LightColorNoAtten: 1
     - _MainLightShadowSoftScale: 1
     - _MaxSpecularIntensity: 5
-    - _Metallic: 1
+    - _Metallic: 0.55
     - _MetallicChannel: 0
     - _Mode: 0
     - _NormalMapScale: 1
@@ -194,14 +193,16 @@ Material:
     - _ShowOcclusion: 0
     - _ShowSmoothness: 0
     - _ShowSpecular: 0
-    - _Smoothness: 1
+    - _Smoothness: 0.296
     - _SmoothnessChannel: 1
     - _SmoothnessTextureChannel: 0
     - _SpecIntensity1: 10
     - _SpecIntensity2: 10
     - _SpecPower1: 1
     - _SpecPower2: 1
+    - _SpecularColorScale: 1
     - _SpecularHighlights: 1
+    - _SpecularIntensity: 1
     - _SpecularOn: 1
     - _SrcBlend: 1
     - _SrcMode: 1
@@ -211,6 +212,7 @@ Material:
     - _TFOffset: 0
     - _TFSaturate: 1
     - _TFScale: 1
+    - _TFSpecMask: 0
     - _ThinFilmOn: 0
     - _UVSec: 0
     - _VertexColorRAttenOn: 1
@@ -223,7 +225,7 @@ Material:
     - _BackSSSColor: {r: 1, g: 0, b: 0, a: 0}
     - _ClearCoatSpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClothSheenColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 1}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _CustomShadowBias: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}

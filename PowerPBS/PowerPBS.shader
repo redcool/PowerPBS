@@ -40,7 +40,7 @@ Shader "Character/PowerPBS"
         _Occlusion("_Occlusion",range(0,1)) = 1
         
         [Header(PBR Slider Options)]
-        [LiteToggle]_InvertSmoothnessOn("_InvertSmoothnessOn",int) = 0
+        [GroupToggle]_InvertSmoothnessOn("_InvertSmoothnessOn",int) = 0
 
         [Header(PBR Mask Channel)]
         [Enum(R,0,G,1,B,2,A,3)]_MetallicChannel("_MetallicChannel",float) = 0
@@ -61,14 +61,14 @@ Shader "Character/PowerPBS"
 // ================================================== vertex
         [Header(Vertex Scale)]
         _VertexScale("_VertexScale",range(-0.1,0.1)) = 0
-        [LiteToggle]_VertexColorRAttenOn("_VertexColorRAttenOn(R)",int) = 1
+        [GroupToggle]_VertexColorRAttenOn("_VertexColorRAttenOn(R)",int) = 1
 // ================================================== Settings
         [Header(PBR Mode)]
         // [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
         [KeywordEnum(Standard,Aniso,Cloth,StrandSpec)]_PBRMode("_PBRMode",int) = 0
 
         [Header(Specular Options)]
-        [LiteToggle]_SpecularOn("_SpecularOn",float) = 1
+        [GroupToggle]_SpecularOn("_SpecularOn",float) = 1
         _MaxSpecularIntensity("_MaxSpecularIntensity", range(0, 10)) = 5
         _SpecularColorScale("_SpecularColorScale",range(1,5)) = 1
         _SpecularIntensity("_SpecularIntensity",range(1,5)) = 1
@@ -79,15 +79,15 @@ Shader "Character/PowerPBS"
         _FresnelWidth("_FresnelWidth",range(0.01,1)) = 1
 // ==================================================
         [Space(10)][Header(Shadow)]
-        [LiteToggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
+        [GroupToggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
         _MainLightShadowSoftScale("_MainLightShadowSoftScale",range(0.01,3)) = 1
         [Header(Shadow Bias)]
         _CustomShadowBias("_CustomShadowBias(x: depth bias, y: normal bias)",vector) = (0,0,0,0)
 
         [Header(URP Additional Lights)]
         [Toggle(_ADDITIONAL_LIGHT)]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
-        [LiteToggle]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
-        [LiteToggle]_AdditionalLightSoftShadowOn("_AdditionalLightSoftShadowOn",int) = 0
+        [GroupToggle]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
+        [GroupToggle]_AdditionalLightSoftShadowOn("_AdditionalLightSoftShadowOn",int) = 0
 
         [Header(Spherical Harmonics)]
         [Toggle(_DIRECTIONAL_LIGHT_FROM_SH)]_DirectionalLightFromSHOn("_DirectionalLightFromSHOn",int) = 0
@@ -101,7 +101,7 @@ Shader "Character/PowerPBS"
         _AnisoShift("_AnisoShift",float) = 0
         // ---- layer2
         [Header(Aniso2)]
-        [LiteToggle]_AnisoLayer2On("_AnisoLayer2On",int) = 0
+        [GroupToggle]_AnisoLayer2On("_AnisoLayer2On",int) = 0
         _Layer2AnisoColor("_Layer2AnisoColor",color) = (.5,0,0,0)
         _Layer2AnisoIntensity("_Layer2AnisoIntensity",range(0,10)) = 1
         _Layer2AnisoRough("_Layer2AnisoRough",range(0,1)) = 0
@@ -109,7 +109,7 @@ Shader "Character/PowerPBS"
         [Header(Mask)]
         [Enum(None,0,MainTexA,1,PbrMaskA,2)]_AnisoMaskFrom("_AnisoMaskFrom",float) = 0
         [Enum(None,0,Intensity,1,BlendStardard,2)]_AnisoMaskUsage("_AnisoMaskUsage",float)=0
-        [LiteToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0
+        [GroupToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0
 // ==================================================
         [Header(Pre Integral Scatter)]
         [Toggle(_PRESSS)]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
@@ -122,8 +122,8 @@ Shader "Character/PowerPBS"
         [Enum(None,0,Intensity,1)]_PreScatterMaskUsage("_AnisoMaskUsage",float)=0
 
         [Header(Light Ops)]
-        [LiteToggle]_LightColorNoAtten("_LightColorNoAtten",int) = 1
-        [LiteToggle]_AdditionalLightCalcScatter("_AdditionalLightCalcScatter",int) = 0
+        [GroupToggle]_LightColorNoAtten("_LightColorNoAtten",int) = 1
+        [GroupToggle]_AdditionalLightCalcScatter("_AdditionalLightCalcScatter",int) = 0
 
         [Header(Diffuse Profile ScreenSpace)]
         [Toggle(_SSSS)]_DiffuseProfileOn("_DiffuseProfileOn",int) = 0
@@ -142,25 +142,25 @@ Shader "Character/PowerPBS"
         [Enum(None,0,MainTexA,1,PbrMaskA,2)]_ClothMaskFrom("_ClothMaskFrom",int) = 0
         [Enum(None,0,Intensity,1,BlendStandard,2)]_ClothMaskUsage("_ClothMaskUsage",int) = 0
 // ==================================================
-        // [LiteToggle]_Detail4_MapOn("_Detail4_MapOn",int) = 0
+        // [GroupToggle]_Detail4_MapOn("_Detail4_MapOn",int) = 0
         // [Enum(Multiply,0,Replace,1)]_Detail4_MapMode("_Detail4_MapMode",int) = 0
         // _Detail4_Map("_Detail4_Map(RGB),Detail4_Mask(A)",2d) = "white"{}
         // _Detail4_MapIntensity("_Detail4_MapIntensity",range(0,1)) = 1
 
         // [Space(10)][Header(Detail3_Map)]
-        // [LiteToggle]_Detail3_MapOn("_Detail3_MapOn",int) = 0
+        // [GroupToggle]_Detail3_MapOn("_Detail3_MapOn",int) = 0
         // [Enum(Multiply,0,Replace,1)]_Detail3_MapMode("_Detail3_MapMode",int) = 0
         // _Detail3_Map("_Detail3_Map(RGB),Detail3_Mask(A)",2d) = "white"{}
         // _Detail3_MapIntensity("_Detail3_MapIntensity",range(0,1)) = 1
 
         // [Space(10)][Header(Detail2_Map)]
-        // [LiteToggle]_Detail2_MapOn("_Detail2_MapOn",int) = 0
+        // [GroupToggle]_Detail2_MapOn("_Detail2_MapOn",int) = 0
         // [Enum(Multiply,0,Replace,1)]_Detail2_MapMode("_Detail2_MapMode",int) = 0
         // _Detail2_Map("_Detail2_Map(RGB),EyeMask(A)",2d) = "white"{}
         // _Detail2_MapIntensity("_Detail2_MapIntensity",range(0,1)) = 1
 
         [Space(10)][Header(Detail1_Map)]
-        [LiteToggle]_Detail1_MapOn("_Detail1_MapOn",int) = 0
+        [GroupToggle]_Detail1_MapOn("_Detail1_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail1_MapMode("_Detail1_MapMode",int) = 0
         _Detail1_Map("_Detail1_Map(rgb),Mask(A)",2d) = "white"{}
         _Detail1_MapIntensity("_Detail1_MapIntensity",range(0,1)) = 1
@@ -174,13 +174,13 @@ Shader "Character/PowerPBS"
         _Detail_NormalMapScale("_Detail_NormalMapScale",range(0,5)) = 1
  // ==================================================       
         [Space(10)][Header(Custom IBL)]
-        [LiteToggle]_CustomIBLOn("_CustomIBLOn",float) = 0
+        [GroupToggle]_CustomIBLOn("_CustomIBLOn",float) = 0
         [noscaleoffset]_EnvCube("_EnvCube",cube) = "white"{}
         _EnvIntensity("_EnvIntensity",float) = 1
         _ReflectionOffsetDir("_ReflectionOffsetDir",vector) = (0,0,0,0)
 // ==================================================
         [Space(10)][Header(Emission)]
-        [LiteToggle]_EmissionOn("_EmissionOn",float) = 0
+        [GroupToggle]_EmissionOn("_EmissionOn",float) = 0
         [noscaleoffset]_EmissionMap("_EmissionMap(RGB),EmissionMask(A)",2d) = "white"{}
         [hdr]_EmissionColor("_EmissionColor",color) = (1,1,1,1)
         _Emission("_Emission",float) = 1
@@ -190,7 +190,7 @@ Shader "Character/PowerPBS"
         _BackFaceGIDiffuse("_BackFaceGIDiffuse",range(0,1)) = 0
 // ==================================================
         [Space(10)][Header(CustomLight)]
-        [LiteToggle]_CustomLightOn("_CustomLightOn",int) = 0
+        [GroupToggle]_CustomLightOn("_CustomLightOn",int) = 0
         _LightDir("_LightDir",vector) = (0,0.5,0,0)
         _LightColor("_LightColor",color) = (1,1,1,1)
 // ==================================================
@@ -203,15 +203,15 @@ Shader "Character/PowerPBS"
         [Enum(UnityEngine.Rendering.BlendMode)]_DstMode("_DstMode",int) = 0
 
         [Space(10)][Header(AlphaMultiMode)]
-        [LiteToggle]_AlphaPreMultiply("_AlphaPreMultiply",int) = 0
+        [GroupToggle]_AlphaPreMultiply("_AlphaPreMultiply",int) = 0
 
         [Header(Fresnel affect)]
-        [LiteToggle]_FresnelAlphaOn("_FresnelAlphaOn",int) = 0
+        [GroupToggle]_FresnelAlphaOn("_FresnelAlphaOn",int) = 0
         _FresnelAlphaMin("_FresnelAlphaMin",range(0,1)) = 0
         _FresnelAlphaMax("_FresnelAlphaMax",range(0,1)) = 1
 // ==================================================
         [Space(10)][Header(DepthMode)]
-        [LiteToggle]_ZWriteOn("_ZWriteOn?",int) = 1
+        [GroupToggle]_ZWriteOn("_ZWriteOn?",int) = 1
         [Enum(UnityEngine.Rendering.CompareFunction)]_ZTestMode("_ZTestMode",int) = 4
 
         [Space(10)][Header(CullMode)]
@@ -222,15 +222,15 @@ Shader "Character/PowerPBS"
         _HeightClothSSSMask("_Height(R) , Cloth(G) , SSSMask(B,A)",2d) = "white"{} 
 
         [Space(10)][Header(FastSSS)]
-        [LiteToggle]_SSSOn("_SSSOn",int) = 0
+        [GroupToggle]_SSSOn("_SSSOn",int) = 0
         _FrontSSSIntensity("_FrontSSSIntensity",range(0,1)) = 1
         _FrontSSSColor("_FrontSSSColor",color) = (1,0,0,0)
         _BackSSSIntensity("_BackSSSIntensity",range(0,1)) = 1
         _BackSSSColor("_BackSSSColor",color) = (1,0,0,0)
-        [LiteToggle]_AdditionalLightCalcFastSSS("_AdditionalLightCalcFastSSS",int) =0
+        [GroupToggle]_AdditionalLightCalcFastSSS("_AdditionalLightCalcFastSSS",int) =0
 
         [Space(10)][Header(ParallelOffset)]
-        [LiteToggle]_ParallalOn("_ParallalOn",int) = 0
+        [GroupToggle]_ParallalOn("_ParallalOn",int) = 0
         _HeightScale("_HeightScale",range(0.005,0.08)) = 0
 // ================================================== kajiya kay
         [Space(10)][Header(Hair)]
@@ -259,20 +259,21 @@ Shader "Character/PowerPBS"
         [Header(Mask)]
         [Enum(None,0,MainTexA,1,PbrMaskA,2)]_TFMaskFrom("_TFMaskFrom",int) = 0
         [Enum(None,0,Intensity,1)]_TFMaskUsage("_TFMaskUsage",int) = 0
+        [GroupToggle]_TFSpecMask("_TFSpecMask",int) = 0
 // ================================================== Debug
         [Header(Debug Info)]
         [Toggle(_POWER_DEBUG)]_EnableDebug("_EnableDebug",float) = 0
         [Header(Debug GI)]
-        [LiteToggle]_ShowGIDiff("_ShowGIDiff",float) = 0
-        [LiteToggle]_ShowGISpec("_ShowGISpec",float) = 0
+        [GroupToggle]_ShowGIDiff("_ShowGIDiff",float) = 0
+        [GroupToggle]_ShowGISpec("_ShowGISpec",float) = 0
         [Header(Debug World Surface)]
-        [LiteToggle]_ShowNormal("_ShowNormal",float) = 0
-        [LiteToggle]_ShowDiffuse("_ShowDiffuse",float) = 0
-        [LiteToggle]_ShowSpecular("_ShowSpecular",float) = 0
+        [GroupToggle]_ShowNormal("_ShowNormal",float) = 0
+        [GroupToggle]_ShowDiffuse("_ShowDiffuse",float) = 0
+        [GroupToggle]_ShowSpecular("_ShowSpecular",float) = 0
         [Header(Debug PBRMask)]
-        [LiteToggle]_ShowMetallic("_ShowMetallic",float) = 0
-        [LiteToggle]_ShowSmoothness("_ShowSmoothness",float) = 0
-        [LiteToggle]_ShowOcclusion("_ShowOcclusion",float) = 0
+        [GroupToggle]_ShowMetallic("_ShowMetallic",float) = 0
+        [GroupToggle]_ShowSmoothness("_ShowSmoothness",float) = 0
+        [GroupToggle]_ShowOcclusion("_ShowOcclusion",float) = 0
         // [Header(Stencil)]
         // _StencilRef("_StencilRef",int) = 2
         // [UnityEngine.Rendering.CompareFunction]_StencilComp("_StencilComp",float) = 0
