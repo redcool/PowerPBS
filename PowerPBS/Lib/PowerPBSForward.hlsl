@@ -103,7 +103,7 @@ half4 frag (v2f i) : SV_Target
     WorldData worldData;
     InitWorldData(uv,detailMask,i.tSpace0,i.tSpace1,i.tSpace2,worldData/**/);
 
-    i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz);
+    // i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz);
 
     UnityLight light = GetLight();
     half3 lightColorNoAtten = light.color;
