@@ -99,11 +99,16 @@ half SampleShadowmapFiltered(ShadowSamplingData samplingData,half4 shadowCoord){
 // returns 1.0 if position is in light
 half AdditionalLightRealtimeShadow(int lightIndex, half3 positionWS,bool isSoftShadow)
 {
-    half4 shadowCoord = mul(_AdditionalLightsWorldToShadow[lightIndex], half4(positionWS, 1.0));
+    half4 shadowParams = GetAdditionalLightShadowParams(lightIndex);
+    int shadowSliceIndex = shadowParams.w;
+
+    if (shadowSliceIndex < 0)
+        return 1.0;
+
+    half4 shadowCoord = mul(_AdditionalLightsWorldToShadow[shadowSliceIndex], half4(positionWS, 1.0));
     // perspective 
     shadowCoord.xyz /= shadowCoord.w;
 
-    half4 shadowParams = GetAdditionalLightShadowParams(lightIndex);
     half shadowStrength = shadowParams.x;
 
     half attenuation = 1;

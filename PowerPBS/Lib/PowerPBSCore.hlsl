@@ -299,24 +299,25 @@ inline half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specCo
 
 half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor){
     half3 color = 0;
-    // if(_ReceiveAdditionalLightsOn){
-        int lightCount = GetAdditionalLightsCount();
-        for(int lightId = 0 ; lightId <lightCount;lightId++){
-            Light light1 = GetAdditionalLight(lightId,data.worldPos);
-            
-            color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
+    half atten = 0;
 
-            #if defined(_PRESSS)
-            if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
-                half3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity,data.maskData_None_mainTexA_pbrMaskA);
-                color.rgb += scatteredColor ;
-            }
-            #endif
-            if(_SSSOn && _AdditionalLightCalcFastSSS){
-                color.rgb += CalcSSS(light1.direction,data.viewDir,data.heightClothFastSSSMask.zw);
-            }
+    int lightCount = GetAdditionalLightsCount();
+    for(int lightId = 0 ; lightId <lightCount;lightId++){
+        Light light1 = GetAdditionalLight(lightId,data.worldPos);
+        atten += light1.shadowAttenuation;
+
+        color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
+
+        #if defined(_PRESSS)
+        if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
+            half3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity,data.maskData_None_mainTexA_pbrMaskA);
+            color.rgb += scatteredColor ;
         }
-    // }
+        #endif
+        if(_SSSOn && _AdditionalLightCalcFastSSS){
+            color.rgb += CalcSSS(light1.direction,data.viewDir,data.heightClothFastSSSMask.zw);
+        }
+    }
     return color;
 }
 
@@ -385,6 +386,7 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     // additional lights
     #if defined(_ADDITIONAL_LIGHT)
     color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
+    return CalcPBSAdditionalLight(data/**/,diffColor,specColor).xyzx;
     #endif
 
     return half4(color,1);
