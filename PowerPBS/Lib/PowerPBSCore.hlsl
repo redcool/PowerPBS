@@ -299,12 +299,12 @@ inline half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specCo
 
 half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor){
     half3 color = 0;
-    half atten = 0;
+    // half atten = 0;
 
     int lightCount = GetAdditionalLightsCount();
     for(int lightId = 0 ; lightId <lightCount;lightId++){
         Light light1 = GetAdditionalLight(lightId,data.worldPos);
-        atten += light1.shadowAttenuation;
+        // atten += light1.shadowAttenuation;
 
         color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
 
