@@ -386,7 +386,6 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     // additional lights
     #if defined(_ADDITIONAL_LIGHT)
     color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
-    return CalcPBSAdditionalLight(data/**/,diffColor,specColor).xyzx;
     #endif
 
     return half4(color,1);
