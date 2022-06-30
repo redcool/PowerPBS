@@ -18,3 +18,8 @@ specular map flow and metallic flow
 
 warning: 
 urp need add PowerURPLitFeatures to urp's ForwardRendererData
+
+
+
+Reference Git
+https://github.com/redcool/PowerUtilities.git
