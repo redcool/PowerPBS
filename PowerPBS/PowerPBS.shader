@@ -80,7 +80,7 @@ Shader "Character/PowerPBS"
 // ==================================================
         [Space(10)][Header(Shadow)]
         [GroupToggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
-        _MainLightShadowSoftScale("_MainLightShadowSoftScale",range(0.01,3)) = 1
+        _MainLightShadowSoftScale("_MainLightShadowSoftScale",range(0,3)) = 0
         [Header(Shadow Bias)]
         _CustomShadowBias("_CustomShadowBias(x: depth bias, y: normal bias)",vector) = (0,0,0,0)
 

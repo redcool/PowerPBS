@@ -89,6 +89,27 @@ half AngleAttenuation(half3 spotDirection, half3 lightDirection, half2 spotAtten
     return atten * atten;
 }
 
+Light GetMainLight(){
+    Light light;
+    light.direction = half3(_MainLightPosition.xyz);
+#if USE_CLUSTERED_LIGHTING
+    light.distanceAttenuation = 1.0;
+#else
+    light.distanceAttenuation = unity_LightData.z; // unity_LightData.z is 1 when not culled by the culling mask, otherwise 0.
+#endif
+    light.shadowAttenuation = 1.0;
+    light.color = _MainLightColor.rgb;
+
+#ifdef _LIGHT_LAYERS
+    light.layerMask = _MainLightLayerMask;
+#else
+    light.layerMask = DEFAULT_LIGHT_LAYERS;
+#endif
+
+    return light;
+}
+
+
 // Fills a light struct given a perObjectLightIndex
 Light GetAdditionalPerObjectLight(int perObjectLightIndex, half3 positionWS)
 {

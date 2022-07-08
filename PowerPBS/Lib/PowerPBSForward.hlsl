@@ -105,14 +105,15 @@ half4 frag (v2f i) : SV_Target
 
     // i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz);
 
-    UnityLight light = GetLight();
+    Light light = GetMainLight();
+    OffsetMainLight(light);
     half3 lightColorNoAtten = light.color;
 
     if(_ApplyShadowOn){
         // UNITY_LIGHT_ATTENUATION(atten, i, worldPos)
         float atten = CalcShadow(i._ShadowCoord,worldData.pos);
         // return atten;
-        light.color *= atten;
+        light.shadowAttenuation = atten;
     }
 
     SurfaceData surfaceData;
@@ -172,7 +173,7 @@ half4 frag (v2f i) : SV_Target
     #endif
 
     if(_SSSOn){
-        col.rgb += CalcSSS(light.dir,worldData.view,heightClothSSSMask.zw);
+        col.rgb += CalcSSS(light.direction,worldData.view,heightClothSSSMask.zw);
     }
 
     //for emission

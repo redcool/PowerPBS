@@ -7,17 +7,11 @@
 #include "UrpLib/URP_Lighting.hlsl"
 #include "Tools/ExtractLightFromSH.hlsl"
 
-inline UnityLight GetLight(){
-    half3 dir = _MainLightPosition.xyz;
-    half3 color = _MainLightColor.xyz;
 
-    // ---- 改变主光源,方向,颜色.
-    dir.xyz += _CustomLightOn > 0 ? _LightDir.xyz : 0;
-    color += _CustomLightOn > 0 ?_LightColor.xyz : 0;
-    dir = normalize(dir);
-
-    UnityLight l = {color.rgb,dir.xyz,0};
-    return l;
+void OffsetMainLight(inout Light light){
+    light.direction += _CustomLightOn > 0 ? _LightDir.xyz : 0;
+    light.color += _CustomLightOn > 0 ?_LightColor.xyz : 0;
+    light.direction = normalize(light.direction);
 }
 
 inline half3 CalcSSS(half3 l,half3 v,half2 fastSSSMask){
@@ -342,8 +336,8 @@ void ApplyThinFilm(half invertNV,half3 maskData,half baseMask,inout half3 specCo
     #endif
 }
 
-half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect gi,ClearCoatData coatData,inout PBSData data){
-    CALC_LIGHT_INFO(mainLight.dir);
+half4 CalcPBS(half3 diffColor,half3 specColor,Light mainLight,UnityIndirect gi,ClearCoatData coatData,inout PBSData data){
+    CALC_LIGHT_INFO(mainLight.direction);
 
     ApplyThinFilm(1-nv,data.maskData_None_mainTexA_pbrMaskA,_TFSpecMask ? nh : 1,specColor/**/);
     // set pbsdata for others flow.
@@ -372,7 +366,10 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     color += (1-nl) * _BackFaceGIDiffuse * diffColor;
 
     // direct
-    half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh);
+    half3 directColor = 0;
+    
+    if(mainLight.distanceAttenuation)
+        directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh);
 
     #if defined(_CLEARCOAT)
     // if(_ClearCoatOn){
@@ -380,7 +377,7 @@ half4 CalcPBS(half3 diffColor,half3 specColor,UnityLight mainLight,UnityIndirect
     // }
     #endif
     // apply main light atten 
-    directColor *= mainLight.color * nl;
+    directColor *= mainLight.color * nl * mainLight.shadowAttenuation * mainLight.distanceAttenuation;
     color += directColor;
 
     // additional lights
