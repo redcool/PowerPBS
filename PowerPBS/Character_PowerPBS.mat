@@ -132,7 +132,7 @@ Material:
     - _Layer2AnisoIntensity: 1
     - _Layer2AnisoRough: 0
     - _LightColorNoAtten: 1
-    - _MainLightShadowSoftScale: 1
+    - _MainLightShadowSoftScale: 0.0001
     - _MaxSpecularIntensity: 5
     - _Metallic: 0.5
     - _MetallicChannel: 0
