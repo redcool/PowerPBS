@@ -299,8 +299,9 @@ half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor)
     for(int lightId = 0 ; lightId <lightCount;lightId++){
         Light light1 = GetAdditionalLight(lightId,data.worldPos);
         // atten += light1.shadowAttenuation;
-
-        color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
+        
+        if(light1.distanceAttenuation)
+            color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
 
         #if defined(_PRESSS)
         if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
