@@ -170,6 +170,7 @@ CBUFFER_START(UnityPerMaterial)
 // ================================================== Thin Film
     half _TFScale,_TFOffset,_TFSaturate,_TFBrightness;
     half _TFMaskFrom,_TFMaskUsage,_TFSpecMask;
+    half _FogOn;
 // ================================================== debug data
     half _ShowGIDiff,_ShowGISpec,_ShowNormal,_ShowOcclusion;
     half _ShowMetallic,_ShowSmoothness,_ShowSpecular,_ShowDiffuse;
