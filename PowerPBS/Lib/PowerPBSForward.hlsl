@@ -2,10 +2,10 @@
 #define POWER_PBS_FORWARD_HLSL
 
 #include "PowerPBSCore.hlsl"
-#include "PowerPBSHair.hlsl"
 #include "UrpLib/URP_MainLightShadows.hlsl"
 #include "Tools/Blur.hlsl"
 #include "Tools/ParallaxMapping.hlsl"
+#include "../../PowerShaderLib/Lib/FogLib.hlsl"
 
 #if defined(_POWER_DEBUG)
 #include "PowerPBSDebug.hlsl"
@@ -59,7 +59,8 @@ v2f vert (appdata v)
     }
     // TRANSFER_SHADOW(o)
     o._ShadowCoord = TransformWorldToShadowCoord(worldPos.xyz);
-    o.fogCoord.x = ComputeFogFactor(o.pos.z);
+    o.fogCoord.z = ComputeFogFactor(o.pos.z);
+    o.fogCoord.xy = CalcFogFactor(worldPos);
     o.screenPos = ComputeScreenPos(o.pos);
     return o;
 }
@@ -183,9 +184,10 @@ half4 frag (v2f i) : SV_Target
     if(_FresnelAlphaOn){
         col.a *= saturate(smoothstep(_FresnelAlphaMin,_FresnelAlphaMax,pbsData.nv));
     }
-    // apply fog
-    // UNITY_APPLY_FOG(i.fogCoord, col);
-    col.rgb = MixFog(col.xyz,i.fogCoord.x);
+    // apply unity fog
+    // col.rgb = MixFog(col.xyz,i.fogCoord.z);
+    // apply sphere fog
+    BlendFogSphere(col.xyz/**/,worldData.pos,i.fogCoord.xy,true,false);
     return col;
 }
 

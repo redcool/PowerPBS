@@ -165,12 +165,6 @@ CBUFFER_START(UnityPerMaterial)
     half _ParallalOn;
     half _HeightScale;
 
-// ================================================== strandSpec parameters
-    half _Shift1,_Shift2;
-    half _SpecPower1, _SpecPower2;
-    half3 _SpecColor1,_SpecColor2;
-    half _SpecIntensity1,_SpecIntensity2;
-    half _HairAoIntensity;
 // ================================================== custom shadow caster params
     half4 _CustomShadowBias; // x: depth bias, y: normal bias
 // ================================================== Thin Film
