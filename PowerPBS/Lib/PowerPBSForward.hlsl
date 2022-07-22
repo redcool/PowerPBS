@@ -126,16 +126,6 @@ half4 frag (v2f i) : SV_Target
     pbsData.mainTex = mainTex;
     pbsData.maskData_None_mainTexA_pbrMaskA = half3(1,mainTex.a,pbrMask.a);
 
-    // calc strand specular
-    #if defined(_PBRMODE_STRANDSPEC)
-    if(_PBRMode == PBR_MODE_STRAND){
-        half4 ao_shift_specMask_tbMask = SAMPLE_TEXTURE2D(_StrandMaskTex,sampler_linear_repeat,i.uv);
-		half hairAo = ao_shift_specMask_tbMask.x;
-        pbsData.hairSpecColor = CalcHairSpecColor(worldData.vertexTangent,worldData.normal,worldData.vertexBinormal,light.dir,worldData.view,ao_shift_specMask_tbMask.yzw);
-		surfaceData.diffColor *= lerp(1, hairAo, _HairAoIntensity);
-    }
-    #endif
-
     UnityIndirect indirect = CalcGI(surfaceData.diffColor,uv,worldData.reflect,worldData.normal,occlusion,pbsData.perceptualRoughness);
     #if defined(_POWER_DEBUG)
         return ShowDebug(indirect,worldData,surfaceData,metallic,smoothness,occlusion);
@@ -154,7 +144,7 @@ half4 frag (v2f i) : SV_Target
     #if defined(_PRESSS)
     if(_ScatteringLUTOn){
         half3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
-        half3 scatteredColor = PreScattering(worldData.vertexNormal,light.dir,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.maskData_None_mainTexA_pbrMaskA);
+        half3 scatteredColor = PreScattering(worldData.vertexNormal,light.direction,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.maskData_None_mainTexA_pbrMaskA);
         col.rgb += scatteredColor;
     }
     #endif

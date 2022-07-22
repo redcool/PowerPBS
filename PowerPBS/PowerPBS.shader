@@ -18,7 +18,6 @@ Shader "Character/PowerPBS"
 {
     Properties
     {
-        // [Header(Drp BakedLight LightingProcess Is Required)]
 // ==================================================
         [Header(MainProp)]
         _MainTex ("Main Texture", 2D) = "white" {}
@@ -65,7 +64,7 @@ Shader "Character/PowerPBS"
 // ================================================== Settings
         [Header(PBR Mode)]
         // [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
-        [KeywordEnum(Standard,Aniso,Cloth,StrandSpec)]_PBRMode("_PBRMode",int) = 0
+        [KeywordEnum(Standard,Aniso,Cloth)]_PBRMode("_PBRMode",int) = 0
 
         [Header(Specular Options)]
         [GroupToggle]_SpecularOn("_SpecularOn",float) = 1
@@ -291,12 +290,12 @@ Shader "Character/PowerPBS"
             #pragma fragment frag
             // make fog work
             #pragma multi_compile_fog
-            #pragma target 3.0
+            #pragma target 4.5
 
         //     #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma shader_feature_local_fragment _ALPHA_TEST
-            #pragma shader_feature_local_fragment _PBRMODE_STANDRAD _PBRMODE_ANISO _PBRMODE_CLOTH _PBRMODE_STRANDSPEC
+            #pragma shader_feature_local_fragment _PBRMODE_STANDRAD _PBRMODE_ANISO _PBRMODE_CLOTH
             #pragma shader_feature_local_fragment _SSSS
             #pragma shader_feature_local_fragment _PRESSS
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT

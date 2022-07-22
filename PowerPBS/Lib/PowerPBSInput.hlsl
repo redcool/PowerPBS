@@ -1,7 +1,6 @@
 #if !defined(POWER_PBS_INPUT_HLSL)
 #define POWER_PBS_INPUT_HLSL
 #include "Tools/Common.hlsl"
-#include "Tools/StrandSpecLib.hlsl"
 
 #define MAX_SPECULAR 25
 // detail map mode id

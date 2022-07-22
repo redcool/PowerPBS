@@ -212,10 +212,6 @@ inline half3 CalcDirectSpecColor(inout PBSData data,half nl,half nv,half nh,half
         }
     #endif
 
-    #if defined(_PBRMODE_STRANDSPEC)
-        directSpecColor = data.hairSpecColor;
-    #endif
-
     return min(directSpecColor * _SpecularIntensity, _MaxSpecularIntensity); // eliminate large value in HDR
 }
 
