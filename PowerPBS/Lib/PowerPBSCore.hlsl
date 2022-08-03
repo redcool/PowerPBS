@@ -46,16 +46,15 @@ inline half3 PreScattering(half3 normal,half3 lightDir,half3 lightColor,half nl,
 }
 
 inline half3 GetIndirectSpecular(half3 reflectDir,half rough){
-    rough = rough *(1.7 - rough * 0.7);
-    half mip = rough * 6;
+    half mip = (1.7-0.7*rough)*rough*6;
 
     half4 encodeIrradiance = 0;
     if(_CustomIBLOn){
         encodeIrradiance = SAMPLE_TEXTURECUBE_LOD(_EnvCube,sampler_linear_repeat,reflectDir,mip);
-        encodeIrradiance *= _EnvIntensity;
     }else{
         encodeIrradiance = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0,sampler_linear_repeat, reflectDir, mip);
     }
+    encodeIrradiance *= _EnvIntensity;
     return DecodeHDR(encodeIrradiance,unity_SpecCube0_HDR);
 }
 
