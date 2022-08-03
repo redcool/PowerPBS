@@ -82,6 +82,7 @@ Shader "Character/PowerPBS"
         _MainLightShadowSoftScale("_MainLightShadowSoftScale",range(0,3)) = 0
         [Header(Shadow Bias)]
         _CustomShadowBias("_CustomShadowBias(x: depth bias, y: normal bias)",vector) = (0,0,0,0)
+        _ShadowColor("_ShadowColor",color) = (0,0,0,0)
 // ================================================== Additional Lights
         [Header(URP Additional Lights)]
         [Toggle(_ADDITIONAL_LIGHT)]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1

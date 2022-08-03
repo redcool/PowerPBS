@@ -169,7 +169,7 @@ Material:
     - _LightColorNoAtten: 1
     - _MainLightShadowSoftScale: 1
     - _MaxSpecularIntensity: 5
-    - _Metallic: 1
+    - _Metallic: 0.421
     - _MetallicChannel: 0
     - _Mode: 0
     - _NormalMapScale: 1
@@ -239,6 +239,7 @@ Material:
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}
     - _LightDir: {r: 0, g: 0.5, b: 0, a: 0}
     - _ReflectionOffsetDir: {r: 0, g: 0, b: 0, a: 0}
+    - _ShadowColor: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor1: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor2: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

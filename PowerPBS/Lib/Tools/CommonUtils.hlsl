@@ -339,11 +339,11 @@ half Pow5(half a){
 // {
 //     return (numer != denom) ? numer / denom : 1;
 // }
-half3 SafeNormalize(half3 inVec)
-{
-    half3 dp3 = max(FLT_MIN, dot(inVec, inVec));
-    return inVec * rsqrt(dp3);
-}
+// half3 SafeNormalize(half3 inVec)
+// {
+//     half3 dp3 = max(FLT_MIN, dot(inVec, inVec));
+//     return inVec * rsqrt(dp3);
+// }
 
 half3 UnpackScaleNormalRGorAG(half4 packednormal, half bumpScale)
 {

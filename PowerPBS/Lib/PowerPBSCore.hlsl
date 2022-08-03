@@ -277,13 +277,13 @@ half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Lig
     half nl = saturate(dot(data.normal,light.direction));
     half nh = saturate(dot(data.normal,h));
 
-    half lightAtten = light.distanceAttenuation * light.shadowAttenuation;
+    half lightAtten = light.distanceAttenuation * light.shadowAttenuation *nl ;
     // half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     half3 directColor = diffColor;
     if(_SpecularOn){
         directColor += CalcSpecularTermOnlyStandard(data,nh,specColor);
     }
-    return lightAtten *nl * light.color * directColor;
+    return lerp(_ShadowColor,1,lightAtten) * light.color * directColor;
 }
 
 half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor){
@@ -373,7 +373,8 @@ half4 CalcPBS(half3 diffColor,half3 specColor,Light mainLight,UnityIndirect gi,C
     // }
     #endif
     // apply main light atten 
-    directColor *= mainLight.color * nl * mainLight.shadowAttenuation * mainLight.distanceAttenuation;
+    half atten = (nl * mainLight.shadowAttenuation * mainLight.distanceAttenuation);
+    directColor *= mainLight.color * lerp(_ShadowColor,1,atten);
     color += directColor;
 
     // additional lights

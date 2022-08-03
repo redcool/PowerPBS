@@ -108,6 +108,8 @@ CBUFFER_START(UnityPerMaterial)
 // ==================================================
     half _ApplyShadowOn;
     half _MainLightShadowSoftScale;
+    half4 _ShadowColor;
+
     half _ReceiveAdditionalLightsOn;
     half _ReceiveAdditionalLightsShadowOn;
     half _AdditionalLightSoftShadowOn;

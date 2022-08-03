@@ -51,7 +51,7 @@ half ComputeCascadeIndex(half3 positionWS)
     return 4 - dot(weights, half4(4, 3, 2, 1));
 }
 
-half4 TransformWorldToShadowCoord(half3 positionWS)
+half4 TransformWorldToShadowCoord(float3 positionWS)
 {
 #ifdef _MAIN_LIGHT_SHADOWS_CASCADE
     half cascadeIndex = ComputeCascadeIndex(positionWS);

@@ -43,13 +43,13 @@ half4 UnityObjectToClipPosODS(half3 inPos)
 }
 
 // Tranforms position from object to homogenous space
-half4 UnityObjectToClipPos(in half3 pos)
+float4 UnityObjectToClipPos(in half3 pos)
 {
 #if defined(STEREO_CUBEMAP_RENDER_ON)
     return UnityObjectToClipPosODS(pos);
 #else
     // More efficient than computing M*VP matrix product
-    return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, half4(pos, 1.0)));
+    return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, float4(pos, 1.0)));
 #endif
 }
 half4 UnityObjectToClipPos(half4 pos) // overload for half4; avoids "implicit truncation" warning for existing shaders

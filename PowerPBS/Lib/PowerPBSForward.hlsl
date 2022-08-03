@@ -22,15 +22,15 @@ struct appdata
 
 struct v2f
 {
-    half4 uv : TEXCOORD0;
-    half4 fogCoord:TEXCOORD1;
-    half4 pos : SV_POSITION;
-    half4 tSpace0:TEXCOORD2;
-    half4 tSpace1:TEXCOORD3;
-    half4 tSpace2:TEXCOORD4;
-    half3 viewTangentSpace:TEXCOORD5;
+    float4 uv : TEXCOORD0;
+    float4 fogCoord:TEXCOORD1;
+    float4 pos : SV_POSITION;
+    float4 tSpace0:TEXCOORD2;
+    float4 tSpace1:TEXCOORD3;
+    float4 tSpace2:TEXCOORD4;
+    float3 viewTangentSpace:TEXCOORD5;
     float4 _ShadowCoord:TEXCOORD6;
-    half4 screenPos:TEXCOORD7;
+    float4 screenPos:TEXCOORD7;
 };
 
 //-------------------------------------
@@ -97,14 +97,12 @@ half4 frag (v2f i) : SV_Target
     half alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a * _Color.a;
 
     #if defined(_ALPHA_TEST)
-    if(_AlphaTestOn)
+    // if(_AlphaTestOn)
         clip(alpha - _Cutoff);
     #endif
 
     WorldData worldData;
     InitWorldData(uv,detailMask,i.tSpace0,i.tSpace1,i.tSpace2,worldData/**/);
-
-    // i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz);
 
     Light light = GetMainLight();
     OffsetMainLight(light);
@@ -113,7 +111,6 @@ half4 frag (v2f i) : SV_Target
     if(_ApplyShadowOn){
         i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz); // in vert, has bug
         float atten = CalcShadow(i._ShadowCoord,worldData.pos);
-        // return lerp(float4(0.3,0,0,0),1,atten);
         light.shadowAttenuation = atten;
     }
 

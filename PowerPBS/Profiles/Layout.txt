@@ -4,7 +4,7 @@
 tabNames = Settings, Main,Vertex,Aniso,Cloth,ThinFilm,Scatter,Alpha,Details,Parallal_SSS,Env,Emission,Debug
 
 // Tab's contents
-Settings =_ZWriteOn,_ZTestMode,_CullMode,_ApplyShadowOn,_MainLightShadowSoftScale,_CustomShadowBias,_PBRMode,_RenderQueue
+Settings =_ZWriteOn,_ZTestMode,_CullMode,_ApplyShadowOn,_MainLightShadowSoftScale,_ShadowColor,_CustomShadowBias,_PBRMode,_RenderQueue
 Main = _MainTex,_Color,_AlphaFrom,_NormalMap,_NormalMapScale,_MetallicMap,_Metallic,_Smoothness,_Occlusion,_InvertSmoothnessOn,_MetallicChannel,_SmoothnessChannel,_OcclusionChannel,_CustomSpecularMapOn,_CustomSpecularMap,_CustomSpecularIntensity,_ClearCoatOn,_ClearCoatSpecColor,_CoatSmoothness,_CoatIndirectSpecularIntensity
 Vertex = _VertexScale,_VertexColorRAttenOn
 Aniso=_AnisoColor,_AnisoIntensity,_AnisoRough,_AnisoShift,_AnisoLayer2On,_Layer2AnisoColor,_Layer2AnisoIntensity,_Layer2AnisoRough,_Layer2AnisoShift,_AnisoMaskFrom,_AnisoMaskUsage,_AnisoIntensityUseSmoothness
