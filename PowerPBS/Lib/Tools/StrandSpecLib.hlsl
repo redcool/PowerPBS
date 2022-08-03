@@ -1,6 +1,6 @@
 #if !defined(STRAND_SPEC_LIB_HLSL)
 #define STRAND_SPEC_LIB_HLSL
-    inline half StrandSpecular ( half3 T, half3 V, half3 L, half exponent)
+    half StrandSpecular ( half3 T, half3 V, half3 L, half exponent)
     {
         half3 H = normalize(L + V);
         half dotTH = dot(T, H);
@@ -9,7 +9,7 @@
         return dirAtten * pow(sinTH, exponent);
     }
     
-    inline half3 ShiftTangent ( half3 T, half3 N, half shift)
+    half3 ShiftTangent ( half3 T, half3 N, half shift)
     {
         return normalize(T + shift * N);
     }
@@ -25,7 +25,7 @@
         half specPower;
     };
 
-    inline half3 StrandSpecularColor(StrandSpecularData data){
+    half3 StrandSpecularColor(StrandSpecularData data){
         half3 tb = lerp(data.tangent,data.binormal,data.tbMask);
         half3 t = ShiftTangent(data.binormal,data.normal,data.shift);
         half spec = StrandSpecular(t,data.viewDir,data.lightDir,data.specPower);

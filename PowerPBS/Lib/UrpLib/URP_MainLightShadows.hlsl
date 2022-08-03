@@ -117,7 +117,9 @@ half4 TransformWorldToShadowCoord(half3 positionWS)
     half CalcShadow (half4 shadowCoord,half3 worldPos)
     {
         half shadow = 1;
-        if(MainLightEnabled()){
+        #if defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE)
+        // if(MainLightEnabled())
+        {
             //shadow = SAMPLE_TEXTURE2D_SHADOW(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture, shadowCoord.xyz);
             shadow = SampleShadowmap(TEXTURE2D_ARGS(_MainLightShadowmapTexture,sampler_MainLightShadowmapTexture),shadowCoord,_MainLightShadowSoftScale);
             shadow = lerp(1,shadow,_MainLightShadowParams.x); // shadow intensity
@@ -128,6 +130,7 @@ half4 TransformWorldToShadowCoord(half3 positionWS)
             
             shadow = lerp(shadow,1,shadowFade);
         }
+        #endif
         return shadow;
     }
 

@@ -58,7 +58,7 @@ v2f vert (appdata v)
         o.viewTangentSpace = mul(viewWorldSpace,tSpace);
     }
     // TRANSFER_SHADOW(o)
-    o._ShadowCoord = TransformWorldToShadowCoord(worldPos.xyz);
+    // o._ShadowCoord = TransformWorldToShadowCoord(worldPos.xyz); // move to frag
     o.fogCoord.z = ComputeFogFactor(o.pos.z);
     o.fogCoord.xy = CalcFogFactor(worldPos);
     o.screenPos = ComputeScreenPos(o.pos);
@@ -111,9 +111,9 @@ half4 frag (v2f i) : SV_Target
     half3 lightColorNoAtten = light.color;
 
     if(_ApplyShadowOn){
-        // UNITY_LIGHT_ATTENUATION(atten, i, worldPos)
+        i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz); // in vert, has bug
         float atten = CalcShadow(i._ShadowCoord,worldData.pos);
-        // return atten;
+        // return lerp(float4(0.3,0,0,0),1,atten);
         light.shadowAttenuation = atten;
     }
 

@@ -340,11 +340,11 @@
         #define CALL_MERGE(X) MERGE_UNITY_BUILTINS_INDEX(X)
         #define unity_WorldToObject     UNITY_ACCESS_MERGED_INSTANCED_PROP(CALL_MERGE(UNITY_WORLDTOOBJECTARRAY_CB), unity_WorldToObjectArray)
 
-        inline half4 UnityObjectToClipPosInstanced(in half3 pos)
+        half4 UnityObjectToClipPosInstanced(in half3 pos)
         {
             return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, half4(pos, 1.0)));
         }
-        inline half4 UnityObjectToClipPosInstanced(half4 pos)
+        half4 UnityObjectToClipPosInstanced(half4 pos)
         {
             return UnityObjectToClipPosInstanced(pos.xyz);
         }

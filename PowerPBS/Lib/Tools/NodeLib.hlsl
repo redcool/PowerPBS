@@ -193,17 +193,17 @@ half Unity_GradientNoise(half2 uv,half scale){
 
 //---------------------------
 
-inline half unity_noise_randomValue(half2 uv)
+half unity_noise_randomValue(half2 uv)
 {
 	return frac(sin(dot(uv, half2(12.9898, 78.233)))*43758.5453);
 }
 
-inline half unity_noise_interpolate(half a, half b, half t)
+half unity_noise_interpolate(half a, half b, half t)
 {
 	return (1.0 - t)*a + (t*b);
 }
 
-inline half unity_valueNoise(half2 uv)
+half unity_valueNoise(half2 uv)
 {
 	half2 i = floor(uv);
 	half2 f = frac(uv);

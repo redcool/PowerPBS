@@ -14,7 +14,7 @@ void OffsetMainLight(inout Light light){
     light.direction = normalize(light.direction);
 }
 
-inline half3 CalcSSS(half3 l,half3 v,half2 fastSSSMask){
+half3 CalcSSS(half3 l,half3 v,half2 fastSSSMask){
     half sss1 = FastSSS(l,v);
     half sss2 = FastSSS(-l,v);
     half3 front = sss1 * _FrontSSSIntensity * fastSSSMask.x * _FrontSSSColor;
@@ -22,7 +22,7 @@ inline half3 CalcSSS(half3 l,half3 v,half2 fastSSSMask){
     return (front + back);
 }
 
-inline half3 GetWorldViewDir(half3 worldPos){
+half3 GetWorldViewDir(half3 worldPos){
     half3 dir = 0;
     if(unity_OrthoParams.w != 0){ // ortho
         // dir = half3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
@@ -32,7 +32,7 @@ inline half3 GetWorldViewDir(half3 worldPos){
     return dir;
 }
 
-inline half3 PreScattering(half3 normal,half3 lightDir,half3 lightColor,half nl,half4 mainTex,half3 worldPos,half curveScale,half scatterIntensity,half3 maskData){
+half3 PreScattering(half3 normal,half3 lightDir,half3 lightColor,half nl,half4 mainTex,half3 worldPos,half curveScale,half scatterIntensity,half3 maskData){
     half wnl = dot(normal,(lightDir)) * 0.5 + 0.5;
     // half deltaNormal = length(fwidth(normal))*10;
     // half deltaPos = length(fwidth(worldPos));
@@ -45,7 +45,7 @@ inline half3 PreScattering(half3 normal,half3 lightDir,half3 lightColor,half nl,
     return scattering.xyz * lightColor * mainTex.xyz * atten * scatterIntensity * mask;
 }
 
-inline half3 GetIndirectSpecular(half3 reflectDir,half rough){
+half3 GetIndirectSpecular(half3 reflectDir,half rough){
     half mip = (1.7-0.7*rough)*rough*6;
 
     half4 encodeIrradiance = 0;
@@ -59,7 +59,7 @@ inline half3 GetIndirectSpecular(half3 reflectDir,half rough){
 }
 
 
-inline half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflectivity, out half outModifiedAlpha)
+half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflectivity, out half outModifiedAlpha)
 {
     if(_AlphaPreMultiply){
         diffColor *= alpha;
@@ -75,7 +75,7 @@ inline half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflect
     return diffColor;
 }
 
-inline half3 CalcNormal(half2 uv, half detailMask ){
+half3 CalcNormal(half2 uv, half detailMask ){
     half3 tn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,uv),_NormalMapScale);
 	
 	// if (_Detail_MapOn) {
@@ -89,7 +89,7 @@ inline half3 CalcNormal(half2 uv, half detailMask ){
     return tn;
 }
 
-inline half CalcDetailAlbedo(inout half4 mainColor, TEXTURE2D(texObj),half2 uv, half detailIntensity,bool isOn,int detailMapMode){
+half CalcDetailAlbedo(inout half4 mainColor, TEXTURE2D(texObj),half2 uv, half detailIntensity,bool isOn,int detailMapMode){
     half detailMask = 0;
     if(isOn){
         half4 tex = SAMPLE_TEXTURE2D(texObj,sampler_linear_repeat,uv);
@@ -107,7 +107,7 @@ inline half CalcDetailAlbedo(inout half4 mainColor, TEXTURE2D(texObj),half2 uv, 
 
 #define CALC_DETAIL_ALBEDO(id) CalcDetailAlbedo(albedo, _Detail##id##_Map,TRANSFORM_TEX(uv,_Detail##id##_Map), _Detail##id##_MapIntensity, _Detail##id##_MapOn,_Detail##id##_MapMode)
 
-inline half4 CalcAlbedo(half2 uv,out half detailMask) 
+half4 CalcAlbedo(half2 uv,out half detailMask) 
 {
     detailMask = 1;
     half4 albedo = SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,uv) ;
@@ -121,7 +121,7 @@ inline half4 CalcAlbedo(half2 uv,out half detailMask)
     return albedo;
 }
 
-inline UnityIndirect CalcGI(half3 albedo,half2 uv,half3 reflectDir,half3 normal,half3 occlusion,half roughness){
+UnityIndirect CalcGI(half3 albedo,half2 uv,half3 reflectDir,half3 normal,half3 occlusion,half roughness){
     half3 indirectSpecular = GetIndirectSpecular(reflectDir,roughness) * occlusion * _IndirectSpecularIntensity;
     // half3 indirectDiffuse = albedo * occlusion;
     // indirectDiffuse += ShadeSH9(half4(normal,1));
@@ -145,11 +145,11 @@ half3 CalcEmission(half3 albedo,half2 uv){
 #define PBR_MODE_CLOTH 2
 #define PBR_MODE_STRAND 3
 
-inline half3 CalcSpecularTermOnlyStandard(inout PBSData data,half nh,half3 specColor){
+half3 CalcSpecularTermOnlyStandard(inout PBSData data,half nh,half3 specColor){
     return D_GGXTerm(nh,data.roughness2) * specColor;
 }
 
-inline half3 CalcDirectSpecColor(inout PBSData data,half nl,half nv,half nh,half lh,half3 specColor){
+half3 CalcDirectSpecColor(inout PBSData data,half nl,half nv,half nh,half lh,half3 specColor){
     half V = 1;
     half specTerm = 0;
     half3 directSpecColor = 0;
@@ -271,7 +271,7 @@ half3 CalcDirectApplyClearCoat(half3 directColor,ClearCoatData data,half fresnel
     half lh = saturate(dot(l,h));
     // half lv = saturate(dot(l,v));\
 
-inline half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Light light){
+half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Light light){
     // CALC_LIGHT_INFO(light.direction);
     half3 h = SafeNormalize(light.direction + data.viewDir);
     half nl = saturate(dot(data.normal,light.direction));

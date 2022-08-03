@@ -10,54 +10,54 @@ half F_Schlick(half f0,half f90,half t){
     return (f90-f0) * x5+f0;
 }
 
-inline half FastSSS(half3 l,half3 v){
+half FastSSS(half3 l,half3 v){
     return saturate(dot(l,v));
 }
 
-inline half DisneyDiffuse(half nv,half nl,half lh,half roughness){
+half DisneyDiffuse(half nv,half nl,half lh,half roughness){
     half fd90 = 0.5 + 2*roughness*lh*lh;
     half lightScatter = 1 - (fd90 - 1) * Pow5(1 - nl);
     half viewScatter = 1 - (fd90 - 1 ) * Pow5(1 - nv);
     return lightScatter * viewScatter;
 }
-inline half RoughnessToSpecPower(half a){
+half RoughnessToSpecPower(half a){
     half a2 = a * a;
     half sq = max(1e-4f,a2 * a2);
     half n = 2.0/sq - 2;
     n = max(n,1e-4f);
     return n;
 }
-inline half3 FresnelTerm(half3 F0,half lh){
+half3 FresnelTerm(half3 F0,half lh){
     return F0 + (1-F0) * Pow5(1 - lh);
 }
-inline half3 FresnelLerp(half3 f0,half3 f90,half lh){
+half3 FresnelLerp(half3 f0,half3 f90,half lh){
     half t = Pow5(1-lh);
     return lerp(f0,f90,t);
 }
-inline half3 FresnelLerpFast(half3 F0,half3 F90,half lh){
+half3 FresnelLerpFast(half3 F0,half3 F90,half lh){
     half t = Pow4(1 - lh);
     return lerp(F0,F90,t);
 }
 
-inline half SmithJointGGXTerm(half nl,half nv,half a2){
+half SmithJointGGXTerm(half nl,half nv,half a2){
     half v = nv * (nv * (1-a2)+a2);
     half l = nl * (nl * (1-a2)+a2);
     return 0.5f/(v + l + 1e-5f);
 }
 
-inline half NDFBlinnPhongTerm(half nh,half a){
+half NDFBlinnPhongTerm(half nh,half a){
     half normTerm = (a + 2)* 0.5/PI;
     half specularTerm = pow(nh,a);
     return normTerm * specularTerm;
 }
 
-inline half D_GGXTerm(half nh,half a2){
+half D_GGXTerm(half nh,half a2){
     half d = (nh*a2-nh)*nh + 1;
     return a2 / (d*d + 1e-7f);
 }
 
 
-inline half D_GGXAnisoNoPI(half TdotH, half BdotH, half NdotH, half roughnessT, half roughnessB)
+half D_GGXAnisoNoPI(half TdotH, half BdotH, half NdotH, half roughnessT, half roughnessB)
 {
     half a2 = roughnessT * roughnessB;
     half3 v = half3(roughnessB * TdotH, roughnessT * BdotH, a2 * NdotH);

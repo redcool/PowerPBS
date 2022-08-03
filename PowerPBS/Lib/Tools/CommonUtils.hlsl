@@ -58,47 +58,47 @@ half3 LinearToGammaSpace(half3 linearRGB){
 }
 
 // Tranforms position from world to homogenous space
-inline half4 UnityWorldToClipPos( in half3 pos )
+half4 UnityWorldToClipPos( in half3 pos )
 {
     return mul(UNITY_MATRIX_VP, half4(pos, 1.0));
 }
 
 // Tranforms position from view to homogenous space
-inline half4 UnityViewToClipPos( in half3 pos )
+half4 UnityViewToClipPos( in half3 pos )
 {
     return mul(UNITY_MATRIX_P, half4(pos, 1.0));
 }
 
 // Tranforms position from object to camera space
-inline half3 UnityObjectToViewPos( in half3 pos )
+half3 UnityObjectToViewPos( in half3 pos )
 {
     return mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, half4(pos, 1.0))).xyz;
 }
-inline half3 UnityObjectToViewPos(half4 pos) // overload for half4; avoids "implicit truncation" warning for existing shaders
+half3 UnityObjectToViewPos(half4 pos) // overload for half4; avoids "implicit truncation" warning for existing shaders
 {
     return UnityObjectToViewPos(pos.xyz);
 }
 
 // Tranforms position from world to camera space
-inline half3 UnityWorldToViewPos( in half3 pos )
+half3 UnityWorldToViewPos( in half3 pos )
 {
     return mul(UNITY_MATRIX_V, half4(pos, 1.0)).xyz;
 }
 
 // Transforms direction from object to world space
-inline half3 UnityObjectToWorldDir( in half3 dir )
+half3 UnityObjectToWorldDir( in half3 dir )
 {
     return normalize(mul((half3x3)unity_ObjectToWorld, dir));
 }
 
 // Transforms direction from world to object space
-inline half3 UnityWorldToObjectDir( in half3 dir )
+half3 UnityWorldToObjectDir( in half3 dir )
 {
     return normalize(mul((half3x3)unity_WorldToObject, dir));
 }
 
 // Transforms normal from object to world space
-inline half3 UnityObjectToWorldNormal( in half3 norm )
+half3 UnityObjectToWorldNormal( in half3 norm )
 {
 #ifdef UNITY_ASSUME_UNIFORM_SCALING
     return UnityObjectToWorldDir(norm);
@@ -109,7 +109,7 @@ inline half3 UnityObjectToWorldNormal( in half3 norm )
 }
 
 // Computes world space light direction, from world space position
-inline half3 UnityWorldSpaceLightDir( in half3 worldPos )
+half3 UnityWorldSpaceLightDir( in half3 worldPos )
 {
     #ifndef USING_LIGHT_MULTI_COMPILE
         return _WorldSpaceLightPos0.xyz - worldPos * _WorldSpaceLightPos0.w;
@@ -124,14 +124,14 @@ inline half3 UnityWorldSpaceLightDir( in half3 worldPos )
 
 // Computes world space light direction, from object space position
 // *Legacy* Please use UnityWorldSpaceLightDir instead
-inline half3 WorldSpaceLightDir( in half4 localPos )
+half3 WorldSpaceLightDir( in half4 localPos )
 {
     half3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
     return UnityWorldSpaceLightDir(worldPos);
 }
 
 // Computes object space light direction
-inline half3 ObjSpaceLightDir( in half4 v )
+half3 ObjSpaceLightDir( in half4 v )
 {
     half3 objSpaceLightPos = mul(unity_WorldToObject, _WorldSpaceLightPos0).xyz;
     #ifndef USING_LIGHT_MULTI_COMPILE
@@ -146,21 +146,21 @@ inline half3 ObjSpaceLightDir( in half4 v )
 }
 
 // Computes world space view direction, from object space position
-inline half3 UnityWorldSpaceViewDir( in half3 worldPos )
+half3 UnityWorldSpaceViewDir( in half3 worldPos )
 {
     return _WorldSpaceCameraPos.xyz - worldPos;
 }
 
 // Computes world space view direction, from object space position
 // *Legacy* Please use UnityWorldSpaceViewDir instead
-inline half3 WorldSpaceViewDir( in half4 localPos )
+half3 WorldSpaceViewDir( in half4 localPos )
 {
     half3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
     return UnityWorldSpaceViewDir(worldPos);
 }
 
 // Computes object space view direction
-inline half3 ObjSpaceViewDir( in half4 v )
+half3 ObjSpaceViewDir( in half4 v )
 {
     half3 objSpaceCameraPos = mul(unity_WorldToObject, half4(_WorldSpaceCameraPos.xyz, 1)).xyz;
     return objSpaceCameraPos - v.xyz;
@@ -219,14 +219,14 @@ half3 ShadeSH9 (half4 normal)
 
 
 // Converts color to luminance (grayscale)
-inline half Luminance(half3 rgb)
+half Luminance(half3 rgb)
 {
     return dot(rgb, unity_ColorSpaceLuminance.rgb);
 }
 
 // Decodes HDR textures
 // handles dLDR, RGBM formats
-inline half3 DecodeHDR (half4 data, half4 decodeInstructions)
+half3 DecodeHDR (half4 data, half4 decodeInstructions)
 {
     // Take into account texture alpha if decodeInstructions.w is true(the alpha value affects the RGB channels)
     half alpha = decodeInstructions.w * (data.a - 1.0) + 1.0;
@@ -322,14 +322,14 @@ half3 MixFog(half3 fragColor, half fogFactor)
 
 #endif  //! UNITY_CG_INCLUDED
 
-inline half Pow2(half a){return a*a;}
+half Pow2(half a){return a*a;}
 
-// inline half Pow4(half a){
+// half Pow4(half a){
 //     half a2 = a*a;
 //     return a2*a2;
 // }
 
-inline half Pow5(half a){
+half Pow5(half a){
     half a2 = a*a;
     return a2*a2*a;
 }
@@ -382,7 +382,7 @@ half3 UnpackScaleNormal(half4 packednormal, half bumpScale)
     return UnpackScaleNormalRGorAG(packednormal, bumpScale);
 }
 
-inline half OneMinusReflectivityFromMetallic(half metallic)
+half OneMinusReflectivityFromMetallic(half metallic)
 {
     // We'll need oneMinusReflectivity, so
     //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
@@ -392,7 +392,7 @@ inline half OneMinusReflectivityFromMetallic(half metallic)
     half oneMinusDielectricSpec = unity_ColorSpaceDielectricSpec.a;
     return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
 }
-inline half3 DiffuseAndSpecularFromMetallic (half3 albedo, half metallic, out half3 specColor, out half oneMinusReflectivity)
+half3 DiffuseAndSpecularFromMetallic (half3 albedo, half metallic, out half3 specColor, out half oneMinusReflectivity)
 {
     specColor = lerp (unity_ColorSpaceDielectricSpec.rgb, albedo, metallic);
     oneMinusReflectivity = OneMinusReflectivityFromMetallic(metallic);

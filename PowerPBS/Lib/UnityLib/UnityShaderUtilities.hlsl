@@ -29,7 +29,7 @@ half3 ODSOffset(half3 worldPos, half ipd)
     return offset;
 }
 
-inline half4 UnityObjectToClipPosODS(half3 inPos)
+half4 UnityObjectToClipPosODS(half3 inPos)
 {
     half4 clipPos;
     half3 posWorld = mul(unity_ObjectToWorld, half4(inPos, 1.0)).xyz;
@@ -43,7 +43,7 @@ inline half4 UnityObjectToClipPosODS(half3 inPos)
 }
 
 // Tranforms position from object to homogenous space
-inline half4 UnityObjectToClipPos(in half3 pos)
+half4 UnityObjectToClipPos(in half3 pos)
 {
 #if defined(STEREO_CUBEMAP_RENDER_ON)
     return UnityObjectToClipPosODS(pos);
@@ -52,7 +52,7 @@ inline half4 UnityObjectToClipPos(in half3 pos)
     return mul(UNITY_MATRIX_VP, mul(unity_ObjectToWorld, half4(pos, 1.0)));
 #endif
 }
-inline half4 UnityObjectToClipPos(half4 pos) // overload for half4; avoids "implicit truncation" warning for existing shaders
+half4 UnityObjectToClipPos(half4 pos) // overload for half4; avoids "implicit truncation" warning for existing shaders
 {
     return UnityObjectToClipPos(pos.xyz);
 }
