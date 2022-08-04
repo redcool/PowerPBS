@@ -2,11 +2,12 @@
 #define POWER_PBS_CORE_HLSL
 #include "UnityLib/UnityLightingCommon.hlsl"
 #include "PowerPBSData.hlsl"
-#include "Tools/BSDF.hlsl"
 #include "Tools/CommonUtils.hlsl"
 #include "UrpLib/URP_Lighting.hlsl"
 #include "Tools/ExtractLightFromSH.hlsl"
 
+#include "../../PowerShaderLib/Lib/BSDF.hlsl"
+#include "../../PowerShaderLib/Lib/Colors.hlsl"
 
 void OffsetMainLight(inout Light light){
     light.direction += _CustomLightOn > 0 ? _LightDir.xyz : 0;
@@ -200,7 +201,7 @@ half3 CalcDirectSpecColor(inout PBSData data,half nl,half nv,half nh,half lh,hal
         // V = AshikhminV(nv,nl);
         specTerm = CharlieD(data.roughness,nh);
         specTerm = smoothstep(_ClothDMin,_ClothDMax,specTerm);
-        directSpecColor = specTerm * PI * _ClothSheenColor;
+        directSpecColor = specTerm * PI * _ClothSheenColor.xyz;
         half clothMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_ClothMaskFrom);
         // mask control intensity
         directSpecColor *= lerp(1,clothMask,_ClothMaskUsage == CLOTH_MASK_FOR_INTENSITY);
@@ -283,7 +284,7 @@ half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Lig
     if(_SpecularOn){
         directColor += CalcSpecularTermOnlyStandard(data,nh,specColor);
     }
-    return lerp(_ShadowColor,1,lightAtten) * light.color * directColor;
+    return lerp(_ShadowColor.xyz,1,lightAtten) * light.color * directColor;
 }
 
 half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor){
@@ -374,7 +375,7 @@ half4 CalcPBS(half3 diffColor,half3 specColor,Light mainLight,UnityIndirect gi,C
     #endif
     // apply main light atten 
     half atten = (nl * mainLight.shadowAttenuation * mainLight.distanceAttenuation);
-    directColor *= mainLight.color * lerp(_ShadowColor,1,atten);
+    directColor *= mainLight.color * lerp(_ShadowColor.xyz,1,atten);
     color += directColor;
 
     // additional lights

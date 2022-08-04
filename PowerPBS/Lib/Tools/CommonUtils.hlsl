@@ -329,10 +329,10 @@ half Pow2(half a){return a*a;}
 //     return a2*a2;
 // }
 
-half Pow5(half a){
-    half a2 = a*a;
-    return a2*a2*a;
-}
+// half Pow5(half a){
+//     half a2 = a*a;
+//     return a2*a2*a;
+// }
 
 
 // half SafeDiv(half numer, half denom)

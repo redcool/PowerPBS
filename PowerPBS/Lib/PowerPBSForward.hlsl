@@ -4,7 +4,7 @@
 #include "PowerPBSCore.hlsl"
 #include "UrpLib/URP_MainLightShadows.hlsl"
 #include "Tools/Blur.hlsl"
-#include "Tools/ParallaxMapping.hlsl"
+#include "../../PowerShaderLib/Lib/ParallaxMapping.hlsl"
 #include "../../PowerShaderLib/Lib/FogLib.hlsl"
 
 #if defined(_POWER_DEBUG)
