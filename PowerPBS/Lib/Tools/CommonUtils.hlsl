@@ -13,92 +13,92 @@
 #if !defined(UNITY_CG_INCLUDED)
 
 #ifdef UNITY_COLORSPACE_GAMMA
-#define unity_ColorSpaceGrey half4(0.5, 0.5, 0.5, 0.5)
-#define unity_ColorSpaceDouble half4(2.0, 2.0, 2.0, 2.0)
-#define unity_ColorSpaceDielectricSpec half4(0.220916301, 0.220916301, 0.220916301, 1.0 - 0.220916301)
-#define unity_ColorSpaceLuminance half4(0.22, 0.707, 0.071, 0.0) // Legacy: alpha is set to 0.0 to specify gamma mode
+#define unity_ColorSpaceGrey float4(0.5, 0.5, 0.5, 0.5)
+#define unity_ColorSpaceDouble float4(2.0, 2.0, 2.0, 2.0)
+#define unity_ColorSpaceDielectricSpec float4(0.220916301, 0.220916301, 0.220916301, 1.0 - 0.220916301)
+#define unity_ColorSpaceLuminance float4(0.22, 0.707, 0.071, 0.0) // Legacy: alpha is set to 0.0 to specify gamma mode
 #else // Linear values
-#define unity_ColorSpaceGrey half4(0.214041144, 0.214041144, 0.214041144, 0.5)
-#define unity_ColorSpaceDouble half4(4.59479380, 4.59479380, 4.59479380, 2.0)
-#define unity_ColorSpaceDielectricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04) // standard dielectric reflectivity coef at incident angle (= 4%)
-#define unity_ColorSpaceLuminance half4(0.0396819152, 0.458021790, 0.00609653955, 1.0) // Legacy: alpha is set to 1.0 to specify linear mode
+#define unity_ColorSpaceGrey float4(0.214041144, 0.214041144, 0.214041144, 0.5)
+#define unity_ColorSpaceDouble float4(4.59479380, 4.59479380, 4.59479380, 2.0)
+#define unity_ColorSpaceDielectricSpec float4(0.04, 0.04, 0.04, 1.0 - 0.04) // standard dielectric reflectivity coef at incident angle (= 4%)
+#define unity_ColorSpaceLuminance float4(0.0396819152, 0.458021790, 0.00609653955, 1.0) // Legacy: alpha is set to 1.0 to specify linear mode
 #endif
 
 // for urp adapter
 #define _WorldSpaceLightPos0 _MainLightPosition
 
 struct appdata_base {
-    half4 vertex : POSITION;
-    half3 normal : NORMAL;
-    half4 texcoord : TEXCOORD0;
+    float4 vertex : POSITION;
+    float3 normal : NORMAL;
+    float4 texcoord : TEXCOORD0;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
 struct appdata_tan {
-    half4 vertex : POSITION;
-    half4 tangent : TANGENT;
-    half3 normal : NORMAL;
-    half4 texcoord : TEXCOORD0;
+    float4 vertex : POSITION;
+    float4 tangent : TANGENT;
+    float3 normal : NORMAL;
+    float4 texcoord : TEXCOORD0;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 struct appdata_full {
-    half4 vertex : POSITION;
-    half4 tangent : TANGENT;
-    half3 normal : NORMAL;
-    half4 texcoord : TEXCOORD0;
-    half4 texcoord1 : TEXCOORD1;
-    half4 texcoord2 : TEXCOORD2;
-    half4 texcoord3 : TEXCOORD3;
-    half4 color : COLOR;
+    float4 vertex : POSITION;
+    float4 tangent : TANGENT;
+    float3 normal : NORMAL;
+    float4 texcoord : TEXCOORD0;
+    float4 texcoord1 : TEXCOORD1;
+    float4 texcoord2 : TEXCOORD2;
+    float4 texcoord3 : TEXCOORD3;
+    float4 color : COLOR;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
-half3 LinearToGammaSpace(half3 linearRGB){
+float3 LinearToGammaSpace(float3 linearRGB){
     return max(0,pow(linearRGB,0.45));
 }
 
 // Tranforms position from world to homogenous space
-half4 UnityWorldToClipPos( in half3 pos )
+float4 UnityWorldToClipPos( in float3 pos )
 {
-    return mul(UNITY_MATRIX_VP, half4(pos, 1.0));
+    return mul(UNITY_MATRIX_VP, float4(pos, 1.0));
 }
 
 // Tranforms position from view to homogenous space
-half4 UnityViewToClipPos( in half3 pos )
+float4 UnityViewToClipPos( in float3 pos )
 {
-    return mul(UNITY_MATRIX_P, half4(pos, 1.0));
+    return mul(UNITY_MATRIX_P, float4(pos, 1.0));
 }
 
 // Tranforms position from object to camera space
-half3 UnityObjectToViewPos( in half3 pos )
+float3 UnityObjectToViewPos( in float3 pos )
 {
-    return mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, half4(pos, 1.0))).xyz;
+    return mul(UNITY_MATRIX_V, mul(unity_ObjectToWorld, float4(pos, 1.0))).xyz;
 }
-half3 UnityObjectToViewPos(half4 pos) // overload for half4; avoids "implicit truncation" warning for existing shaders
+float3 UnityObjectToViewPos(float4 pos) // overload for float4; avoids "implicit truncation" warning for existing shaders
 {
     return UnityObjectToViewPos(pos.xyz);
 }
 
 // Tranforms position from world to camera space
-half3 UnityWorldToViewPos( in half3 pos )
+float3 UnityWorldToViewPos( in float3 pos )
 {
-    return mul(UNITY_MATRIX_V, half4(pos, 1.0)).xyz;
+    return mul(UNITY_MATRIX_V, float4(pos, 1.0)).xyz;
 }
 
 // Transforms direction from object to world space
-half3 UnityObjectToWorldDir( in half3 dir )
+float3 UnityObjectToWorldDir( in float3 dir )
 {
     return normalize(mul((half3x3)unity_ObjectToWorld, dir));
 }
 
 // Transforms direction from world to object space
-half3 UnityWorldToObjectDir( in half3 dir )
+float3 UnityWorldToObjectDir( in float3 dir )
 {
     return normalize(mul((half3x3)unity_WorldToObject, dir));
 }
 
 // Transforms normal from object to world space
-half3 UnityObjectToWorldNormal( in half3 norm )
+float3 UnityObjectToWorldNormal( in float3 norm )
 {
 #ifdef UNITY_ASSUME_UNIFORM_SCALING
     return UnityObjectToWorldDir(norm);
@@ -109,7 +109,7 @@ half3 UnityObjectToWorldNormal( in half3 norm )
 }
 
 // Computes world space light direction, from world space position
-half3 UnityWorldSpaceLightDir( in half3 worldPos )
+float3 UnityWorldSpaceLightDir( in float3 worldPos )
 {
     #ifndef USING_LIGHT_MULTI_COMPILE
         return _WorldSpaceLightPos0.xyz - worldPos * _WorldSpaceLightPos0.w;
@@ -124,16 +124,16 @@ half3 UnityWorldSpaceLightDir( in half3 worldPos )
 
 // Computes world space light direction, from object space position
 // *Legacy* Please use UnityWorldSpaceLightDir instead
-half3 WorldSpaceLightDir( in half4 localPos )
+float3 WorldSpaceLightDir( in float4 localPos )
 {
-    half3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
+    float3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
     return UnityWorldSpaceLightDir(worldPos);
 }
 
 // Computes object space light direction
-half3 ObjSpaceLightDir( in half4 v )
+float3 ObjSpaceLightDir( in float4 v )
 {
-    half3 objSpaceLightPos = mul(unity_WorldToObject, _WorldSpaceLightPos0).xyz;
+    float3 objSpaceLightPos = mul(unity_WorldToObject, _WorldSpaceLightPos0).xyz;
     #ifndef USING_LIGHT_MULTI_COMPILE
         return objSpaceLightPos.xyz - v.xyz * _WorldSpaceLightPos0.w;
     #else
@@ -146,30 +146,30 @@ half3 ObjSpaceLightDir( in half4 v )
 }
 
 // Computes world space view direction, from object space position
-half3 UnityWorldSpaceViewDir( in half3 worldPos )
+float3 UnityWorldSpaceViewDir( in float3 worldPos )
 {
     return _WorldSpaceCameraPos.xyz - worldPos;
 }
 
 // Computes world space view direction, from object space position
 // *Legacy* Please use UnityWorldSpaceViewDir instead
-half3 WorldSpaceViewDir( in half4 localPos )
+float3 WorldSpaceViewDir( in float4 localPos )
 {
-    half3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
+    float3 worldPos = mul(unity_ObjectToWorld, localPos).xyz;
     return UnityWorldSpaceViewDir(worldPos);
 }
 
 // Computes object space view direction
-half3 ObjSpaceViewDir( in half4 v )
+float3 ObjSpaceViewDir( in float4 v )
 {
-    half3 objSpaceCameraPos = mul(unity_WorldToObject, half4(_WorldSpaceCameraPos.xyz, 1)).xyz;
+    float3 objSpaceCameraPos = mul(unity_WorldToObject, float4(_WorldSpaceCameraPos.xyz, 1)).xyz;
     return objSpaceCameraPos - v.xyz;
 }
 
 // normal should be normalized, w=1.0
-half3 SHEvalLinearL0L1 (half4 normal)
+float3 SHEvalLinearL0L1 (float4 normal)
 {
-    half3 x;
+    float3 x;
 
     // Linear (L1) + constant (L0) polynomial terms
     x.r = dot(unity_SHAr,normal);
@@ -180,17 +180,17 @@ half3 SHEvalLinearL0L1 (half4 normal)
 }
 
 // normal should be normalized, w=1.0
-half3 SHEvalLinearL2 (half4 normal)
+float3 SHEvalLinearL2 (float4 normal)
 {
-    half3 x1, x2;
+    float3 x1, x2;
     // 4 of the quadratic (L2) polynomials
-    half4 vB = normal.xyzz * normal.yzzx;
+    float4 vB = normal.xyzz * normal.yzzx;
     x1.r = dot(unity_SHBr,vB);
     x1.g = dot(unity_SHBg,vB);
     x1.b = dot(unity_SHBb,vB);
 
     // Final (5th) quadratic (L2) polynomial
-    half vC = normal.x*normal.x - normal.y*normal.y;
+    float vC = normal.x*normal.x - normal.y*normal.y;
     x2 = unity_SHC.rgb * vC;
 
     return x1 + x2;
@@ -198,10 +198,10 @@ half3 SHEvalLinearL2 (half4 normal)
 
 // normal should be normalized, w=1.0
 // output in active color space
-half3 ShadeSH9 (half4 normal)
+float3 ShadeSH9 (float4 normal)
 {
     // Linear + constant polynomial terms
-    half3 res = SHEvalLinearL0L1 (normal);
+    float3 res = SHEvalLinearL0L1 (normal);
 
     // Quadratic polynomials
     res += SHEvalLinearL2 (normal);
@@ -219,17 +219,17 @@ half3 ShadeSH9 (half4 normal)
 
 
 // Converts color to luminance (grayscale)
-half Luminance(half3 rgb)
+float Luminance(float3 rgb)
 {
     return dot(rgb, unity_ColorSpaceLuminance.rgb);
 }
 
 // Decodes HDR textures
 // handles dLDR, RGBM formats
-half3 DecodeHDR (half4 data, half4 decodeInstructions)
+float3 DecodeHDR (float4 data, float4 decodeInstructions)
 {
     // Take into account texture alpha if decodeInstructions.w is true(the alpha value affects the RGB channels)
-    half alpha = decodeInstructions.w * (data.a - 1.0) + 1.0;
+    float alpha = decodeInstructions.w * (data.a - 1.0) + 1.0;
 
     // If Linear mode is not supported we can skip exponent part
     #if defined(UNITY_COLORSPACE_GAMMA)
@@ -243,10 +243,10 @@ half3 DecodeHDR (half4 data, half4 decodeInstructions)
     #endif
 }
 
-half4 ComputeScreenPos(half4 positionCS)
+float4 ComputeScreenPos(float4 positionCS)
 {
-    half4 o = positionCS * 0.5f;
-    o.xy = half2(o.x, o.y * _ProjectionParams.x) + o.w;
+    float4 o = positionCS * 0.5f;
+    o.xy = float2(o.x, o.y * _ProjectionParams.x) + o.w;
     o.zw = positionCS.zw;
     return o;
 }
@@ -270,26 +270,26 @@ half4 ComputeScreenPos(half4 positionCS)
     #define UNITY_Z_0_FAR_FROM_CLIPSPACE(coord) (coord)
 #endif
 
-half ComputeFogFactor(half z)
+float ComputeFogFactor(float z)
 {
-    half clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
+    float clipZ_01 = UNITY_Z_0_FAR_FROM_CLIPSPACE(z);
 
     #if defined(FOG_LINEAR)
         // factor = (end-z)/(end-start) = z * (-1/(end-start)) + (end/(end-start))
-        half fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
-        return half(fogFactor);
+        float fogFactor = saturate(clipZ_01 * unity_FogParams.z + unity_FogParams.w);
+        return float(fogFactor);
     #elif defined(FOG_EXP) || defined(FOG_EXP2)
         // factor = exp(-(density*z)^2)
         // -density * z computed at vertex
-        return half(unity_FogParams.x * clipZ_01);
+        return float(unity_FogParams.x * clipZ_01);
     #else
         return 0.0h;
     #endif
 }
 
-half ComputeFogIntensity(half fogFactor)
+float ComputeFogIntensity(float fogFactor)
 {
-    half fogIntensity = 0.0h;
+    float fogIntensity = 0.0h;
     #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
         #if defined(FOG_EXP)
             // factor = exp(-density*z)
@@ -306,49 +306,49 @@ half ComputeFogIntensity(half fogFactor)
     return fogIntensity;
 }
 
-half3 MixFogColor(half3 fragColor, half3 fogColor, half fogFactor)
+float3 MixFogColor(float3 fragColor, float3 fogColor, float fogFactor)
 {
     #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-        half fogIntensity = ComputeFogIntensity(fogFactor);
+        float fogIntensity = ComputeFogIntensity(fogFactor);
         fragColor = lerp(fogColor, fragColor, fogIntensity);
     #endif
     return fragColor;
 }
 
-half3 MixFog(half3 fragColor, half fogFactor)
+float3 MixFog(float3 fragColor, float fogFactor)
 {
     return MixFogColor(fragColor, unity_FogColor.rgb, fogFactor);
 }
 
 #endif  //! UNITY_CG_INCLUDED
 
-half Pow2(half a){return a*a;}
+float Pow2(float a){return a*a;}
 
-// half Pow4(half a){
-//     half a2 = a*a;
+// float Pow4(float a){
+//     float a2 = a*a;
 //     return a2*a2;
 // }
 
-// half Pow5(half a){
-//     half a2 = a*a;
+// float Pow5(float a){
+//     float a2 = a*a;
 //     return a2*a2*a;
 // }
 
 
-// half SafeDiv(half numer, half denom)
+// float SafeDiv(float numer, float denom)
 // {
 //     return (numer != denom) ? numer / denom : 1;
 // }
-// half3 SafeNormalize(half3 inVec)
+// float3 SafeNormalize(float3 inVec)
 // {
-//     half3 dp3 = max(FLT_MIN, dot(inVec, inVec));
+//     float3 dp3 = max(FLT_MIN, dot(inVec, inVec));
 //     return inVec * rsqrt(dp3);
 // }
 
-half3 UnpackScaleNormalRGorAG(half4 packednormal, half bumpScale)
+float3 UnpackScaleNormalRGorAG(float4 packednormal, float bumpScale)
 {
     #if defined(UNITY_NO_DXT5nm)
-        half3 normal = packednormal.xyz * 2 - 1;
+        float3 normal = packednormal.xyz * 2 - 1;
         #if (SHADER_TARGET >= 30)
             // SM2.0: instruction count limitation
             // SM2.0: normal scaler is not supported
@@ -356,7 +356,7 @@ half3 UnpackScaleNormalRGorAG(half4 packednormal, half bumpScale)
         #endif
         return normal;
     #elif defined(UNITY_ASTC_NORMALMAP_ENCODING)
-        half3 normal;
+        float3 normal;
         normal.xy = (packednormal.wy * 2 - 1);
         normal.z = sqrt(1.0 - saturate(dot(normal.xy, normal.xy)));
         normal.xy *= bumpScale;
@@ -365,7 +365,7 @@ half3 UnpackScaleNormalRGorAG(half4 packednormal, half bumpScale)
         // This do the trick
         packednormal.x *= packednormal.w;
 
-        half3 normal;
+        float3 normal;
         normal.xy = (packednormal.xy * 2 - 1);
         #if (SHADER_TARGET >= 30)
             // SM2.0: instruction count limitation
@@ -377,22 +377,22 @@ half3 UnpackScaleNormalRGorAG(half4 packednormal, half bumpScale)
     #endif
 }
 
-half3 UnpackScaleNormal(half4 packednormal, half bumpScale)
+float3 UnpackScaleNormal(float4 packednormal, float bumpScale)
 {
     return UnpackScaleNormalRGorAG(packednormal, bumpScale);
 }
 
-half OneMinusReflectivityFromMetallic(half metallic)
+float OneMinusReflectivityFromMetallic(float metallic)
 {
     // We'll need oneMinusReflectivity, so
     //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
     // store (1-dielectricSpec) in unity_ColorSpaceDielectricSpec.a, then
     //   1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =
     //                  = alpha - metallic * alpha
-    half oneMinusDielectricSpec = unity_ColorSpaceDielectricSpec.a;
+    float oneMinusDielectricSpec = unity_ColorSpaceDielectricSpec.a;
     return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
 }
-half3 DiffuseAndSpecularFromMetallic (half3 albedo, half metallic, out half3 specColor, out half oneMinusReflectivity)
+float3 DiffuseAndSpecularFromMetallic (float3 albedo, float metallic, out float3 specColor, out float oneMinusReflectivity)
 {
     specColor = lerp (unity_ColorSpaceDielectricSpec.rgb, albedo, metallic);
     oneMinusReflectivity = OneMinusReflectivityFromMetallic(metallic);
