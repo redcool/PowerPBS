@@ -419,7 +419,7 @@ void InitSurfaceData(half2 uv,half3 albedo,half alpha,half metallic,out SurfaceD
     data.diffColor = AlphaPreMultiply (data.diffColor, alpha, data.oneMinusReflectivity, /*out*/ data.finalAlpha);
 }
 
-void InitWorldData(half2 uv,half detailMask,half4 tSpace0,half4 tSpace1,half4 tSpace2,out WorldData data ){
+void InitWorldData(float2 uv,half detailMask,half4 tSpace0,half4 tSpace1,half4 tSpace2,out WorldData data ){
     half2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
     half3 tn = CalcNormal(normalMapUV,detailMask);
     data.normal = SafeNormalize(half3(

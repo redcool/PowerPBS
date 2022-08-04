@@ -15,8 +15,8 @@ struct appdata
 {
     half4 vertex : POSITION;
     half4 color:COLOR;
-    half2 uv : TEXCOORD0;
-    half3 normal:NORMAL;
+    float2 uv : TEXCOORD0;
+    float3 normal:NORMAL;
     half4 tangent:TANGENT;
 };
 
@@ -42,18 +42,18 @@ v2f vert (appdata v)
     o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
     float3 worldPos = mul(unity_ObjectToWorld,v.vertex).xyz;
-    half3 n = normalize(UnityObjectToWorldNormal(v.normal));
-    half3 t = normalize(UnityObjectToWorldDir(v.tangent.xyz));
+    float3 n = normalize(UnityObjectToWorldNormal(v.normal));
+    float3 t = normalize(UnityObjectToWorldDir(v.tangent.xyz));
     t = normalize(t - dot(t,n) * n);
     
-    half tangentSign = v.tangent.w * unity_WorldTransformParams.w;
-    half3 b = cross(n,t) * tangentSign;
+    float tangentSign = v.tangent.w * unity_WorldTransformParams.w;
+    float3 b = cross(n,t) * tangentSign;
     o.tSpace0 = half4(t.x,b.x,n.x,worldPos.x);
     o.tSpace1 = half4(t.y,b.y,n.y,worldPos.y);
     o.tSpace2 = half4(t.z,b.z,n.z,worldPos.z);
 
     if(_ParallalOn){
-        half3 viewWorldSpace = UnityWorldSpaceViewDir(worldPos);
+        float3 viewWorldSpace = UnityWorldSpaceViewDir(worldPos);
         half3x3 tSpace = half3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
         o.viewTangentSpace = mul(viewWorldSpace,tSpace);
     }
@@ -69,32 +69,32 @@ half4 frag (v2f i) : SV_Target
 {
     // heightClothSSSMask
     half4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
-    half height = heightClothSSSMask.x;
-    half clothMask = heightClothSSSMask.y;
-    // half frontSSS = heightClothSSSMask.z;
-    // half backSSS = heightClothSSSMask.w;
+    float height = heightClothSSSMask.x;
+    float clothMask = heightClothSSSMask.y;
+    // float frontSSS = heightClothSSSMask.z;
+    // float backSSS = heightClothSSSMask.w;
 
-    half2 uv = i.uv.xy;
+    float2 uv = i.uv.xy;
     if(_ParallalOn){
         uv += ParallaxMapOffset(_HeightScale,i.viewTangentSpace,height);
     }
 
     // pbrMask
     half4 pbrMask = SAMPLE_TEXTURE2D(_MetallicMap,sampler_MetallicMap ,uv);
-    half metallic = pbrMask[_MetallicChannel] * _Metallic;
+    float metallic = pbrMask[_MetallicChannel] * _Metallic;
     // pbrMask'g is smoothness or roughness ?
-    half smoothness = pbrMask[_SmoothnessChannel];
+    float smoothness = pbrMask[_SmoothnessChannel];
     smoothness = lerp(smoothness , 1 - smoothness,_InvertSmoothnessOn)  * _Smoothness;
 
-    half occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
+    float occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
     
-    half detailMask=0;
+    float detailMask=0;
     half4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
     mainTex *= _Color;
 
-    half3 albedo = mainTex.rgb;
+    float3 albedo = mainTex.rgb;
     // albedo.rgb *= occlusion; // more dark than urp'lit
-    half alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a * _Color.a;
+    float alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a * _Color.a;
 
     #if defined(_ALPHA_TEST)
     // if(_AlphaTestOn)
@@ -106,7 +106,7 @@ half4 frag (v2f i) : SV_Target
 
     Light light = GetMainLight();
     OffsetMainLight(light);
-    half3 lightColorNoAtten = light.color;
+    float3 lightColorNoAtten = light.color;
 
     if(_ApplyShadowOn){
         i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz); // in vert, has bug
@@ -121,7 +121,7 @@ half4 frag (v2f i) : SV_Target
     PBSData pbsData;
     InitPBSData(worldData.tangent,worldData.binormal,worldData.normal,worldData.view,surfaceData.oneMinusReflectivity, smoothness,heightClothSSSMask,worldData.pos,pbsData/**/);
     pbsData.mainTex = mainTex;
-    pbsData.maskData_None_mainTexA_pbrMaskA = half3(1,mainTex.a,pbrMask.a);
+    pbsData.maskData_None_mainTexA_pbrMaskA = float3(1,mainTex.a,pbrMask.a);
 
     UnityIndirect indirect = CalcGI(surfaceData.diffColor,uv,worldData.reflect,worldData.normal,occlusion,pbsData.perceptualRoughness);
     #if defined(_POWER_DEBUG)
@@ -140,21 +140,21 @@ half4 frag (v2f i) : SV_Target
     //for preintegrated lut
     #if defined(_PRESSS)
     if(_ScatteringLUTOn){
-        half3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
-        half3 scatteredColor = PreScattering(worldData.vertexNormal,light.direction,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.maskData_None_mainTexA_pbrMaskA);
+        float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
+        float3 scatteredColor = PreScattering(worldData.vertexNormal,light.direction,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.maskData_None_mainTexA_pbrMaskA);
         col.rgb += scatteredColor;
     }
     #endif
     
     #if defined(_SSSS)
     // if(_DiffuseProfileOn){
-        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
-        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,half2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
-        half2 screenUV = i.screenPos.xy/i.screenPos.w;
-        half profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
+        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(_MainTex_TexelSize.x,0) * _BlurSize,mainTex.a);
+        // col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_MainTex,sampler_MainTex),uv,float2(0,_MainTex_TexelSize.y) * _BlurSize,mainTex.a);
+        float2 screenUV = i.screenPos.xy/i.screenPos.w;
+        float profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
 
-        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
-        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,half2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
+        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
+        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
         // col = originalColor + horizontalGasussianColor + verticalGausssianColor
         col.rgb *= 0.333;
     // }
@@ -192,7 +192,7 @@ half4 DepthOnlyFragment (v2f i) : SV_Target
 {
     #if defined(_ALPHA_TEST)
     if(_AlphaTestOn){
-        half detailMask = 0;
+        float detailMask = 0;
         half4 mainTex = CalcAlbedo(i.uv.xy,detailMask/*out*/);
         clip(mainTex.a - _Cutoff);
     }
