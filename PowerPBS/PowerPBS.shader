@@ -290,7 +290,7 @@ Shader "Character/PowerPBS"
             #pragma vertex vert
             #pragma fragment frag
             // make fog work
-            #pragma multi_compile_fog
+        //     #pragma multi_compile_fog
             #pragma target 4.5
 
         //     #pragma multi_compile_fragment _ _SHADOWS_SOFT

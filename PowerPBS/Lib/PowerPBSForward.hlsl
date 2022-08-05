@@ -190,7 +190,8 @@ v2f DepthOnlyVertex (appdata v)
 half4 DepthOnlyFragment (v2f i) : SV_Target
 {
     #if defined(_ALPHA_TEST)
-    if(_AlphaTestOn){
+    // if(_AlphaTestOn)
+    {
         float detailMask = 0;
         half4 mainTex = CalcAlbedo(i.uv.xy,detailMask/*out*/);
         clip(mainTex.a - _Cutoff);
