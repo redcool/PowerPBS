@@ -351,5 +351,5 @@ Shader "Character/PowerPBS"
 
     }
     CustomEditor "PowerUtilities.PowerPBSInspector"
-    FallBack "Diffuse"
+//     FallBack "Hidden/Universal Render Pipeline/FallbackError"
 }
