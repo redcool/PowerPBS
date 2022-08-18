@@ -109,6 +109,7 @@ Shader "Character/PowerPBS"
         [Header(Mask)]
         [Enum(None,0,MainTexA,1,PbrMaskA,2)]_AnisoMaskFrom("_AnisoMaskFrom",float) = 0
         [Enum(None,0,Intensity,1,BlendStardard,2)]_AnisoMaskUsage("_AnisoMaskUsage",float)=0
+        [Header(Options)]
         [GroupToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0
 // ================================================== SSSS,Pre SSS
         [Header(Pre Integral Scatter)]
