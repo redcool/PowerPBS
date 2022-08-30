@@ -323,20 +323,21 @@ half3 CalcIndirectApplySHDirLight(half3 indirectColor,PBSData data,half3 diffCol
 }
 
 void ApplyThinFilm(half invertNV,half3 maskData,half baseMask,inout half3 specColor){
-    #if defined(_THIN_FILM_ON)
-        half tfMask = GetMaskForIntensity(maskData,_TFMaskFrom,_TFMaskUsage,THIN_FILE_MASK_FOR_INTENSITY) * baseMask;
-        // half tfMask =  (_TFMaskUsage == THIN_FILE_MASK_FOR_INTENSITY) ? tfMaskData : 1;
-        half3 thinFilm = ThinFilm(invertNV,_TFScale,_TFOffset,_TFSaturate,_TFBrightness);
+    half tfMask = GetMaskForIntensity(maskData,_TFMaskFrom,_TFMaskUsage,THIN_FILE_MASK_FOR_INTENSITY) * baseMask;
+    // half tfMask =  (_TFMaskUsage == THIN_FILE_MASK_FOR_INTENSITY) ? tfMaskData : 1;
+    half3 thinFilm = ThinFilm(invertNV,_TFScale,_TFOffset,_TFSaturate,_TFBrightness);
 
-        half3 tfSpecColor = (specColor + 1) * thinFilm ;
-        specColor = lerp(specColor,tfSpecColor,tfMask);
-    #endif
+    half3 tfSpecColor = (specColor + 1) * thinFilm ;
+    specColor = lerp(specColor,tfSpecColor,tfMask);
 }
 
 half4 CalcPBS(half3 diffColor,half3 specColor,Light mainLight,UnityIndirect gi,ClearCoatData coatData,inout PBSData data){
     CALC_LIGHT_INFO(mainLight.direction);
-
+    
+    #if defined(_THIN_FILM_ON)
     ApplyThinFilm(1-nv,data.maskData_None_mainTexA_pbrMaskA,_TFSpecMask ? nh : 1,specColor/**/);
+    #endif
+
     // set pbsdata for others flow.
     data.nl = nl;
     data.nv = nv;
