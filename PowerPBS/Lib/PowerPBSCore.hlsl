@@ -8,6 +8,7 @@
 
 #include "../../PowerShaderLib/Lib/BSDF.hlsl"
 #include "../../PowerShaderLib/Lib/Colors.hlsl"
+#include "../../../PowerShaderLib/Lib/MaskLib.hlsl"
 
 void OffsetMainLight(inout Light light){
     light.direction += _CustomLightOn > 0 ? _LightDir.xyz : 0;
