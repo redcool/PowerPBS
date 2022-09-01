@@ -112,7 +112,7 @@ CBUFFER_START(UnityPerMaterial)
 
     // half _ReceiveAdditionalLightsOn; // to keywords _ADDITIONAL_LIGHT
     // half _ReceiveAdditionalLightsShadowOn; // to keywords _ADDITIONAL_LIGHT_SHADOWS
-    half _AdditionalLightSoftShadowOn;
+    // half _AdditionalLightSoftShadowOn; //to keyword _ADDITIONAL_LIGHT_SHADOWS_SOFT
     half _DirectionalLightFromSHOn;
     half _AmbientSHIntensity;
     half _DirectionalSHIntensity;

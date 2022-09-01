@@ -66,35 +66,35 @@ Shader "Character/PowerPBS"
         // [Enum(Standard,0,Aniso,1,Cloth,2,StrandSpec,3)]_PBRMode("_PBRMode",int) = 0
         [KeywordEnum(Standard,Aniso,Cloth)]_PBRMode("_PBRMode",int) = 0
 
-        [Header(Specular Options)]
+        [GroupHeader(Specular Options)]
         [GroupToggle]_SpecularOn("_SpecularOn",float) = 1
         _MaxSpecularIntensity("_MaxSpecularIntensity", range(0, 10)) = 5
         _SpecularColorScale("_SpecularColorScale",range(1,5)) = 1
         _SpecularIntensity("_SpecularIntensity",range(1,5)) = 1
 
-        [Header(Fresnel Options)]
+        [GroupHeader(Fresnel Options)]
         _FresnelIntensity("_FresnelIntensity",range(0,3)) = 1
         _FresnelColor("_FresnelColor",Color) = (1,1,1,1)
         _FresnelWidth("_FresnelWidth",range(0.01,1)) = 1
 // ================================================== Shadow
-        [Space(10)][Header(Shadow)]
+        [GroupHeader(Shadow)]
         [GroupToggle(_,_RECEIVE_SHADOWS_ON)]_ApplyShadowOn("_ApplyShadowOn",int) = 1
         _MainLightShadowSoftScale("_MainLightShadowSoftScale",range(0,3)) = 0
         [Header(Shadow Bias)]
         _CustomShadowBias("_CustomShadowBias(x: depth bias, y: normal bias)",vector) = (0,0,0,0)
         _ShadowColor("_ShadowColor",color) = (0,0,0,0)
 // ================================================== Additional Lights
-        [Header(URP Additional Lights)]
+        [GroupHeader(Additional Lights)]
         [Toggle(_ADDITIONAL_LIGHT)]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
         [GroupToggle(_,_ADDITIONAL_LIGHT_SHADOWS)]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
-        [GroupToggle]_AdditionalLightSoftShadowOn("_AdditionalLightSoftShadowOn",int) = 0
+        [GroupToggle(_,_ADDITIONAL_LIGHT_SHADOWS_SOFT)]_AdditionalLightSoftShadowOn("_AdditionalLightSoftShadowOn",int) = 0
 
-        [Header(Spherical Harmonics)]
+        [GroupHeader(Spherical Harmonics)]
         [Toggle(_DIRECTIONAL_LIGHT_FROM_SH)]_DirectionalLightFromSHOn("_DirectionalLightFromSHOn",int) = 0
         _AmbientSHIntensity("_AmbientSHIntensity",range(0,1)) = 0.5
         _DirectionalSHIntensity("_DirectionalSHIntensity", range(0, 1)) = 0.5
 // ================================================== Anisotropic
-        [Header(Anisotropic)]
+        [GroupHeader(Anisotropic)]
         _AnisoColor("_AnisoColor",color) = (1,1,0,1)
         _AnisoIntensity("_AnisoIntensity",range(0,10)) = 1
         _AnisoRough("_AnisoRough",range(0,1)) = 0
@@ -179,13 +179,13 @@ Shader "Character/PowerPBS"
         _LightDir("_LightDir",vector) = (0,0.5,0,0)
         _LightColor("_LightColor",color) = (1,1,1,1)        
  // ==================================================       IBL
-        [Space(10)][GroupHeader(Custom IBL)]
+        [GroupHeader(Custom IBL)]
         [GroupToggle]_CustomIBLOn("_CustomIBLOn",float) = 0
         [noscaleoffset]_EnvCube("_EnvCube",cube) = "white"{}
         _EnvIntensity("_EnvIntensity",float) = 1
         _ReflectionOffsetDir("_ReflectionOffsetDir",vector) = (0,0,0,0)
 // ================================================== GI Settings
-        [Space(10)][Header(GI )]
+        [GroupHeader(GI )]
         _IndirectSpecularIntensity("_IndirectSpecularIntensity",float) = 1
         _BackFaceGIDiffuse("_BackFaceGIDiffuse",range(0,1)) = 0
 // ================================================== Fog
@@ -300,6 +300,7 @@ Shader "Character/PowerPBS"
 
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT
             #pragma shader_feature_local_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS_SOFT
 
             #pragma shader_feature_local_fragment _ALPHA_TEST
             #pragma shader_feature_local_fragment _PBRMODE_STANDRAD _PBRMODE_ANISO _PBRMODE_CLOTH

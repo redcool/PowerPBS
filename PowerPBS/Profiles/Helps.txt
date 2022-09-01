@@ -1,0 +1,4 @@
+// powerpbs helps strings
+_ReceiveAdditionalLightsOn=接收urp多光源
+_ReceiveAdditionalLightsShadowOn=接收urp多光源阴影
+_AdditionalLightSoftShadowOn=计算多光源的软阴影
