@@ -2,8 +2,8 @@
 #define POWER_PBS_FORWARD_HLSL
 
 #include "PowerPBSCore.hlsl"
-#include "UrpLib/URP_MainLightShadows.hlsl"
 #include "Tools/Blur.hlsl"
+#include "../../PowerShaderLib/UrpLib/URP_MainLightShadows.hlsl"
 #include "../../PowerShaderLib/Lib/ParallaxMapping.hlsl"
 #include "../../PowerShaderLib/Lib/FogLib.hlsl"
 
@@ -30,7 +30,7 @@ struct v2f
     float4 tSpace2:TEXCOORD4;
     float3 viewTangentSpace:TEXCOORD5;
     float4 _ShadowCoord:TEXCOORD6;
-    float4 screenPos:TEXCOORD7;
+    // float4 screenPos:TEXCOORD7;
 };
 
 //-------------------------------------
@@ -38,7 +38,7 @@ v2f vert (appdata v)
 {
     v2f o = (v2f)0;
     ApplyVertexWave(v.vertex/**/,v.normal,v.color);
-    o.pos = UnityObjectToClipPos(v.vertex);
+    o.pos = UnityObjectToClipPos(v.vertex.xyz);
     o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
     float3 worldPos = mul(unity_ObjectToWorld,v.vertex).xyz;
@@ -59,9 +59,9 @@ v2f vert (appdata v)
     }
     // TRANSFER_SHADOW(o)
     // o._ShadowCoord = TransformWorldToShadowCoord(worldPos.xyz); // move to frag
-    o.fogCoord.z = ComputeFogFactor(o.pos.z);
+    // o.fogCoord.z = ComputeFogFactor(o.pos.z);
     o.fogCoord.xy = CalcFogFactor(worldPos);
-    o.screenPos = ComputeScreenPos(o.pos);
+    // o.screenPos = ComputeScreenPos(o.pos);
     return o;
 }
 
@@ -108,11 +108,14 @@ half4 frag (v2f i) : SV_Target
     OffsetMainLight(light);
     float3 lightColorNoAtten = light.color;
 
-    if(_ApplyShadowOn){
+    // if(_ApplyShadowOn)
+    #if defined(_RECEIVE_SHADOWS_ON)
+    {
         i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz); // in vert, has bug
         float atten = CalcShadow(i._ShadowCoord,worldData.pos);
         light.shadowAttenuation = atten;
     }
+    #endif
 
     SurfaceData surfaceData;
     InitSurfaceData(i.uv.zw,albedo,alpha,metallic,surfaceData/**/);
@@ -127,12 +130,15 @@ half4 frag (v2f i) : SV_Target
     #if defined(_POWER_DEBUG)
         return ShowDebug(indirect,worldData,surfaceData,metallic,smoothness,occlusion);
     #endif
-    // calc coat data
-    ClearCoatData coatData;
-    InitCoatData(_CoatSmoothness,_ClearCoatSpecColor.xyz * surfaceData.specColor,unity_ColorSpaceDielectricSpec.x,coatData/**/);
 
-    coatData.reflectDir = worldData.reflect;
-    coatData.occlusion = occlusion;
+    // calc coat data
+    ClearCoatData coatData = (ClearCoatData)0;
+    #if defined(_CLEARCOAT)
+        InitCoatData(_CoatSmoothness,_ClearCoatSpecColor.xyz * surfaceData.specColor,unity_ColorSpaceDielectricSpec.x,coatData/**/);
+
+        coatData.reflectDir = worldData.reflect;
+        coatData.occlusion = occlusion;
+    #endif 
 
     half4 col = CalcPBS(surfaceData.diffColor, surfaceData.specColor, light, indirect,coatData,pbsData/**/);
     col.a = surfaceData.finalAlpha;
@@ -148,7 +154,7 @@ half4 frag (v2f i) : SV_Target
     
     #if defined(_SSSS)
     // if(_DiffuseProfileOn){
-        float2 screenUV = i.screenPos.xy/i.screenPos.w;
+        float2 screenUV = i.pos.xy / _ScreenParams.xy;
         float profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
         half shadowAtten = max(0.1,light.shadowAttenuation);
 
@@ -175,29 +181,6 @@ half4 frag (v2f i) : SV_Target
     // apply sphere fog
     BlendFogSphere(col.xyz/**/,worldData.pos,i.fogCoord.xy,true,false);
     return col;
-}
-
-
-//-------------------------------------
-v2f DepthOnlyVertex (appdata v)
-{
-    v2f o = (v2f)0;
-    o.pos = UnityObjectToClipPos(v.vertex);
-    o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
-    return o;
-}
-
-half4 DepthOnlyFragment (v2f i) : SV_Target
-{
-    #if defined(_ALPHA_TEST)
-    // if(_AlphaTestOn)
-    {
-        float detailMask = 0;
-        half4 mainTex = CalcAlbedo(i.uv.xy,detailMask/*out*/);
-        clip(mainTex.a - _Cutoff);
-    }
-    #endif
-    return 0;
 }
 
 #endif // POWER_PBS_FORWARD_HLSL

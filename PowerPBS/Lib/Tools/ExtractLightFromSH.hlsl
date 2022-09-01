@@ -1,7 +1,8 @@
 #if !defined (EXTRACT_LIGHT_FROM_SH_HLSL)
 #define EXTRACT_LIGHT_FROM_SH_HLSL
 
-#include "../UnityLib/UnityShaderVariables.hlsl"
+// #include "../UnityLib/UnityShaderVariables.hlsl"
+#include "Lib/Tools/Common.hlsl"
 
 // #define PI 3.1415926
 // #define BAND0_FACTOR 0.5 / sqrt(PI) 
@@ -39,7 +40,7 @@ SHL2 GetOriginalSHFromUnityLightProbe()
 
     return sh;
 }
-
+#define Luminance(c) dot(half3(.2,.7,.02),c)
 half3 GetLightDirFromSH(SHL2 sh)
 {
     // half3 lightDirR = normalize(half3(-sh.data[3].r, -sh.data[1].r, sh.data[2].r));

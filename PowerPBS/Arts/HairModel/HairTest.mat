@@ -16,7 +16,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -95,7 +95,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ScatteringLUT:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 2cabe440a8d3362459bf3c72e7cd1e8c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -135,11 +135,11 @@ Material:
     - _AnisoMaskUsage: 0
     - _AnisoRough: 0.875
     - _AnisoShift: 0.4
-    - _ApplyShadowOn: 1
+    - _ApplyShadowOn: 0
     - _BackFaceGIDiffuse: 0
     - _BackSSSIntensity: 1
     - _Blend: 0
-    - _BlurSize: 1
+    - _BlurSize: 5.1
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatOn: 0
@@ -152,12 +152,12 @@ Material:
     - _CoatSmoothness: 0.5
     - _Cull: 2
     - _CullMode: 2
-    - _CurvatureScale: 1
+    - _CurvatureScale: 0.99
     - _CustomIBLOn: 0
     - _CustomLightOn: 0
     - _CustomSpecularIntensity: 1
     - _CustomSpecularMapOn: 0
-    - _Cutoff: 0.5
+    - _Cutoff: 0.326
     - _Detail1_MapIntensity: 1
     - _Detail1_MapMode: 0
     - _Detail1_MapOn: 0
@@ -181,8 +181,8 @@ Material:
     - _FresnelAlphaMax: 1
     - _FresnelAlphaMin: 0
     - _FresnelAlphaOn: 0
-    - _FresnelIntensity: 0.33
-    - _FresnelWidth: 1
+    - _FresnelIntensity: 0.48
+    - _FresnelWidth: 0.01
     - _FrontSSSIntensity: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
@@ -194,8 +194,8 @@ Material:
     - _Layer2AnisoIntensity: 1.92
     - _Layer2AnisoRough: 0.623
     - _LightColorNoAtten: 1
-    - _MainLightShadowSoftScale: 1
-    - _MaxSpecularIntensity: 5
+    - _MainLightShadowSoftScale: 0.75
+    - _MaxSpecularIntensity: 10
     - _Metallic: 0
     - _MetallicChannel: 0
     - _NormalMapScale: 1
@@ -214,7 +214,7 @@ Material:
     - _SSSOn: 0
     - _SSSSMaskFrom: 1
     - _SSSSMaskUsage: 0
-    - _ScatteringIntensity: 1
+    - _ScatteringIntensity: 3
     - _ScatteringLUTOn: 0
     - _Shift1: -0.93
     - _Shift2: -1
@@ -263,12 +263,13 @@ Material:
     - _Color: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 1}
     - _CustomShadowBias: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
+    - _FresnelColor: {r: 0.3301887, g: 0.3301887, b: 0.3301887, a: 1}
     - _FrontSSSColor: {r: 1, g: 0, b: 0, a: 0}
     - _Layer2AnisoColor: {r: 1, g: 0, b: 0, a: 0}
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}
     - _LightDir: {r: 0, g: 0.5, b: 0, a: 0}
     - _ReflectionOffsetDir: {r: 0, g: 0, b: 0, a: 0}
+    - _ShadowColor: {r: 0, g: 0, b: 0, a: 0}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecColor1: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor2: {r: 1, g: 1, b: 1, a: 1}

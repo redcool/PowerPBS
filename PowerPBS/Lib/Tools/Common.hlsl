@@ -8,11 +8,39 @@
 #define HALF_MIN 6.103515625e-5  // 2^-14, the same value for 10, 11 and 16-bit: https://www.khronos.org/opengl/wiki/Small_half_Formats
 #define HALF_MIN_SQRT 0.0078125
 #define FLT_MIN  1.175494351e-38
+
+#define unity_ColorSpaceDouble half4(4.59479380, 4.59479380, 4.59479380, 2.0)
+#define unity_ColorSpaceDielectricSpec half4(0.04, 0.04, 0.04, 1.0 - 0.04) 
 #define kDielectricSpec unity_ColorSpaceDielectricSpec
 
 //---------- custom symbols
 #define if UNITY_BRANCH if
 
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+// #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+#include "../../PowerShaderLib/Lib/UnityLib.hlsl"
+
+struct UnityIndirect
+{
+    half3 diffuse;
+    half3 specular;
+};
+
+half OneMinusReflectivityFromMetallic(half metallic)
+{
+    // We'll need oneMinusReflectivity, so
+    //   1-reflectivity = 1-lerp(dielectricSpec, 1, metallic) = lerp(1-dielectricSpec, 0, metallic)
+    // store (1-dielectricSpec) in unity_ColorSpaceDielectricSpec.a, then
+    //   1-reflectivity = lerp(alpha, 0, metallic) = alpha + metallic*(0 - alpha) =
+    //                  = alpha - metallic * alpha
+    half oneMinusDielectricSpec = unity_ColorSpaceDielectricSpec.a;
+    return oneMinusDielectricSpec - metallic * oneMinusDielectricSpec;
+}
+
+half3 DiffuseAndSpecularFromMetallic (half3 albedo, half metallic, out half3 specColor, out half oneMinusReflectivity)
+{
+    specColor = lerp (unity_ColorSpaceDielectricSpec.rgb, albedo, metallic);
+    oneMinusReflectivity = OneMinusReflectivityFromMetallic(metallic);
+    return albedo * oneMinusReflectivity;
+}
 
 #endif // COMMON_HLSL

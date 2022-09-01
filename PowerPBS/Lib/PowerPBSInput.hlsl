@@ -70,12 +70,12 @@ CBUFFER_START(UnityPerMaterial)
     half _SmoothnessChannel;
     half _OcclusionChannel;
 
-    half _ClearCoatOn;
+    // half _ClearCoatOn; // to keyword _CLEARCOAT
     half4 _ClearCoatSpecColor;
     half _CoatSmoothness;
     half _CoatIndirectSpecularIntensity;
 
-    half _CustomSpecularMapOn;
+    // half _CustomSpecularMapOn; // to keyword _SPECULAR_MAP_FLOW
     half4 _CustomSpecularMap_ST;
     half _CustomSpecularIntensity;
 
@@ -106,12 +106,12 @@ CBUFFER_START(UnityPerMaterial)
     half _ClothMaskFrom;
     half _ClothMaskUsage;
 // ==================================================
-    half _ApplyShadowOn;
+    // half _ApplyShadowOn; // to _RECEIVE_SHADOWS_ON
     half _MainLightShadowSoftScale;
     half4 _ShadowColor;
 
-    half _ReceiveAdditionalLightsOn;
-    half _ReceiveAdditionalLightsShadowOn;
+    // half _ReceiveAdditionalLightsOn; // to keywords _ADDITIONAL_LIGHT
+    // half _ReceiveAdditionalLightsShadowOn; // to keywords _ADDITIONAL_LIGHT_SHADOWS
     half _AdditionalLightSoftShadowOn;
     half _DirectionalLightFromSHOn;
     half _AmbientSHIntensity;
@@ -149,7 +149,7 @@ CBUFFER_START(UnityPerMaterial)
     half _IndirectSpecularIntensity;
     half _BackFaceGIDiffuse;
 
-    half _AlphaTestOn;
+    // half _AlphaTestOn; // to keyword _ALPHA_TEST
     half _AlphaPreMultiply;
 
 // ================================================== custom light

@@ -1,10 +1,17 @@
 #if !defined(SHADOW_CASTER_PASS_HLSL)
 #define SHADOW_CASTER_PASS_HLSL
 
-#include "Tools/CommonUtils.hlsl"
+#include "Tools/Common.hlsl"
 #include "PowerPBSInput.hlsl"
-#include "UrpLib/URP_MainLightShadows.hlsl"
+#include "../../PowerShaderLib/UrpLib/URP_MainLightShadows.hlsl"
 
+struct appdata
+{
+    float4 vertex   : POSITION;
+    float3 normal     : NORMAL;
+    float2 texcoord     : TEXCOORD0;
+    UNITY_VERTEX_INPUT_INSTANCE_ID
+};
 
 struct v2f{
     float2 uv:TEXCOORD0;
@@ -14,7 +21,7 @@ struct v2f{
 float3 _LightDirection;
 
 //--------- shadow helpers
-float4 GetShadowPositionHClip(appdata_full input){
+float4 GetShadowPositionHClip(appdata input){
     float3 worldPos = mul(unity_ObjectToWorld,input.vertex).xyz;
     float3 worldNormal = UnityObjectToWorldNormal(input.normal);
     float4 positionCS = UnityWorldToClipPos(ApplyShadowBias(worldPos,worldNormal,_LightDirection));
@@ -26,25 +33,22 @@ float4 GetShadowPositionHClip(appdata_full input){
     return positionCS;
 }
 
-v2f vert(appdata_full input){
+v2f vert(appdata input){
     v2f output;
 
-    // #if defined(URP_SHADOW)
+    #if defined(SHADOW_PASS)
         output.pos = GetShadowPositionHClip(input);
-    // #else 
-    //     output.pos = UnityClipSpaceShadowCasterPos(input.vertex, input.normal);
-    //     output.pos = UnityApplyLinearShadowBias(output.pos);
-    // #endif
+    #else
+        output.pos = mul(unity_ObjectToWorld,input.vertex);
+    #endif
     output.uv = TRANSFORM_TEX(input.texcoord,_MainTex);
     return output;
 }
 
 float4 frag(v2f input):SV_Target{
     #if defined(_ALPHA_TEST)
-    if(_AlphaTestOn){
         float4 tex = SAMPLE_TEXTURE2D(_MainTex,sampler_MainTex,input.uv);
         clip(tex.a - _Cutoff);
-    }
     #endif
     return 0;
 }

@@ -1,14 +1,15 @@
 #if !defined (POWER_PBS_CORE_HLSL)
 #define POWER_PBS_CORE_HLSL
-#include "UnityLib/UnityLightingCommon.hlsl"
 #include "PowerPBSData.hlsl"
-#include "Tools/CommonUtils.hlsl"
-#include "UrpLib/URP_Lighting.hlsl"
+
+#include "../../PowerShaderLib/UrpLib/URP_GI.hlsl"
+#include "../../PowerShaderLib/UrpLib/URP_Lighting.hlsl"
 #include "Tools/ExtractLightFromSH.hlsl"
 
 #include "../../PowerShaderLib/Lib/BSDF.hlsl"
+
 #include "../../PowerShaderLib/Lib/Colors.hlsl"
-#include "../../../PowerShaderLib/Lib/MaskLib.hlsl"
+#include "../../PowerShaderLib/Lib/MaskLib.hlsl"
 
 void OffsetMainLight(inout Light light){
     light.direction += _CustomLightOn > 0 ? _LightDir.xyz : 0;
@@ -78,12 +79,12 @@ half3 AlphaPreMultiply (half3 diffColor, half alpha, half oneMinusReflectivity, 
 }
 
 half3 CalcNormal(half2 uv, half detailMask ){
-    half3 tn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,uv),_NormalMapScale);
+    half3 tn = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,uv),_NormalMapScale);
 	
 	// if (_Detail_MapOn) {
     #if defined(_DETAIL_MAP)
         half2 dnUV = uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw;
-		half3 dn = UnpackScaleNormal(SAMPLE_TEXTURE2D(_Detail_NormalMap,sampler_linear_repeat, dnUV), _Detail_NormalMapScale);
+		half3 dn = UnpackNormalScale(SAMPLE_TEXTURE2D(_Detail_NormalMap,sampler_linear_repeat, dnUV), _Detail_NormalMapScale);
 		dn = normalize(half3(tn.xy + dn.xy, tn.z*dn.z));
 		tn = lerp(tn, dn, detailMask);
 	// }
@@ -99,7 +100,7 @@ half CalcDetailAlbedo(inout half4 mainColor, TEXTURE2D(texObj),half2 uv, half de
         detailMask = tex.w;
         half mask = detailMask * detailIntensity;
         if(detailMapMode == DETAIL_MAP_MODE_MULTIPLY){
-            mainColor.rgb *= lerp(1,detailAlbedo * unity_ColorSpaceDouble.rgb,mask);
+            mainColor.rgb *= lerp(1,detailAlbedo * unity_ColorSpaceDouble.xyz,mask); //unity_ColorSpaceDouble linear pow(2,2.2)
         }else if(detailMapMode == DETAIL_MAP_MODE_REPLACE){
             mainColor.rgb = lerp(mainColor.xyz,detailAlbedo,mask);
         }
@@ -126,8 +127,7 @@ half4 CalcAlbedo(half2 uv,out half detailMask)
 UnityIndirect CalcGI(half3 albedo,half2 uv,half3 reflectDir,half3 normal,half3 occlusion,half roughness){
     half3 indirectSpecular = GetIndirectSpecular(reflectDir,roughness) * occlusion * _IndirectSpecularIntensity;
     // half3 indirectDiffuse = albedo * occlusion;
-    // indirectDiffuse += ShadeSH9(half4(normal,1));
-    half3 indirectDiffuse = ShadeSH9(half4(normal,1)) * occlusion;
+    half3 indirectDiffuse = SampleSH(normal) * occlusion;
     UnityIndirect indirect = {indirectDiffuse,indirectSpecular};
     return indirect;
 }
@@ -235,8 +235,8 @@ half3 CalcIndirect(PBSData data,half3 giDiffColor,half3 giSpecColor,half3 diffCo
 half3 CalcIndirectApplyClearCoat(half3 indirectColor,ClearCoatData data,half fresnelTerm){
     half3 coatSpecGI = GetIndirectSpecular(data.reflectDir,data.perceptualRoughness) * data.occlusion * _CoatIndirectSpecularIntensity;
     half3 coatColor = CalcIndirect(data.smoothness,data.roughness2,1-data.oneMinusReflectivity,0,coatSpecGI,0,data.specColor,fresnelTerm); // 1-data.oneMinusReflectivity approach unity_ColorSpaceDielectricSpec.x(0.04) 
-    half coatFresnel = unity_ColorSpaceDielectricSpec.x + unity_ColorSpaceDielectricSpec.w * fresnelTerm;
-    return indirectColor * (1 - coatFresnel) + coatColor;
+    // half coatFresnel = 0.04 + 0.96 * fresnelTerm;
+    return indirectColor * (1 - fresnelTerm) + coatColor;
 }
 
 half3 CalcDirect(inout PBSData data,half3 diffColor,half3 specColor,half nl,half nv,half nh,half lh){
@@ -382,7 +382,7 @@ half4 CalcPBS(half3 diffColor,half3 specColor,Light mainLight,UnityIndirect gi,C
 
     // additional lights
     #if defined(_ADDITIONAL_LIGHT)
-    color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
+        color += CalcPBSAdditionalLight(data/**/,diffColor,specColor);
     #endif
 
     return half4(color,1);

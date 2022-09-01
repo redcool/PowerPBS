@@ -46,19 +46,19 @@ Shader "Character/PowerPBS"
         [Enum(R,0,G,1,B,2,A,3)]_SmoothnessChannel("_SmoothnessChannel",float) = 1
         [Enum(R,0,G,1,B,2,A,3)]_OcclusionChannel("_OcclusionChannel",float) = 2
 
-        [Header(Custom Specular)]
-        [Toggle(_SPECULAR_MAP_FLOW)]_CustomSpecularMapOn("_CustomSpecularMapOn",int) = 0
+        [GroupHeader(Custom Specular)]
+        [GroupToggle(_,_SPECULAR_MAP_FLOW)]_CustomSpecularMapOn("_CustomSpecularMapOn",int) = 0
         _CustomSpecularMap("_CustomSpecularMap(a:Mask(0:DielectricSpec,1:CustomSpecColor))",2d) ="white"{}
         _CustomSpecularIntensity("_CustomSpecularIntensity",float) = 1
         
-        [Header(Clear Coat)]
-        [Toggle(_CLEARCOAT)]_ClearCoatOn("_ClearCoatOn",int) = 0
+        [GroupHeader(Clear Coat)]
+        [GroupToggle(_,_CLEARCOAT)]_ClearCoatOn("_ClearCoatOn",int) = 0
         _ClearCoatSpecColor("_ClearCoatSpecColor",color) = (1,1,1,1)
         _CoatSmoothness("_CoatSmoothness",range(0,1)) = 0.5
         _CoatIndirectSpecularIntensity("_CoatIndirectSpecularIntensity",float) = 1
 
 // ================================================== vertex
-        [Header(Vertex Scale)]
+        [GroupHeader(Vertex Scale)]
         _VertexScale("_VertexScale",range(-0.1,0.1)) = 0
         [GroupToggle]_VertexColorRAttenOn("_VertexColorRAttenOn(R)",int) = 1
 // ================================================== Settings
@@ -78,7 +78,7 @@ Shader "Character/PowerPBS"
         _FresnelWidth("_FresnelWidth",range(0.01,1)) = 1
 // ================================================== Shadow
         [Space(10)][Header(Shadow)]
-        [GroupToggle]_ApplyShadowOn("_ApplyShadowOn",int) = 1
+        [GroupToggle(_,_RECEIVE_SHADOWS_ON)]_ApplyShadowOn("_ApplyShadowOn",int) = 1
         _MainLightShadowSoftScale("_MainLightShadowSoftScale",range(0,3)) = 0
         [Header(Shadow Bias)]
         _CustomShadowBias("_CustomShadowBias(x: depth bias, y: normal bias)",vector) = (0,0,0,0)
@@ -86,7 +86,7 @@ Shader "Character/PowerPBS"
 // ================================================== Additional Lights
         [Header(URP Additional Lights)]
         [Toggle(_ADDITIONAL_LIGHT)]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
-        [GroupToggle]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
+        [GroupToggle(_,_ADDITIONAL_LIGHT_SHADOWS)]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
         [GroupToggle]_AdditionalLightSoftShadowOn("_AdditionalLightSoftShadowOn",int) = 0
 
         [Header(Spherical Harmonics)]
@@ -112,7 +112,7 @@ Shader "Character/PowerPBS"
         [Header(Options)]
         [GroupToggle]_AnisoIntensityUseSmoothness("_AnisoIntensityUseSmoothness",float) = 0
 // ================================================== SSSS,Pre SSS
-        [Header(Pre Integral Scatter)]
+        [GroupHeader(Pre Integral Scatter)]
         [Toggle(_PRESSS)]_ScatteringLUTOn("_ScatteringLUTOn",float) = 0
         [NoScaleOffset]_ScatteringLUT("_ScatteringLUT",2d) = ""{}
         _ScatteringIntensity("_ScatteringIntensity",range(0,3)) = 1
@@ -126,7 +126,7 @@ Shader "Character/PowerPBS"
         [GroupToggle]_LightColorNoAtten("_LightColorNoAtten",int) = 1
         [GroupToggle]_AdditionalLightCalcScatter("_AdditionalLightCalcScatter",int) = 0
 
-        [Header(Diffuse Profile ScreenSpace)]
+        [GroupHeader(Diffuse Profile ScreenSpace)]
         [Toggle(_SSSS)]_DiffuseProfileOn("_DiffuseProfileOn",int) = 0
         _BlurSize("_BlurSize",range(0,20)) = 1
 
@@ -160,13 +160,13 @@ Shader "Character/PowerPBS"
         // _Detail2_Map("_Detail2_Map(RGB),EyeMask(A)",2d) = "white"{}
         // _Detail2_MapIntensity("_Detail2_MapIntensity",range(0,1)) = 1
 
-        [Space(10)][Header(Detail1_Map)]
+        [Space(10)][GroupHeader(Detail1_Map)]
         [GroupToggle]_Detail1_MapOn("_Detail1_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail1_MapMode("_Detail1_MapMode",int) = 0
         _Detail1_Map("_Detail1_Map(rgb),Mask(A)",2d) = "white"{}
         _Detail1_MapIntensity("_Detail1_MapIntensity",range(0,1)) = 1
 
-        [Space(10)][Header(DetailMap)]
+        [Space(10)][GroupHeader(DetailMap)]
         [Toggle(_DETAIL_MAP)]_Detail_MapOn("_Detail_MapOn",int) = 0
         [Enum(Multiply,0,Replace,1)]_Detail_MapMode("_Detail_MapMode",int) = 0
         _Detail_Map("_Detail_Map(RGB),DetailMask(A)",2d) = "white"{}
@@ -174,12 +174,12 @@ Shader "Character/PowerPBS"
         _Detail_NormalMap("_Detail_NormalMap",2d) = "bump"{}
         _Detail_NormalMapScale("_Detail_NormalMapScale",range(0,5)) = 1
 // ================================================== CustomLight
-        [Space(10)][Header(CustomLight)]
+        [Space(10)][GroupHeader(CustomLight)]
         [GroupToggle]_CustomLightOn("_CustomLightOn",int) = 0
         _LightDir("_LightDir",vector) = (0,0.5,0,0)
         _LightColor("_LightColor",color) = (1,1,1,1)        
  // ==================================================       IBL
-        [Space(10)][Header(Custom IBL)]
+        [Space(10)][GroupHeader(Custom IBL)]
         [GroupToggle]_CustomIBLOn("_CustomIBLOn",float) = 0
         [noscaleoffset]_EnvCube("_EnvCube",cube) = "white"{}
         _EnvIntensity("_EnvIntensity",float) = 1
@@ -225,7 +225,7 @@ Shader "Character/PowerPBS"
         [Header(Height Cloth FrontSSS BackSSS)]
         _HeightClothSSSMask("_Height(R) , Cloth(G) , SSSMask(B,A)",2d) = "white"{} 
 
-        [Space(10)][Header(FastSSS)]
+        [Space(10)][GroupHeader(FastSSS)]
         [GroupToggle]_SSSOn("_SSSOn",int) = 0
         _FrontSSSIntensity("_FrontSSSIntensity",range(0,1)) = 1
         _FrontSSSColor("_FrontSSSColor",color) = (1,0,0,0)
@@ -233,7 +233,7 @@ Shader "Character/PowerPBS"
         _BackSSSColor("_BackSSSColor",color) = (1,0,0,0)
         [GroupToggle]_AdditionalLightCalcFastSSS("_AdditionalLightCalcFastSSS",int) =0
 
-        [Space(10)][Header(ParallelOffset)]
+        [Space(10)][GroupHeader(ParallelOffset)]
         [GroupToggle]_ParallalOn("_ParallalOn",int) = 0
         _HeightScale("_HeightScale",range(0.005,0.08)) = 0
 
@@ -294,19 +294,25 @@ Shader "Character/PowerPBS"
         //     #pragma multi_compile_fog
             #pragma target 4.5
 
-        //     #pragma multi_compile_fragment _ _SHADOWS_SOFT
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
+            #pragma multi_compile _ CALCULATE_BAKED_SHADOWS
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT
+
+            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT
+            #pragma shader_feature_local_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+
             #pragma shader_feature_local_fragment _ALPHA_TEST
             #pragma shader_feature_local_fragment _PBRMODE_STANDRAD _PBRMODE_ANISO _PBRMODE_CLOTH
             #pragma shader_feature_local_fragment _SSSS
             #pragma shader_feature_local_fragment _PRESSS
-            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT
             #pragma shader_feature_local_fragment _CLEARCOAT
             #pragma shader_feature_local_fragment _DIRECTIONAL_LIGHT_FROM_SH
             #pragma shader_feature_local_fragment _DETAIL_MAP
             #pragma shader_feature_local_fragment _SPECULAR_MAP_FLOW
             #pragma shader_feature_local_fragment _THIN_FILM_ON
             #pragma shader_feature_local_fragment _POWER_DEBUG
+
+            #pragma shader_feature_local _RECEIVE_SHADOWS_ON
 
             #include "Lib/PowerPBSForward.hlsl"
            
@@ -323,14 +329,12 @@ Shader "Character/PowerPBS"
             ColorMask 0
 
             HLSLPROGRAM
-            #pragma exclude_renderers gles gles3 glcore
-
-            #pragma vertex DepthOnlyVertex
-            #pragma fragment DepthOnlyFragment
+            #pragma vertex vert
+            #pragma fragment frag
 
             #pragma shader_feature_local_fragment _ALPHA_TEST
 
-            #include "Lib/PowerPBSForward.hlsl"
+            #include "Lib/ShadowCasterPass.hlsl"
             ENDHLSL
         }
 
@@ -345,6 +349,7 @@ Shader "Character/PowerPBS"
             #pragma fragment frag
             #pragma shader_feature_local_fragment _ALPHA_TEST
 
+            #define SHADOW_PASS
             #include "Lib/ShadowCasterPass.hlsl"
             ENDHLSL
         }
