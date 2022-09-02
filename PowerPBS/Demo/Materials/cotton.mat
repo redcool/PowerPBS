@@ -199,7 +199,7 @@ Material:
     - _OcclusionChannel: 2
     - _OcclusionStrength: 1
     - _PBRMode: 2
-    - _ParallalOn: 0
+    - _ParallaxOn: 0
     - _Parallax: 0.005
     - _PreScatterMaskFrom: 1
     - _QueueOffset: 0

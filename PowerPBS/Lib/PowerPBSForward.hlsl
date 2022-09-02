@@ -52,11 +52,14 @@ v2f vert (appdata v)
     o.tSpace1 = half4(t.y,b.y,n.y,worldPos.y);
     o.tSpace2 = half4(t.z,b.z,n.z,worldPos.z);
 
-    if(_ParallalOn){
+    #if defined(_PARALLAX_ON)
+    // if(_ParallaxOn)
+    {
         float3 viewWorldSpace = UnityWorldSpaceViewDir(worldPos);
         half3x3 tSpace = half3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
         o.viewTangentSpace = mul(viewWorldSpace,tSpace);
     }
+    #endif
     // TRANSFER_SHADOW(o)
     // o._ShadowCoord = TransformWorldToShadowCoord(worldPos.xyz); // move to frag
     // o.fogCoord.z = ComputeFogFactor(o.pos.z);
@@ -75,9 +78,12 @@ half4 frag (v2f i) : SV_Target
     // float backSSS = heightClothSSSMask.w;
 
     float2 uv = i.uv.xy;
-    if(_ParallalOn){
+    #if defined(_PARALLAX_ON)
+    // if(_ParallaxOn)
+    {
         uv += ParallaxMapOffset(_HeightScale,i.viewTangentSpace,height);
     }
+    #endif
 
     // pbrMask
     half4 pbrMask = SAMPLE_TEXTURE2D(_MetallicMap,sampler_MetallicMap ,uv);
@@ -108,8 +114,8 @@ half4 frag (v2f i) : SV_Target
     OffsetMainLight(light);
     float3 lightColorNoAtten = light.color;
 
-    // if(_ApplyShadowOn)
     #if defined(_RECEIVE_SHADOWS_ON)
+    // if(_ApplyShadowOn)
     {
         i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz); // in vert, has bug
         float atten = CalcShadow(i._ShadowCoord,worldData.pos);
@@ -127,6 +133,7 @@ half4 frag (v2f i) : SV_Target
     pbsData.maskData_None_mainTexA_pbrMaskA = float3(1,mainTex.a,pbrMask.a);
 
     UnityIndirect indirect = CalcGI(surfaceData.diffColor,uv,worldData.reflect,worldData.normal,occlusion,pbsData.perceptualRoughness);
+
     #if defined(_POWER_DEBUG)
         return ShowDebug(indirect,worldData,surfaceData,metallic,smoothness,occlusion);
     #endif
@@ -145,7 +152,8 @@ half4 frag (v2f i) : SV_Target
 
     //for preintegrated lut
     #if defined(_PRESSS)
-    if(_ScatteringLUTOn){
+    // if(_ScatteringLUTOn)
+    {
         float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
         float3 scatteredColor = PreScattering(worldData.vertexNormal,light.direction,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.maskData_None_mainTexA_pbrMaskA);
         col.rgb += scatteredColor;
@@ -153,31 +161,33 @@ half4 frag (v2f i) : SV_Target
     #endif
     
     #if defined(_SSSS)
-    // if(_DiffuseProfileOn){
+    // if(_DiffuseProfileOn)
+    {
         float2 screenUV = i.pos.xy / _ScreenParams.xy;
         float profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
-        half shadowAtten = max(0.1,light.shadowAttenuation);
+        // profileMask *= light.shadowAttenuation;
 
-        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask * shadowAtten);
-        col.rgb += DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask * shadowAtten);
-        // col = originalColor + horizontalGasussianColor + verticalGausssianColor
-        col.rgb *= 0.333;
-    // }
+        half3 diffProfileH = DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
+        half3 diffProfileV = DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
+        col.rgb = (col.xyz + diffProfileH + diffProfileV)*0.3333;
+    }
     #endif
 
-    if(_SSSOn){
+    #if defined(_FAST_SSS)
+    // if(_SSSOn)
+    {
         col.rgb += CalcSSS(light.direction,worldData.view,heightClothSSSMask.zw);
     }
+    #endif
 
     //for emission
     if(_EmissionOn){
         col.rgb += CalcEmission(surfaceData.diffColor,uv);
     }
-    if(_FresnelAlphaOn){
-        col.a *= saturate(smoothstep(_FresnelAlphaMin,_FresnelAlphaMax,pbsData.nv));
-    }
-    // apply unity fog
-    // col.rgb = MixFog(col.xyz,i.fogCoord.z);
+
+    // apply _FresnelAlpha
+    col.a *= lerp(1,saturate(smoothstep(_FresnelAlphaMin,_FresnelAlphaMax,pbsData.nv)),_FresnelAlphaOn);
+
     // apply sphere fog
     BlendFogSphere(col.xyz/**/,worldData.pos,i.fogCoord.xy,true,false);
     return col;

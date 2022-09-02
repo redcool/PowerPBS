@@ -21,15 +21,20 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Character_PowerPBS
-  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_Shader: {fileID: 4800000, guid: 31d16b753185afc41babb5aab1d1b6c3, type: 3}
+  m_ValidKeywords:
+  - _ADDITIONAL_LIGHT
+  - _ADDITIONAL_LIGHT_SHADOWS
+  - _ADDITIONAL_LIGHT_SHADOWS_SOFT
+  - _PRESSS
+  - _RECEIVE_SHADOWS_ON
+  m_InvalidKeywords:
+  - _PBRMODE_STANDARD
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap:
-    RenderType: Opaque
+  stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -134,7 +139,7 @@ Material:
     m_Floats:
     - _AdditionalLightCalcFastSSS: 0
     - _AdditionalLightCalcScatter: 0
-    - _AdditionalLightSoftShadowOn: 0
+    - _AdditionalLightSoftShadowOn: 1
     - _AlphaClip: 0
     - _AlphaFrom: 0
     - _AlphaPreMultiply: 0
@@ -215,7 +220,7 @@ Material:
     - _OcclusionChannel: 2
     - _OcclusionStrength: 1
     - _PBRMode: 0
-    - _ParallalOn: 0
+    - _ParallaxOn: 0
     - _Parallax: 0.005
     - _PreScatterMaskFrom: 0
     - _PreScatterMaskUsage: 0
@@ -245,7 +250,7 @@ Material:
     - _SpecIntensity2: 10
     - _SpecPower1: 1
     - _SpecPower2: 1
-    - _SpecularColorScale: 1
+    - _SpecularColorScale: 1.02
     - _SpecularHighlights: 1
     - _SpecularIntensity: 1
     - _SpecularOn: 1
@@ -272,7 +277,7 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClearCoatSpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClothSheenColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
     - _CustomShadowBias: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}

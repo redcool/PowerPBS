@@ -213,7 +213,7 @@ Material:
     - _Occlusion: 1
     - _OcclusionChannel: 2
     - _PBRMode: 0
-    - _ParallalOn: 0
+    - _ParallaxOn: 0
     - _PreScatterMaskFrom: 0
     - _PreScatterMaskUsage: 0
     - _ReceiveAdditionalLightsOn: 1

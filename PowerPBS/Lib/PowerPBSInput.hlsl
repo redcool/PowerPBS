@@ -117,7 +117,7 @@ CBUFFER_START(UnityPerMaterial)
     half _AmbientSHIntensity;
     half _DirectionalSHIntensity;
 // ==================================================
-    half _ScatteringLUTOn;
+    // half _ScatteringLUTOn; // to keyword _PRESSS
     half _ScatteringIntensity;
     half _CurvatureScale;
     half _PreScatterMaskFrom;
@@ -125,7 +125,7 @@ CBUFFER_START(UnityPerMaterial)
 
     half _LightColorNoAtten;
     half _AdditionalLightCalcScatter;
-    half _DiffuseProfileOn;
+    // half _DiffuseProfileOn;// to keyword _SSSS
     half _BlurSize;
     half _SSSSMaskFrom;
     half _SSSSMaskUsage;
@@ -158,12 +158,12 @@ CBUFFER_START(UnityPerMaterial)
     half4 _LightColor;
     half _MaxSpecularIntensity;
 
-    half _SSSOn;
+    // half _SSSOn; //to keyword _FAST_SSS
     half3 _BackSSSColor,_FrontSSSColor;
     half _FrontSSSIntensity,_BackSSSIntensity;
     half _AdditionalLightCalcFastSSS;
 // ================================================== parallel
-    half _ParallalOn;
+    // half _ParallaxOn;//to keyword 
     half _HeightScale;
 
 // ================================================== custom shadow caster params

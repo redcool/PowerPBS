@@ -301,14 +301,17 @@ half3 CalcPBSAdditionalLight(inout PBSData data,half3 diffColor,half3 specColor)
             color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
 
         #if defined(_PRESSS)
-        if(_ScatteringLUTOn && _AdditionalLightCalcScatter){
+        if(_AdditionalLightCalcScatter){
             half3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity,data.maskData_None_mainTexA_pbrMaskA);
             color.rgb += scatteredColor ;
         }
         #endif
-        if(_SSSOn && _AdditionalLightCalcFastSSS){
+        
+        #if defined(_FAST_SSS)
+        if(_AdditionalLightCalcFastSSS){
             color.rgb += CalcSSS(light1.direction,data.viewDir,data.heightClothFastSSSMask.zw);
         }
+        #endif
     }
     return color;
 }

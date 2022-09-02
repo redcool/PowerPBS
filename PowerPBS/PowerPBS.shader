@@ -226,7 +226,7 @@ Shader "Character/PowerPBS"
         _HeightClothSSSMask("_Height(R) , Cloth(G) , SSSMask(B,A)",2d) = "white"{} 
 
         [Space(10)][GroupHeader(FastSSS)]
-        [GroupToggle]_SSSOn("_SSSOn",int) = 0
+        [GroupToggle(_,_FAST_SSS)]_SSSOn("_SSSOn",int) = 0
         _FrontSSSIntensity("_FrontSSSIntensity",range(0,1)) = 1
         _FrontSSSColor("_FrontSSSColor",color) = (1,0,0,0)
         _BackSSSIntensity("_BackSSSIntensity",range(0,1)) = 1
@@ -234,7 +234,7 @@ Shader "Character/PowerPBS"
         [GroupToggle]_AdditionalLightCalcFastSSS("_AdditionalLightCalcFastSSS",int) =0
 
         [Space(10)][GroupHeader(ParallelOffset)]
-        [GroupToggle]_ParallalOn("_ParallalOn",int) = 0
+        [GroupToggle(_,_PARALLAX_ON)]_ParallaxOn("_ParallaxOn",int) = 0
         _HeightScale("_HeightScale",range(0.005,0.08)) = 0
 
 // ================================================== ThinFilm
@@ -313,7 +313,9 @@ Shader "Character/PowerPBS"
             #pragma shader_feature_local_fragment _THIN_FILM_ON
             #pragma shader_feature_local_fragment _POWER_DEBUG
 
-            #pragma shader_feature_local _RECEIVE_SHADOWS_ON
+            #pragma shader_feature_local_fragment _RECEIVE_SHADOWS_ON
+            #pragma shader_feature_local_fragment _FAST_SSS
+            #pragma shader_feature_local _PARALLAX_ON
 
             #include "Lib/PowerPBSForward.hlsl"
            

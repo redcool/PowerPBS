@@ -141,7 +141,7 @@ _FrontSSSColor=_FrontSSSColor
 _BackSSSIntensity=_BackSSSIntensity
 _BackSSSColor=_BackSSSColor
 
-_ParallalOn=_ParallalOn
+_ParallaxOn=_ParallaxOn
 _Height=_Height
 // ==================================================
 _TBMaskMap=_TBMaskMap(R,white:use binormal)
