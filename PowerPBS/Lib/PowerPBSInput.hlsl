@@ -110,7 +110,7 @@ CBUFFER_START(UnityPerMaterial)
     half _MainLightShadowSoftScale;
     half4 _ShadowColor;
 
-    // half _ReceiveAdditionalLightsOn; // to keywords _ADDITIONAL_LIGHT
+    // half _ReceiveAdditionalLightsOn; // to keywords _ADDITIONAL_LIGHTS
     // half _ReceiveAdditionalLightsShadowOn; // to keywords _ADDITIONAL_LIGHT_SHADOWS
     // half _AdditionalLightSoftShadowOn; //to keyword _ADDITIONAL_LIGHT_SHADOWS_SOFT
     half _DirectionalLightFromSHOn;

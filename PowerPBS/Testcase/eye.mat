@@ -22,7 +22,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: eye
   m_Shader: {fileID: 4800000, guid: 31d16b753185afc41babb5aab1d1b6c3, type: 3}
-  m_ShaderKeywords: _ADDITIONAL_LIGHT
+  m_ShaderKeywords: _ADDITIONAL_LIGHTS
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

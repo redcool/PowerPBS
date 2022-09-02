@@ -85,7 +85,7 @@ Shader "Character/PowerPBS"
         _ShadowColor("_ShadowColor",color) = (0,0,0,0)
 // ================================================== Additional Lights
         [GroupHeader(Additional Lights)]
-        [Toggle(_ADDITIONAL_LIGHT)]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
+        [Toggle(_ADDITIONAL_LIGHTS)]_ReceiveAdditionalLightsOn("_ReceiveAdditionalLightsOn",int) = 1
         [GroupToggle(_,_ADDITIONAL_LIGHT_SHADOWS)]_ReceiveAdditionalLightsShadowOn("_ReceiveAdditionalLightsShadowOn",int) = 1
         [GroupToggle(_,_ADDITIONAL_LIGHT_SHADOWS_SOFT)]_AdditionalLightSoftShadowOn("_AdditionalLightSoftShadowOn",int) = 0
 
@@ -299,7 +299,7 @@ Shader "Character/PowerPBS"
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
             // material keywords
-            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT
+            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHTS
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS_SOFT
 

@@ -23,7 +23,7 @@ Material:
   m_Name: Character_PowerPBS
   m_Shader: {fileID: 4800000, guid: 31d16b753185afc41babb5aab1d1b6c3, type: 3}
   m_ValidKeywords:
-  - _ADDITIONAL_LIGHT
+  - _ADDITIONAL_LIGHTS
   - _ADDITIONAL_LIGHT_SHADOWS
   - _ADDITIONAL_LIGHT_SHADOWS_SOFT
   - _PRESSS

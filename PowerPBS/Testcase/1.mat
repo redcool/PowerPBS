@@ -10,7 +10,7 @@ Material:
   m_Name: 1
   m_Shader: {fileID: 4800000, guid: 31d16b753185afc41babb5aab1d1b6c3, type: 3}
   m_ValidKeywords:
-  - _ADDITIONAL_LIGHT
+  - _ADDITIONAL_LIGHTS
   - _RECEIVE_SHADOWS_ON
   m_InvalidKeywords:
   - _PBRMODE_STANDARD
