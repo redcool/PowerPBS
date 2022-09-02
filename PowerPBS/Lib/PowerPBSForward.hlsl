@@ -165,11 +165,13 @@ half4 frag (v2f i) : SV_Target
     {
         float2 screenUV = i.pos.xy / _ScreenParams.xy;
         float profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
-        // profileMask *= light.shadowAttenuation;
 
-        half3 diffProfileH = DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
-        half3 diffProfileV = DiffuseProfile(col,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
-        col.rgb = (col.xyz + diffProfileH + diffProfileV)*0.3333;
+        half3 sss = col.xyz;
+        sss.xyz += DiffuseProfile(sss.xyz,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask);
+        sss.xyz += DiffuseProfile(sss.xyz,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask);
+        sss.xyz *=0.3333;
+
+        col.xyz = lerp(col.xyz,sss,light.shadowAttenuation);
     }
     #endif
 

@@ -220,8 +220,8 @@ Material:
     - _OcclusionChannel: 2
     - _OcclusionStrength: 1
     - _PBRMode: 0
-    - _ParallaxOn: 0
     - _Parallax: 0.005
+    - _ParallaxOn: 0
     - _PreScatterMaskFrom: 0
     - _PreScatterMaskUsage: 0
     - _QueueOffset: 0
