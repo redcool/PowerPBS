@@ -284,22 +284,23 @@ Shader "Character/PowerPBS"
         Pass
         {
             Name "PowerPBS"
-            // Tags{"LightMode"="ForwardBase" } // drp need this, otherwise shadow out
             Tags { "LightMode" = "UniversalForward" }
             HLSLPROGRAM
-            // #pragma multi_compile_fwdbase
             #pragma vertex vert
             #pragma fragment frag
+
             // make fog work
-        //     #pragma multi_compile_fog
+            // #pragma multi_compile_fog
             #pragma target 4.5
 
+            // urp keywords
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma multi_compile _ CALCULATE_BAKED_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
+            // material keywords
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT
-            #pragma shader_feature_local_fragment _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS_SOFT
 
             #pragma shader_feature_local_fragment _ALPHA_TEST
