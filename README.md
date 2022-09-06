@@ -23,3 +23,6 @@ urp need add PowerURPLitFeatures to urp's ForwardRendererData
 
 Reference Git
 https://github.com/redcool/PowerUtilities.git
+https://github.com/redcool/PowerShaderLib.git
+
+put them into same folder.
