@@ -39,13 +39,13 @@ half4 CalcKernel(int id){
     // return _LocalKernel[id];
 }
 
-half3 DiffuseProfile(half3 mainColor,TEXTURE2D_PARAM(tex,sampler_tex),half2 uv,half2 offset,half sssMask){
+half3 DiffuseProfile(half3 mainColor,TEXTURE2D_PARAM(tex,sampler_tex),half2 uv,half2 offset,half sssMask,half baseScale=0.2){
     half BlurLength = DistanceToProjectionWindow;
     half2 UVOffset = BlurLength*offset;
 
     // base color
-    half3 blurColor = mainColor.xyz * CalcKernel(0).xyz*0.2;
-    
+    half3 blurColor = mainColor.xyz * CalcKernel(0).xyz* baseScale;
+
     UNITY_LOOP
     for(int i = 0;i < KERNEL_SIZE ; i++){
         half4 k = CalcKernel(i);

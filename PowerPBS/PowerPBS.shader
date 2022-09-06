@@ -129,6 +129,7 @@ Shader "Character/PowerPBS"
         [GroupHeader(Diffuse Profile ScreenSpace)]
         [Toggle(_SSSS)]_DiffuseProfileOn("_DiffuseProfileOn",int) = 0
         _BlurSize("_BlurSize",range(0,20)) = 1
+        _DiffuseProfileBaseScale("_DiffuseProfileBaseScale",range(0,1))=0.2
 
         [Header(SSSS Mask)]
         [Enum(None,0,MainTexA,1,PbrMaskA,2)]_SSSSMaskFrom("_SSSSMaskFrom",float) = 0

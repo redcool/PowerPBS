@@ -127,6 +127,7 @@ CBUFFER_START(UnityPerMaterial)
     half _AdditionalLightCalcScatter;
     // half _DiffuseProfileOn;// to keyword _SSSS
     half _BlurSize;
+    half _DiffuseProfileBaseScale;
     half _SSSSMaskFrom;
     half _SSSSMaskUsage;
 // ================================================== detail maps
