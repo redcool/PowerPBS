@@ -299,6 +299,7 @@ Shader "Character/PowerPBS"
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
 
             // material keywords
+            #pragma shader_feature_local_fragment _RECEIVE_SHADOWS_ON
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHTS
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS_SOFT
@@ -314,7 +315,6 @@ Shader "Character/PowerPBS"
             #pragma shader_feature_local_fragment _THIN_FILM_ON
             #pragma shader_feature_local_fragment _POWER_DEBUG
 
-            #pragma shader_feature_local_fragment _RECEIVE_SHADOWS_ON
             #pragma shader_feature_local_fragment _FAST_SSS
             #pragma shader_feature_local _PARALLAX_ON
 
