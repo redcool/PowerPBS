@@ -159,7 +159,7 @@ Material:
     - _SmoothnessChannel: 1
     - _SpecularColorScale: 1
     - _SpecularIntensity: 1
-    - _SpecularOn: 1
+    - _SpecularOff: 1
     - _SrcMode: 1
     - _TFBrightness: 1
     - _TFMaskFrom: 0

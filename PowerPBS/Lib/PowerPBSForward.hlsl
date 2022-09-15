@@ -70,6 +70,8 @@ v2f vert (appdata v)
 
 half4 frag (v2f i) : SV_Target
 {
+
+
     // heightClothSSSMask
     half4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
     float height = heightClothSSSMask.x;
@@ -125,7 +127,6 @@ half4 frag (v2f i) : SV_Target
 
     SurfaceData surfaceData;
     InitSurfaceData(i.uv.zw,albedo,alpha,metallic,surfaceData/**/);
-    surfaceData.specColor *= _SpecularColorScale;
 
     PBSData pbsData;
     InitPBSData(worldData.tangent,worldData.binormal,worldData.normal,worldData.view,surfaceData.oneMinusReflectivity, smoothness,heightClothSSSMask,worldData.pos,pbsData/**/);
@@ -190,7 +191,7 @@ half4 frag (v2f i) : SV_Target
     }
 
     // apply _FresnelAlpha
-    col.a *= lerp(1,saturate(smoothstep(_FresnelAlphaMin,_FresnelAlphaMax,pbsData.nv)),_FresnelAlphaOn);
+    col.a *= lerp(1,saturate(smoothstep(_FresnelAlphaRange.x,_FresnelAlphaRange.y,pbsData.nv)),_FresnelAlphaOn);
 
     // apply sphere fog
     BlendFogSphere(col.xyz/**/,worldData.pos,i.fogCoord.xy,true,false);

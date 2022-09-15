@@ -26,3 +26,10 @@ https://github.com/redcool/PowerUtilities.git
 https://github.com/redcool/PowerShaderLib.git
 
 put them into same folder.
+
+-----------------------------------------------
+(v2.0.2)
+New Features:
+    1 sheen layer, can simulate skin, satin
+Update:
+    _SpecularOff to shader_feature

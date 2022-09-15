@@ -2,7 +2,7 @@
 
 //Help行,约定 | 为换行字符
 // 版本号: vx.y.z.w (x:基础架构,y:功能,z:功能update或fixed,w:提交序号)
-Help=PowerPBS,用于高清角色渲染| 多选:按住Control | (v2.0.1)
+Help=PowerPBS,用于高清角色渲染| 多选:按住Control | (v2.0.2)
 // ==================================================
 //Settings=设置
 //Main=基础
@@ -60,8 +60,7 @@ _SSSSMaskFrom=_SSSSMaskFrom?
 // ==================================================
 
 _ClothSheenColor=_ClothSheenColor
-_ClothDMin=_ClothDMin
-_ClothDMax=_ClothDMax
+_ClothSheenRange=_ClothSheenRange
 _ClothMaskFrom=_ClothMaskFrom
 _ClothMaskUsage=_ClothMaskUsage
 // ==================================================

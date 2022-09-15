@@ -10,6 +10,7 @@
 
 #include "../../PowerShaderLib/Lib/Colors.hlsl"
 #include "../../PowerShaderLib/Lib/MaskLib.hlsl"
+#include "../../PowerShaderLib/Lib/ToneMappers.hlsl"
 
 void OffsetMainLight(inout Light light){
     light.direction += _CustomLightOn > 0 ? _LightDir.xyz : 0;
@@ -201,7 +202,7 @@ half3 CalcDirectSpecColor(inout PBSData data,half nl,half nv,half nh,half lh,hal
     #if defined(_PBRMODE_CLOTH)
         // V = AshikhminV(nv,nl);
         specTerm = CharlieD(data.roughness,nh);
-        specTerm = smoothstep(_ClothDMin,_ClothDMax,specTerm);
+        specTerm = smoothstep(_ClothSheenRange.x,_ClothSheenRange.y,specTerm);
         directSpecColor = specTerm * PI * _ClothSheenColor.xyz;
         half clothMask = GetMask(data.maskData_None_mainTexA_pbrMaskA,_ClothMaskFrom);
         // mask control intensity
@@ -243,35 +244,43 @@ half3 CalcDirect(inout PBSData data,half3 diffColor,half3 specColor,half nl,half
     // half3 diffuseTerm = DisneyDiffuse(nl,nv,lh,data.roughness2) * diffColor;
     half3 directDiffuseColor = diffColor;
     half3 directSpecColor = 0;
-    if(_SpecularOn){
+    // if(!_SpecularOff)
+    #if !defined(_SPECULAR_OFF)
+    {
         directSpecColor = CalcDirectSpecColor(data,nl,nv,nh,lh,specColor);
     }
+    #endif
     return directDiffuseColor + directSpecColor ;
 }
 
 half3 CalcDirectApplyClearCoat(half3 directColor,ClearCoatData data,half fresnelTerm,half nl,half nh,half lh){
     half3 specColor = 0;
-    if(_SpecularOn){
+    // if(!_SpecularOff)
+    #if !defined(_SPECULAR_OFF)
+    {
         half3 coatSpec = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * data.specColor;
         half coatFresnel = kDielectricSpec.x + kDielectricSpec.a * fresnelTerm;
         // return directColor * 1;
         specColor = directColor * (1-coatFresnel) + coatSpec;
     }
+    #endif
     return specColor;
 }
 
 #define CALC_LIGHT_INFO(lightDir)\
-    half3 l = (lightDir);\
-    half3 v = (data.viewDir);\
-    half3 h = SafeNormalize(l + v);\
-    half3 t = (data.tangent);\
-    half3 b = (data.binormal);\
-    half3 n = (data.normal);\
-    half nh = saturate(dot(n,h));\
-    half nl = saturate(dot(n,l));\
-    half nv = saturate(dot(n,v));\
-    half lh = saturate(dot(l,h));
-    // half lv = saturate(dot(l,v));\
+    float3 l = (lightDir);\
+    float3 v = (data.viewDir);\
+    float3 h = SafeNormalize(l + v);\
+    float3 t = (data.tangent);\
+    float3 b = (data.binormal);\
+    float3 n = (data.normal);\
+    float nh = (dot(n,h));\
+    float nl = (dot(n,l));\
+    float nv = (dot(n,v));\
+    float lh = saturate(dot(l,h));\
+    float wnv = nv*0.5+0.5;\
+    nh = saturate(nh); nl = saturate(nl); nv = saturate(nv);
+    // float lv = saturate(dot(l,v));\
 
 half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Light light){
     // CALC_LIGHT_INFO(light.direction);
@@ -282,9 +291,12 @@ half3 CalcDirectAdditionalLight(PBSData data,half3 diffColor,half3 specColor,Lig
     half lightAtten = light.distanceAttenuation * light.shadowAttenuation *nl ;
     // half3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     half3 directColor = diffColor;
-    if(_SpecularOn){
+    // if(!_SpecularOff)
+    #if !defined(_SPECULAR_OFF)
+    {
         directColor += CalcSpecularTermOnlyStandard(data,nh,specColor);
     }
+    #endif
     return lerp(_ShadowColor.xyz,1,lightAtten) * light.color * directColor;
 }
 
@@ -337,7 +349,18 @@ void ApplyThinFilm(half invertNV,half3 maskData,half baseMask,inout half3 specCo
 
 half4 CalcPBS(half3 diffColor,half3 specColor,Light mainLight,UnityIndirect gi,ClearCoatData coatData,inout PBSData data){
     CALC_LIGHT_INFO(mainLight.direction);
-    
+
+    // shell layer 
+    #if defined(_SHEEN_LAYER_ON)
+    diffColor *= SheenLayer(nh,wnv,_SheenLayerRange.xy,_SheenLayerRange.z,_SheenLayerRange.w);
+    // diffColor = diffColor/(1+diffColor);
+    // diffColor = GTTone(diffColor);
+    if(_SheenLayerApplyTone){
+        // diffColor += lerp(0,half3(.1,0,0),1-wnv);
+        diffColor = ACESFilm(diffColor);
+    }
+    #endif
+
     #if defined(_THIN_FILM_ON)
     ApplyThinFilm(1-nv,data.maskData_None_mainTexA_pbrMaskA,_TFSpecMask ? nh : 1,specColor/**/);
     #endif
@@ -424,25 +447,25 @@ void InitSurfaceData(half2 uv,half3 albedo,half alpha,half metallic,out SurfaceD
     data.diffColor = AlphaPreMultiply (data.diffColor, alpha, data.oneMinusReflectivity, /*out*/ data.finalAlpha);
 }
 
-void InitWorldData(float2 uv,half detailMask,half4 tSpace0,half4 tSpace1,half4 tSpace2,out WorldData data ){
-    half2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
-    half3 tn = CalcNormal(normalMapUV,detailMask);
-    data.normal = SafeNormalize(half3(
+void InitWorldData(float2 uv,float detailMask,float4 tSpace0,float4 tSpace1,float4 tSpace2,out WorldData data ){
+    float2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
+    float3 tn = CalcNormal(normalMapUV,detailMask);
+    data.normal = SafeNormalize(float3(
         dot(tSpace0.xyz,tn),
         dot(tSpace1.xyz,tn),
         dot(tSpace2.xyz,tn)
     ));
 
-    data.pos = half3(tSpace0.w,tSpace1.w,tSpace2.w);
+    data.pos = float3(tSpace0.w,tSpace1.w,tSpace2.w);
     data.view = normalize(GetWorldViewDir(data.pos));
     data.reflect = (reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
 
-    data.vertexNormal = (half3(tSpace0.z,tSpace1.z,tSpace2.z));
-    data.vertexTangent = (half3(tSpace0.x,tSpace1.x,tSpace2.x));
-    data.vertexBinormal = (half3(tSpace0.y,tSpace1.y,tSpace2.y));
+    data.vertexNormal = (float3(tSpace0.z,tSpace1.z,tSpace2.z));
+    data.vertexTangent = (float3(tSpace0.x,tSpace1.x,tSpace2.x));
+    data.vertexBinormal = (float3(tSpace0.y,tSpace1.y,tSpace2.y));
 
 
-    half3 t = cross(data.normal,data.vertexBinormal); // schmidt orthogonal
+    float3 t = cross(data.normal,data.vertexBinormal); // schmidt orthogonal
     data.tangent = normalize(t - dot(t,data.normal) * data.normal);
     data.binormal =(cross(data.tangent,data.normal));
 

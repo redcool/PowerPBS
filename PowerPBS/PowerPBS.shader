@@ -67,9 +67,8 @@ Shader "Character/PowerPBS"
         [KeywordEnum(Standard,Aniso,Cloth)]_PBRMode("_PBRMode",int) = 0
 
         [GroupHeader(Specular Options)]
-        [GroupToggle]_SpecularOn("_SpecularOn",float) = 1
+        [GroupToggle(_,_SPECULAR_OFF)]_SpecularOff("_SpecularOff",float) = 0
         _MaxSpecularIntensity("_MaxSpecularIntensity", range(0, 10)) = 5
-        _SpecularColorScale("_SpecularColorScale",range(1,5)) = 1
         _SpecularIntensity("_SpecularIntensity",range(1,5)) = 1
 
         [GroupHeader(Fresnel Options)]
@@ -135,14 +134,19 @@ Shader "Character/PowerPBS"
         [Enum(None,0,MainTexA,1,PbrMaskA,2)]_SSSSMaskFrom("_SSSSMaskFrom",float) = 0
         [Enum(None,0,Intensity,1)]_SSSSMaskUsage("_SSSSMaskUsage",float)=0
 // ================================================== Cloth
-        [Header(Cloth Spec)]
+        [GroupHeader(Cloth Spec)]
         [hdr]_ClothSheenColor("_ClothSheenColor",Color) = (1,1,1,1)
-        _ClothDMin("_ClothDMin",range(0,1)) = 0
-        _ClothDMax("_ClothDMax",range(0,1)) = 1
+        [GroupVectorSlider(_,min max,0_1 0_1)]_ClothSheenRange("_ClothSheenRange",vector)=(0,1,1,1)
         
         [Header(Mask)]
         [Enum(None,0,MainTexA,1,PbrMaskA,2)]_ClothMaskFrom("_ClothMaskFrom",int) = 0
         [Enum(None,0,Intensity,1,BlendStandard,2)]_ClothMaskUsage("_ClothMaskUsage",int) = 0
+// ================================================== Sheen Layer
+        [Space(10)]
+        [GroupHeader(Sheen Layer)]
+        [GroupToggle(_,_SHEEN_LAYER_ON)]_SheenLayerOn("_SheenLayerOn",int) = 0
+        [GroupVectorSlider(_,min max minLuminance scale,0_1 0_1 0_1 0_1)]_SheenLayerRange("_SheenLayerRange",vector) = (0.8,1,0.5,1)
+        [GroupToggle(_)]_SheenLayerApplyTone("_SheenLayerApplyTone",int) = 0 
 // ================================================== Details
         // [GroupToggle]_Detail4_MapOn("_Detail4_MapOn",int) = 0
         // [Enum(Multiply,0,Replace,1)]_Detail4_MapMode("_Detail4_MapMode",int) = 0
@@ -212,8 +216,7 @@ Shader "Character/PowerPBS"
 
         [Header(Fresnel affect)]
         [GroupToggle]_FresnelAlphaOn("_FresnelAlphaOn",int) = 0
-        _FresnelAlphaMin("_FresnelAlphaMin",range(0,1)) = 0
-        _FresnelAlphaMax("_FresnelAlphaMax",range(0,1)) = 1
+        [GroupVectorSlider(_,min max,0_1 0_1)]_FresnelAlphaRange("_FresnelAlphaRange",vector)=(0,1,1,1)
 // ================================================== Settings
         [Space(10)][Header(DepthMode)]
         [GroupToggle]_ZWriteOn("_ZWriteOn?",int) = 1
@@ -318,6 +321,8 @@ Shader "Character/PowerPBS"
 
             #pragma shader_feature_local_fragment _FAST_SSS
             #pragma shader_feature_local _PARALLAX_ON
+            #pragma shader_feature_local_fragment _SPECULAR_OFF
+            #pragma shader_feature_local_fragment _SHEEN_LAYER_ON
 
             #include "Lib/PowerPBSForward.hlsl"
            

@@ -236,7 +236,7 @@ Material:
     - _SpecularColorScale: 1
     - _SpecularHighlights: 1
     - _SpecularIntensity: 1
-    - _SpecularOn: 1
+    - _SpecularOff: 1
     - _SrcBlend: 1
     - _SrcMode: 1
     - _Surface: 0

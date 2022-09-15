@@ -239,7 +239,7 @@ Material:
     - _SpecIntensity2: 10
     - _SpecPower1: 1
     - _SpecPower2: 1
-    - _SpecularOn: 1
+    - _SpecularOff: 1
     - _SrcMode: 1
     - _TFBrightness: 1
     - _TFMaskFrom: 0

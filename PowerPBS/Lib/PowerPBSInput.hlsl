@@ -58,8 +58,7 @@ CBUFFER_START(UnityPerMaterial)
     half _Cutoff;
     half _InvertSmoothnessOn;
     half _PBRMode; // standard,aniso,fabric,strand
-    half _SpecularOn;
-    half _SpecularColorScale;
+    // half _SpecularOff; // keyword _SPECULAR_OFF
     half _SpecularIntensity;
 
     half _FresnelIntensity;
@@ -81,7 +80,8 @@ CBUFFER_START(UnityPerMaterial)
 
     half _AlphaFrom;
     half _FresnelAlphaOn;
-    half _FresnelAlphaMin,_FresnelAlphaMax;
+    // half _FresnelAlphaMin,_FresnelAlphaMax;
+    half2 _FresnelAlphaRange;
 // ==================================================
     half _VertexScale;
     half _VertexColorRAttenOn;
@@ -100,11 +100,15 @@ CBUFFER_START(UnityPerMaterial)
     half _AnisoIntensityUseSmoothness;
     half _AnisoMaskUsage;
     half _AnisoMaskBlendStandardAniso;
-// ==================================================
+// ================================================== cloth spec
     half4 _ClothSheenColor;
-    half _ClothDMax,_ClothDMin;
+    half2 _ClothSheenRange;
     half _ClothMaskFrom;
     half _ClothMaskUsage;
+// ================================================== sheen layer
+    // half _SheenLayerOn;
+    half4 _SheenLayerRange; //xy : range[min,max],z : min luminance, w:scale
+    half _SheenLayerApplyTone;
 // ==================================================
     // half _ApplyShadowOn; // to _RECEIVE_SHADOWS_ON
     half _MainLightShadowSoftScale;
@@ -155,8 +159,8 @@ CBUFFER_START(UnityPerMaterial)
 
 // ================================================== custom light
     half _CustomLightOn;
-    half4 _LightDir;
-    half4 _LightColor;
+    half3 _LightDir;
+    half3 _LightColor;
     half _MaxSpecularIntensity;
 
     // half _SSSOn; //to keyword _FAST_SSS
@@ -176,7 +180,7 @@ CBUFFER_START(UnityPerMaterial)
 // ================================================== debug data
     half _ShowGIDiff,_ShowGISpec,_ShowNormal,_ShowOcclusion;
     half _ShowMetallic,_ShowSmoothness,_ShowSpecular,_ShowDiffuse;
-    half _EnableDebug;
+    // half _EnableDebug; // keyword _POWER_DEBUG
 
 CBUFFER_END
 
