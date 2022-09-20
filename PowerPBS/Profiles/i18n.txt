@@ -2,7 +2,7 @@
 
 //Help行,约定 | 为换行字符
 // 版本号: vx.y.z.w (x:基础架构,y:功能,z:功能update或fixed,w:提交序号)
-Help=PowerPBS,用于高清角色渲染| 多选:按住Control | (v2.0.2)
+Help=PowerPBS,用于高清角色渲染| 多选:按住Control | (v2.0.3)
 // ==================================================
 //Settings=设置
 //Main=基础

@@ -37,20 +37,24 @@ struct v2f
 v2f vert (appdata v)
 {
     v2f o = (v2f)0;
+    
+    #if defined(_VERTEX_SCALE_ON)
     ApplyVertexWave(v.vertex/**/,v.normal,v.color);
+    #endif
+
     o.pos = UnityObjectToClipPos(v.vertex.xyz);
-    o.uv = half4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
+    o.uv = float4(TRANSFORM_TEX(v.uv, _MainTex),v.uv);
 
     float3 worldPos = mul(unity_ObjectToWorld,v.vertex).xyz;
-    float3 n = normalize(UnityObjectToWorldNormal(v.normal));
-    float3 t = normalize(UnityObjectToWorldDir(v.tangent.xyz));
-    t = normalize(t - dot(t,n) * n);
+    float3 n = (UnityObjectToWorldNormal(v.normal));
+    float3 t = (UnityObjectToWorldDir(v.tangent.xyz));
+    // t = normalize(t - dot(t,n) * n);
     
     float tangentSign = v.tangent.w * unity_WorldTransformParams.w;
     float3 b = cross(n,t) * tangentSign;
-    o.tSpace0 = half4(t.x,b.x,n.x,worldPos.x);
-    o.tSpace1 = half4(t.y,b.y,n.y,worldPos.y);
-    o.tSpace2 = half4(t.z,b.z,n.z,worldPos.z);
+    o.tSpace0 = float4(t.x,b.x,n.x,worldPos.x);
+    o.tSpace1 = float4(t.y,b.y,n.y,worldPos.y);
+    o.tSpace2 = float4(t.z,b.z,n.z,worldPos.z);
 
     #if defined(_PARALLAX_ON)
     // if(_ParallaxOn)

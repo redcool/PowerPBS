@@ -41,7 +41,7 @@ half4 CalcKernel(int id){
 
 half3 DiffuseProfile(half3 mainColor,TEXTURE2D_PARAM(tex,sampler_tex),half2 uv,half2 offset,half sssMask,half baseScale=0.2){
     half BlurLength = DistanceToProjectionWindow;
-    half2 UVOffset = BlurLength*offset;
+    half2 uvOffset = BlurLength*offset;
 
     // base color
     half3 blurColor = mainColor.xyz * CalcKernel(0).xyz* baseScale;
@@ -49,7 +49,7 @@ half3 DiffuseProfile(half3 mainColor,TEXTURE2D_PARAM(tex,sampler_tex),half2 uv,h
     UNITY_LOOP
     for(int i = 0;i < KERNEL_SIZE ; i++){
         half4 k = CalcKernel(i);
-        half2 sssuv = uv + k.w * UVOffset;
+        half2 sssuv = uv + k.w * uvOffset;
         half3 sssColor = SAMPLE_TEXTURE2D(tex,sampler_tex,sssuv).xyz;
         // sssColor = lerp(mainColor,sssColor,saturate(sssMask));
 

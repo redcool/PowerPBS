@@ -30,6 +30,9 @@ Shader "Character/PowerPBS"
         _NormalMap("NormalMap",2d) = "bump"{}
         _NormalMapScale("_NormalMapScale",range(0,5)) = 1
 
+        [Header(VertexNormal)]
+        [GroupToggle(_,_BLEND_VERTEX_NORMAL_ON)]_BlendVertexNormalOn("_BlendVertexNormalOn",int) = 0
+
         [Header(PBR Mask)]
         [noscaleoffset]_MetallicMap("Metallic(R),Smoothness(G),Occlusion(B)",2d) = "white"{}
 
@@ -59,6 +62,7 @@ Shader "Character/PowerPBS"
 
 // ================================================== vertex
         [GroupHeader(Vertex Scale)]
+        [GroupToggle(_,_VERTEX_SCALE_ON)]_VertexScaleOn("_VertexScaleOn",int) = 0
         _VertexScale("_VertexScale",range(-0.1,0.1)) = 0
         [GroupToggle]_VertexColorRAttenOn("_VertexColorRAttenOn(R)",int) = 1
 // ================================================== Settings
@@ -323,6 +327,8 @@ Shader "Character/PowerPBS"
             #pragma shader_feature_local _PARALLAX_ON
             #pragma shader_feature_local_fragment _SPECULAR_OFF
             #pragma shader_feature_local_fragment _SHEEN_LAYER_ON
+            #pragma shader_feature_local_fragment _BLEND_VERTEX_NORMAL_ON
+            #pragma shader_feature_local_vertex _VERTEX_SCALE_ON
 
             #include "Lib/PowerPBSForward.hlsl"
            

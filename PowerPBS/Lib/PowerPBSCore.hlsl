@@ -5,12 +5,11 @@
 #include "../../PowerShaderLib/UrpLib/URP_GI.hlsl"
 #include "../../PowerShaderLib/UrpLib/URP_Lighting.hlsl"
 #include "Tools/ExtractLightFromSH.hlsl"
-
 #include "../../PowerShaderLib/Lib/BSDF.hlsl"
-
 #include "../../PowerShaderLib/Lib/Colors.hlsl"
 #include "../../PowerShaderLib/Lib/MaskLib.hlsl"
 #include "../../PowerShaderLib/Lib/ToneMappers.hlsl"
+#include "../../PowerShaderLib/Lib/PowerUtils.hlsl"
 
 void OffsetMainLight(inout Light light){
     light.direction += _CustomLightOn > 0 ? _LightDir.xyz : 0;
@@ -86,7 +85,7 @@ half3 CalcNormal(half2 uv, half detailMask ){
     #if defined(_DETAIL_MAP)
         half2 dnUV = uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw;
 		half3 dn = UnpackNormalScale(SAMPLE_TEXTURE2D(_Detail_NormalMap,sampler_linear_repeat, dnUV), _Detail_NormalMapScale);
-		dn = normalize(half3(tn.xy + dn.xy, tn.z*dn.z));
+		// dn = normalize(half3(tn.xy + dn.xy, tn.z*dn.z));
 		tn = lerp(tn, dn, detailMask);
 	// }
     #endif
@@ -142,6 +141,50 @@ half3 CalcEmission(half3 albedo,half2 uv){
     half4 tex = SAMPLE_TEXTURE2D(_EmissionMap,sampler_linear_repeat,uv);
     return albedo * tex.rgb * _EmissionColor.xyz * (tex.a * _Emission);
 }
+
+void InitWorldData(float2 uv,float detailMask,float4 tSpace0,float4 tSpace1,float4 tSpace2,out WorldData data ){
+    data.pos = float3(tSpace0.w,tSpace1.w,tSpace2.w);
+
+    // tangent normal
+    float2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
+    float3 tn = CalcNormal(normalMapUV,detailMask);
+
+    // blend vertex normal in tangent space
+    #if defined(_BLEND_VERTEX_NORMAL_ON)
+
+        tn = BlendVertexNormal(tn,data.pos,
+        float3(tSpace0.x,tSpace1.x,tSpace2.x),
+        float3(tSpace0.y,tSpace1.y,tSpace2.y),
+        float3(tSpace0.z,tSpace1.z,tSpace2.z)
+        );
+    #endif
+
+    // transform tangent to world space
+    data.normal = SafeNormalize(float3(
+        dot(tSpace0.xyz,tn),
+        dot(tSpace1.xyz,tn),
+        dot(tSpace2.xyz,tn)
+    ));
+
+    data.view = normalize(GetWorldViewDir(data.pos));
+    data.reflect = (reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
+
+    data.vertexNormal = (float3(tSpace0.z,tSpace1.z,tSpace2.z));
+    data.vertexTangent = (float3(tSpace0.x,tSpace1.x,tSpace2.x));
+    data.vertexBinormal = (float3(tSpace0.y,tSpace1.y,tSpace2.y));
+
+
+    float3 t = cross(data.normal,data.vertexBinormal);
+    data.tangent = normalize(t - dot(t,data.normal) * data.normal); // schmidt orthogonal
+    data.binormal =(cross(data.tangent,data.normal));
+
+    // data.binormal = data.vertexBinormal;
+    // data.tangent = data.vertexTangent;
+    data.normal = data.vertexNormal;
+}
+
+
+
 
 #define PBR_MODE_STANDARD 0
 #define PBR_MODE_ANISO 1
@@ -414,8 +457,8 @@ half4 CalcPBS(half3 diffColor,half3 specColor,Light mainLight,UnityIndirect gi,C
     return half4(color,1);
 }
 
-void ApplyVertexWave(inout half4 vertex,half3 normal,half4 vertexColor){
-    vertex.xyz += _VertexScale * vertexColor.x * normal;
+void ApplyVertexWave(inout float4 vertex,float3 normal,float4 vertexColor){
+    vertex.xyz += _VertexScale * lerp(1,vertexColor.x,_VertexColorRAttenOn) * normal;
 }
 
 half3 CalcDiffuseAndSpecularFromMetallic(half3 albedo,half metallic,inout half3 specColor,out half oneMinusReflectivity){
@@ -447,31 +490,6 @@ void InitSurfaceData(half2 uv,half3 albedo,half alpha,half metallic,out SurfaceD
     data.diffColor = AlphaPreMultiply (data.diffColor, alpha, data.oneMinusReflectivity, /*out*/ data.finalAlpha);
 }
 
-void InitWorldData(float2 uv,float detailMask,float4 tSpace0,float4 tSpace1,float4 tSpace2,out WorldData data ){
-    float2 normalMapUV = TRANSFORM_TEX(uv, _NormalMap);
-    float3 tn = CalcNormal(normalMapUV,detailMask);
-    data.normal = SafeNormalize(float3(
-        dot(tSpace0.xyz,tn),
-        dot(tSpace1.xyz,tn),
-        dot(tSpace2.xyz,tn)
-    ));
 
-    data.pos = float3(tSpace0.w,tSpace1.w,tSpace2.w);
-    data.view = normalize(GetWorldViewDir(data.pos));
-    data.reflect = (reflect(-data.view + _ReflectionOffsetDir.xyz,data.normal));
-
-    data.vertexNormal = (float3(tSpace0.z,tSpace1.z,tSpace2.z));
-    data.vertexTangent = (float3(tSpace0.x,tSpace1.x,tSpace2.x));
-    data.vertexBinormal = (float3(tSpace0.y,tSpace1.y,tSpace2.y));
-
-
-    float3 t = cross(data.normal,data.vertexBinormal); // schmidt orthogonal
-    data.tangent = normalize(t - dot(t,data.normal) * data.normal);
-    data.binormal =(cross(data.tangent,data.normal));
-
-    // data.binormal = data.vertexBinormal;
-    // data.tangent = data.vertexTangent;
-    // data.normal = data.vertexNormal;
-}
 
 #endif // end of POWER_PBS_CORE_HLSL

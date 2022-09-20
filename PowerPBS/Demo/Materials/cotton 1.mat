@@ -2,16 +2,28 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!21 &2100000
 Material:
-  serializedVersion: 6
+  serializedVersion: 8
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: cotton 1
   m_Shader: {fileID: 4800000, guid: 31d16b753185afc41babb5aab1d1b6c3, type: 3}
-  m_ShaderKeywords: _APPLYSHADOWON_ON _DIFFUSEPROFILEMASKUSERMAINTEXA_ON _LIGHTCOLORNOATTEN_ON
-    _PRESCATTERMASKUSEMAINTEXA_ON _RECEIVEADDITIONALLIGHTSON_ON _RECEIVEADDITIONALLIGHTSSHADOWON_ON
-    _SPECULARON_ON _VERTEXCOLORRATTENON_ON _ZWRITEON_ON
+  m_ValidKeywords:
+  - _ADDITIONAL_LIGHTS
+  - _BLEND_VERTEX_NORMAL_ON
+  - _PBRMODE_CLOTH
+  - _VERTEX_SCALE_ON
+  m_InvalidKeywords:
+  - _APPLYSHADOWON_ON
+  - _DIFFUSEPROFILEMASKUSERMAINTEXA_ON
+  - _LIGHTCOLORNOATTEN_ON
+  - _PRESCATTERMASKUSEMAINTEXA_ON
+  - _RECEIVEADDITIONALLIGHTSON_ON
+  - _RECEIVEADDITIONALLIGHTSSHADOWON_ON
+  - _SPECULARON_ON
+  - _VERTEXCOLORRATTENON_ON
+  - _ZWRITEON_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -86,8 +98,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: 550e30f0655b22b43831b9dc77d54e94, type: 3}
-        m_Scale: {x: 10, y: 10}
+        m_Texture: {fileID: 2800000, guid: 3cf0bef342f8fd04fa661200e9c566af, type: 3}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
@@ -121,6 +133,7 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    m_Ints: []
     m_Floats:
     - _AdditionalLightCalcFastSSS: 0
     - _AdditionalLightCalcScatter: 0
@@ -131,13 +144,17 @@ Material:
     - _AlphaTestOn: 0
     - _AmbientSHIntensity: 0.5
     - _AnisoIntensity: 1
+    - _AnisoIntensityUseSmoothness: 0
     - _AnisoLayer2On: 0
     - _AnisoMaskFrom: 0
+    - _AnisoMaskUsage: 0
     - _AnisoRough: 0
+    - _AnisoShift: 0
     - _ApplyShadowOn: 1
     - _BackFaceGIDiffuse: 0
     - _BackSSSIntensity: 1
     - _Blend: 0
+    - _BlendVertexNormalOn: 1
     - _BlurSize: 1
     - _BumpScale: 1
     - _ClearCoatMask: 0
@@ -146,6 +163,8 @@ Material:
     - _ClothDMax: 0.021
     - _ClothDMin: 0.101
     - _ClothMaskFrom: 0
+    - _ClothMaskUsage: 0
+    - _CoatIndirectSpecularIntensity: 1
     - _CoatSmoothness: 0.5
     - _Cull: 2
     - _CullMode: 2
@@ -167,7 +186,7 @@ Material:
     - _Detail_MapMode: 0
     - _Detail_MapOn: 0
     - _Detail_NormalMapScale: 1
-    - _SSSSMaskFrom: 1
+    - _DiffuseProfileBaseScale: 0.2
     - _DiffuseProfileOn: 0
     - _DirectionalLightFromSHOn: 0
     - _DirectionalSHIntensity: 0.5
@@ -175,12 +194,15 @@ Material:
     - _DstMode: 0
     - _Emission: 1
     - _EmissionOn: 0
+    - _EnableDebug: 0
     - _EnvIntensity: 1
     - _EnvironmentReflections: 1
-    - _FresnelAlphaOn: 0
-    - _FresnelIntensity: 1
+    - _FogOn: 0
     - _FresnelAlphaMax: 1
     - _FresnelAlphaMin: 0
+    - _FresnelAlphaOn: 0
+    - _FresnelIntensity: 1
+    - _FresnelWidth: 1
     - _FrontSSSIntensity: 1
     - _GlossMapScale: 0
     - _Glossiness: 0
@@ -188,29 +210,44 @@ Material:
     - _HairAoIntensity: 1
     - _HeightScale: 0
     - _IndirectSpecularIntensity: 1
+    - _InvertSmoothnessOn: 0
     - _Layer2AnisoIntensity: 1
     - _Layer2AnisoRough: 0
     - _LightColorNoAtten: 1
+    - _MainLightShadowSoftScale: 0
     - _MaxSpecularIntensity: 5
     - _Metallic: 0
     - _MetallicChannel: 0
-    - _NormalMapScale: 5
+    - _NormalMapScale: 1
     - _Occlusion: 1
     - _OcclusionChannel: 2
     - _OcclusionStrength: 1
     - _PBRMode: 2
-    - _ParallaxOn: 0
     - _Parallax: 0.005
+    - _ParallaxOn: 0
     - _PreScatterMaskFrom: 1
+    - _PreScatterMaskUsage: 0
     - _QueueOffset: 0
     - _ReceiveAdditionalLightsOn: 1
     - _ReceiveAdditionalLightsShadowOn: 1
     - _ReceiveShadows: 1
     - _SSSOn: 0
+    - _SSSSMaskFrom: 1
+    - _SSSSMaskUsage: 0
     - _ScatteringIntensity: 1
     - _ScatteringLUTOn: 0
+    - _SheenLayerApplyTone: 0
+    - _SheenLayerOn: 0
     - _Shift1: 0
     - _Shift2: 0
+    - _ShowDiffuse: 0
+    - _ShowGIDiff: 0
+    - _ShowGISpec: 0
+    - _ShowMetallic: 0
+    - _ShowNormal: 0
+    - _ShowOcclusion: 0
+    - _ShowSmoothness: 0
+    - _ShowSpecular: 0
     - _Smoothness: 0.5
     - _SmoothnessChannel: 1
     - _SmoothnessTextureChannel: 0
@@ -219,12 +256,22 @@ Material:
     - _SpecPower1: 1
     - _SpecPower2: 1
     - _SpecularHighlights: 1
+    - _SpecularIntensity: 1
     - _SpecularOff: 1
     - _SrcBlend: 1
     - _SrcMode: 1
     - _Surface: 0
-    - _VertexColorRAttenOn: 1
-    - _VertexScale: 0
+    - _TFBrightness: 1
+    - _TFMaskFrom: 0
+    - _TFMaskUsage: 0
+    - _TFOffset: 0
+    - _TFSaturate: 1
+    - _TFScale: 1
+    - _TFSpecMask: 0
+    - _ThinFilmOn: 0
+    - _VertexColorRAttenOn: 0
+    - _VertexScale: 0.0055
+    - _VertexScaleOn: 1
     - _WorkflowMode: 1
     - _ZTestMode: 4
     - _ZWrite: 1
@@ -235,13 +282,19 @@ Material:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClearCoatSpecColor: {r: 1, g: 1, b: 1, a: 1}
     - _ClothSheenColor: {r: 0.18867922, g: 0.18867922, b: 0.18867922, a: 1}
+    - _ClothSheenRange: {r: 0, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _CustomShadowBias: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FresnelAlphaRange: {r: 0, g: 1, b: 1, a: 1}
+    - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
     - _FrontSSSColor: {r: 1, g: 0, b: 0, a: 0}
     - _Layer2AnisoColor: {r: 0.5, g: 0, b: 0, a: 0}
     - _LightColor: {r: 1, g: 1, b: 1, a: 1}
     - _LightDir: {r: 0, g: 0.5, b: 0, a: 0}
     - _ReflectionOffsetDir: {r: 0, g: 0, b: 0, a: 0}
+    - _ShadowColor: {r: 0, g: 0, b: 0, a: 0}
+    - _SheenLayerRange: {r: 0.8, g: 1, b: 0.5, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _SpecColor1: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor2: {r: 1, g: 1, b: 1, a: 1}

@@ -5,10 +5,10 @@ tabNames = Settings, Main,SpecMap,ClearCoat,Vertex,Aniso,Cloth,ThinFilm,Scatter,
 
 // Tab's contents
 Settings =_ZWriteOn,_ZTestMode,_CullMode,_PBRMode,_RenderQueue
-Main = _MainTex,_Color,_AlphaFrom,_NormalMap,_NormalMapScale,_MetallicMap,_Metallic,_Smoothness,_Occlusion,_InvertSmoothnessOn,_MetallicChannel,_SmoothnessChannel,_OcclusionChannel
+Main = _MainTex,_Color,_AlphaFrom,_NormalMap,_NormalMapScale,_BlendVertexNormalOn,_MetallicMap,_Metallic,_Smoothness,_Occlusion,_InvertSmoothnessOn,_MetallicChannel,_SmoothnessChannel,_OcclusionChannel
 SpecMap=_CustomSpecularMapOn,_CustomSpecularMap,_CustomSpecularIntensity
 ClearCoat=_ClearCoatOn,_ClearCoatSpecColor,_CoatSmoothness,_CoatIndirectSpecularIntensity
-Vertex = _VertexScale,_VertexColorRAttenOn
+Vertex =_VertexScaleOn, _VertexScale,_VertexColorRAttenOn
 Aniso=_AnisoColor,_AnisoIntensity,_AnisoRough,_AnisoShift,_AnisoLayer2On,_Layer2AnisoColor,_Layer2AnisoIntensity,_Layer2AnisoRough,_Layer2AnisoShift,_AnisoMaskFrom,_AnisoMaskUsage,_AnisoIntensityUseSmoothness
 Cloth=_ClothSheenColor,_ClothSheenRange,_ClothMaskFrom,_ClothMaskUsage,
 ThinFilm = _ThinFilmOn,_TFScale,_TFOffset,_TFSaturate,_TFBrightness,_TFMaskFrom,_TFMaskUsage,_TFSpecMask

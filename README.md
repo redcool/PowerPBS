@@ -33,3 +33,8 @@ New Features:
     1 sheen layer, can simulate skin, satin
 Update:
     _SpecularOff to shader_feature
+
+(v2.0.3)
+New Features:
+    1 add _BlendVertexNormalOn, in main page
+    2 add _VertexScaleOn,in vertex page
