@@ -180,7 +180,7 @@ void InitWorldData(float2 uv,float detailMask,float4 tSpace0,float4 tSpace1,floa
 
     // data.binormal = data.vertexBinormal;
     // data.tangent = data.vertexTangent;
-    data.normal = data.vertexNormal;
+    // data.normal = data.vertexNormal;
 }
 
 
