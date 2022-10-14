@@ -22,16 +22,16 @@ struct PBSData{
     float3 binormal;
     float3 normal;
     float3 viewDir;
-    half4 heightClothFastSSSMask;
-    half3 hairSpecColor;
+    float4 heightClothFastSSSMask;
+    float3 hairSpecColor;
     float oneMinusReflectivity;
     float smoothness;
     float3 worldPos;
-    half4 mainTex;
+    float4 mainTex;
     float3 lightDir;
-    float3 halfDir;
+    float3 floatDir;
     float perceptualRoughness,roughness,roughness2;
-    half3 maskData_None_mainTexA_pbrMaskA;
+    float3 maskData_None_mainTexA_pbrMaskA;
     // output params
     float nl;
     float nv;
@@ -61,11 +61,11 @@ struct ClearCoatData{
     float oneMinusReflectivity;
     float occlusion;
     float perceptualRoughness,roughness,roughness2;
-    half3 specColor;
-    // half3 diffColor;
+    float3 specColor;
+    // float3 diffColor;
     float3 reflectDir;
 };
-void InitCoatData(float smoothness,half3 specColor,float oneMinusReflectivity,out ClearCoatData data){
+void InitCoatData(float smoothness,float3 specColor,float oneMinusReflectivity,out ClearCoatData data){
     data = (ClearCoatData)0;
     data.smoothness = smoothness;
     data.perceptualRoughness = max(1-smoothness,HALF_MIN_SQRT);
@@ -77,7 +77,7 @@ void InitCoatData(float smoothness,half3 specColor,float oneMinusReflectivity,ou
 
 
 struct SurfaceData{
-    half3 diffColor,specColor;
+    float3 diffColor,specColor;
     float oneMinusReflectivity,finalAlpha;
 };
 

@@ -299,17 +299,17 @@ Shader "Character/PowerPBS"
 
             // make fog work
             // #pragma multi_compile_fog
-            #pragma target 4.5
+            #pragma target 3.0
 
             // urp keywords
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
             #pragma multi_compile _ CALCULATE_BAKED_SHADOWS
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile _ADDITIONAL_LIGHTS
+            #pragma multi_compile_fragment _ADDITIONAL_LIGHT_SHADOWS
 
             // material keywords
             #pragma shader_feature_local_fragment _RECEIVE_SHADOWS_ON
-            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHTS
-            #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS
             #pragma shader_feature_local_fragment _ADDITIONAL_LIGHT_SHADOWS_SOFT
 
             #pragma shader_feature_local_fragment _ALPHA_TEST

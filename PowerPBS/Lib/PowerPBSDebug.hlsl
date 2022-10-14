@@ -1,7 +1,7 @@
 #if !defined(POWER_PBS_DEBUG_HLSL)
 #define POWER_PBS_DEBUG_HLSL
 
-half4 ShowDebug(UnityIndirect gi,WorldData worldData,SurfaceData surfaceData,half metallic,half smoothness,half occlusion){
+float4 ShowDebug(UnityIndirect gi,WorldData worldData,SurfaceData surfaceData,float metallic,float smoothness,float occlusion){
     if(_ShowGIDiff)
         return gi.diffuse.xyzx;
     if(_ShowGISpec)
@@ -19,7 +19,7 @@ half4 ShowDebug(UnityIndirect gi,WorldData worldData,SurfaceData surfaceData,hal
         return surfaceData.specColor.xyzx;
     if(_ShowDiffuse)
         return surfaceData.diffColor.xyzx;
-    return half4(.1,.2,.3,1);
+    return float4(.1,.2,.3,1);
 }
 
 #endif //POWER_PBS_DEBUG_HLSL

@@ -13,11 +13,11 @@
 
 struct appdata
 {
-    half4 vertex : POSITION;
-    half4 color:COLOR;
+    float4 vertex : POSITION;
+    float4 color:COLOR;
     float2 uv : TEXCOORD0;
     float3 normal:NORMAL;
-    half4 tangent:TANGENT;
+    float4 tangent:TANGENT;
 };
 
 struct v2f
@@ -60,7 +60,7 @@ v2f vert (appdata v)
     // if(_ParallaxOn)
     {
         float3 viewWorldSpace = UnityWorldSpaceViewDir(worldPos);
-        half3x3 tSpace = half3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
+        float3x3 tSpace = float3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
         o.viewTangentSpace = mul(viewWorldSpace,tSpace);
     }
     #endif
@@ -72,12 +72,12 @@ v2f vert (appdata v)
     return o;
 }
 
-half4 frag (v2f i) : SV_Target
+float4 frag (v2f i) : SV_Target
 {
 
 
     // heightClothSSSMask
-    half4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
+    float4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
     float height = heightClothSSSMask.x;
     float clothMask = heightClothSSSMask.y;
     // float frontSSS = heightClothSSSMask.z;
@@ -92,7 +92,7 @@ half4 frag (v2f i) : SV_Target
     #endif
 
     // pbrMask
-    half4 pbrMask = SAMPLE_TEXTURE2D(_MetallicMap,sampler_MetallicMap ,uv);
+    float4 pbrMask = SAMPLE_TEXTURE2D(_MetallicMap,sampler_MetallicMap ,uv);
     float metallic = pbrMask[_MetallicChannel] * _Metallic;
     // pbrMask'g is smoothness or roughness ?
     float smoothness = pbrMask[_SmoothnessChannel];
@@ -101,7 +101,7 @@ half4 frag (v2f i) : SV_Target
     float occlusion = lerp(1,pbrMask[_OcclusionChannel] , _Occlusion);
     
     float detailMask=0;
-    half4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
+    float4 mainTex = CalcAlbedo(uv,detailMask/*out*/);
     mainTex *= _Color;
 
     float3 albedo = mainTex.rgb;
@@ -152,7 +152,7 @@ half4 frag (v2f i) : SV_Target
         coatData.occlusion = occlusion;
     #endif 
 
-    half4 col = CalcPBS(surfaceData.diffColor, surfaceData.specColor, light, indirect,coatData,pbsData/**/);
+    float4 col = CalcPBS(surfaceData.diffColor, surfaceData.specColor, light, indirect,coatData,pbsData/**/);
     col.a = surfaceData.finalAlpha;
 
     //for preintegrated lut
@@ -171,13 +171,13 @@ half4 frag (v2f i) : SV_Target
         float2 screenUV = i.pos.xy / _ScreenParams.xy;
         float profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
 
-        half3 sss = col.xyz;
+        float3 sss = col.xyz;
         sss.xyz += DiffuseProfile(sss.xyz,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(_CameraOpaqueTexture_TexelSize.x * _BlurSize,0),profileMask,_DiffuseProfileBaseScale);
 
         sss.xyz += DiffuseProfile(sss.xyz,TEXTURE2D_ARGS(_CameraOpaqueTexture,sampler_linear_repeat),screenUV,float2(0,_CameraOpaqueTexture_TexelSize.y * _BlurSize),profileMask,_DiffuseProfileBaseScale);
         sss.xyz *=0.3333;
 
-        half profileRate = lerp(0.2,1,light.shadowAttenuation);
+        float profileRate = lerp(0.2,1,light.shadowAttenuation);
         col.xyz = lerp(col.xyz,sss,profileRate);
     }
     #endif

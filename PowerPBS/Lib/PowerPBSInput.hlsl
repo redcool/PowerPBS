@@ -36,151 +36,151 @@ TEXTURE2D(_StrandMaskTex); // xyzw  = shift_specMask_ao_tbMask
    //_Detail1_MapIntensity
     //_Detail1_Map_ST
 #define DECLARE_DETAIL(id)\
-    half _Detail##id##_MapOn;\
-    half _Detail##id##_MapMode;\
-    half _Detail##id##_MapIntensity;\
-    half4 _Detail##id##_Map_ST
+    float _Detail##id##_MapOn;\
+    float _Detail##id##_MapMode;\
+    float _Detail##id##_MapIntensity;\
+    float4 _Detail##id##_Map_ST
 
 // transfereb by unity
-    half4 _CameraOpaqueTexture_TexelSize;
+    float4 _CameraOpaqueTexture_TexelSize;
 
 //------------------------- main texture
 CBUFFER_START(UnityPerMaterial)
-    half4 _Color;
-    half4 _MainTex_ST;
-    half4 _MainTex_TexelSize;
-    half4 _NormalMap_ST;
-    half _NormalMapScale;
+    float4 _Color;
+    float4 _MainTex_ST;
+    float4 _MainTex_TexelSize;
+    float4 _NormalMap_ST;
+    float _NormalMapScale;
 
-    half _Smoothness;
-    half _Metallic;
-    half _Occlusion;
-    half _Cutoff;
-    half _InvertSmoothnessOn;
-    half _PBRMode; // standard,aniso,fabric,strand
-    // half _SpecularOff; // keyword _SPECULAR_OFF
-    half _SpecularIntensity;
+    float _Smoothness;
+    float _Metallic;
+    float _Occlusion;
+    float _Cutoff;
+    float _InvertSmoothnessOn;
+    float _PBRMode; // standard,aniso,fabric,strand
+    // float _SpecularOff; // keyword _SPECULAR_OFF
+    float _SpecularIntensity;
 
-    half _FresnelIntensity;
-    half _FresnelWidth;
-    half3 _FresnelColor;
+    float _FresnelIntensity;
+    float _FresnelWidth;
+    float3 _FresnelColor;
 
-    half _MetallicChannel;
-    half _SmoothnessChannel;
-    half _OcclusionChannel;
+    float _MetallicChannel;
+    float _SmoothnessChannel;
+    float _OcclusionChannel;
 
-    // half _ClearCoatOn; // to keyword _CLEARCOAT
-    half4 _ClearCoatSpecColor;
-    half _CoatSmoothness;
-    half _CoatIndirectSpecularIntensity;
+    // float _ClearCoatOn; // to keyword _CLEARCOAT
+    float4 _ClearCoatSpecColor;
+    float _CoatSmoothness;
+    float _CoatIndirectSpecularIntensity;
 
-    // half _CustomSpecularMapOn; // to keyword _SPECULAR_MAP_FLOW
-    half4 _CustomSpecularMap_ST;
-    half _CustomSpecularIntensity;
+    // float _CustomSpecularMapOn; // to keyword _SPECULAR_MAP_FLOW
+    float4 _CustomSpecularMap_ST;
+    float _CustomSpecularIntensity;
 
-    half _AlphaFrom;
-    half _FresnelAlphaOn;
-    // half _FresnelAlphaMin,_FresnelAlphaMax;
-    half2 _FresnelAlphaRange;
+    float _AlphaFrom;
+    float _FresnelAlphaOn;
+    // float _FresnelAlphaMin,_FresnelAlphaMax;
+    float2 _FresnelAlphaRange;
 // ==================================================
-    half _VertexScale;
-    half _VertexColorRAttenOn;
+    float _VertexScale;
+    float _VertexColorRAttenOn;
 // ==================================================
-    half _AnisoRough;
-    half _AnisoIntensity;
-    half4 _AnisoColor;
-    half _AnisoShift;
+    float _AnisoRough;
+    float _AnisoIntensity;
+    float4 _AnisoColor;
+    float _AnisoShift;
 
-    half _AnisoLayer2On;
-    half _Layer2AnisoRough;
-    half _Layer2AnisoIntensity;
-    half4 _Layer2AnisoColor;
-    // half _Layer2AnisoShift;
-    half _AnisoMaskFrom;
-    half _AnisoIntensityUseSmoothness;
-    half _AnisoMaskUsage;
-    half _AnisoMaskBlendStandardAniso;
+    float _AnisoLayer2On;
+    float _Layer2AnisoRough;
+    float _Layer2AnisoIntensity;
+    float4 _Layer2AnisoColor;
+    // float _Layer2AnisoShift;
+    float _AnisoMaskFrom;
+    float _AnisoIntensityUseSmoothness;
+    float _AnisoMaskUsage;
+    float _AnisoMaskBlendStandardAniso;
 // ================================================== cloth spec
-    half4 _ClothSheenColor;
-    half2 _ClothSheenRange;
-    half _ClothMaskFrom;
-    half _ClothMaskUsage;
+    float4 _ClothSheenColor;
+    float2 _ClothSheenRange;
+    float _ClothMaskFrom;
+    float _ClothMaskUsage;
 // ================================================== sheen layer
-    // half _SheenLayerOn;
-    half4 _SheenLayerRange; //xy : range[min,max],z : min luminance, w:scale
-    half _SheenLayerApplyTone;
+    // float _SheenLayerOn;
+    float4 _SheenLayerRange; //xy : range[min,max],z : min luminance, w:scale
+    float _SheenLayerApplyTone;
 // ==================================================
-    // half _ApplyShadowOn; // to _RECEIVE_SHADOWS_ON
-    half _MainLightShadowSoftScale;
-    half4 _ShadowColor;
+    // float _ApplyShadowOn; // to _RECEIVE_SHADOWS_ON
+    float _MainLightShadowSoftScale;
+    float4 _ShadowColor;
 
-    // half _ReceiveAdditionalLightsOn; // to keywords _ADDITIONAL_LIGHTS
-    // half _ReceiveAdditionalLightsShadowOn; // to keywords _ADDITIONAL_LIGHT_SHADOWS
-    // half _AdditionalLightSoftShadowOn; //to keyword _ADDITIONAL_LIGHT_SHADOWS_SOFT
-    half _DirectionalLightFromSHOn;
-    half _AmbientSHIntensity;
-    half _DirectionalSHIntensity;
+    // float _ReceiveAdditionalLightsOn; // to keywords _ADDITIONAL_LIGHTS
+    // float _ReceiveAdditionalLightsShadowOn; // to keywords _ADDITIONAL_LIGHT_SHADOWS
+    // float _AdditionalLightSoftShadowOn; //to keyword _ADDITIONAL_LIGHT_SHADOWS_SOFT
+    float _DirectionalLightFromSHOn;
+    float _AmbientSHIntensity;
+    float _DirectionalSHIntensity;
 // ==================================================
-    // half _ScatteringLUTOn; // to keyword _PRESSS
-    half _ScatteringIntensity;
-    half _CurvatureScale;
-    half _PreScatterMaskFrom;
-    half _PreScatterMaskUsage;
+    // float _ScatteringLUTOn; // to keyword _PRESSS
+    float _ScatteringIntensity;
+    float _CurvatureScale;
+    float _PreScatterMaskFrom;
+    float _PreScatterMaskUsage;
 
-    half _LightColorNoAtten;
-    half _AdditionalLightCalcScatter;
-    // half _DiffuseProfileOn;// to keyword _SSSS
-    half _BlurSize;
-    half _DiffuseProfileBaseScale;
-    half _SSSSMaskFrom;
-    half _SSSSMaskUsage;
+    float _LightColorNoAtten;
+    float _AdditionalLightCalcScatter;
+    // float _DiffuseProfileOn;// to keyword _SSSS
+    float _BlurSize;
+    float _DiffuseProfileBaseScale;
+    float _SSSSMaskFrom;
+    float _SSSSMaskUsage;
 // ================================================== detail maps
     // main detail normalMap
-    half4 _Detail_NormalMap_ST;
-    half _Detail_NormalMapScale;
+    float4 _Detail_NormalMap_ST;
+    float _Detail_NormalMapScale;
     DECLARE_DETAIL();
     DECLARE_DETAIL(1);
     DECLARE_DETAIL(2);
     // DECLARE_DETAIL(3);
     // DECLARE_DETAIL(4);
 // ================================================== ibl
-    half _CustomIBLOn;
-    half _EnvIntensity;
-    half3 _ReflectionOffsetDir;
+    float _CustomIBLOn;
+    float _EnvIntensity;
+    float3 _ReflectionOffsetDir;
 
-    half _EmissionOn;
-    half4 _EmissionColor;
-    half _Emission;
-    half _IndirectSpecularIntensity;
-    half _BackFaceGIDiffuse;
+    float _EmissionOn;
+    float4 _EmissionColor;
+    float _Emission;
+    float _IndirectSpecularIntensity;
+    float _BackFaceGIDiffuse;
 
-    // half _AlphaTestOn; // to keyword _ALPHA_TEST
-    half _AlphaPreMultiply;
+    // float _AlphaTestOn; // to keyword _ALPHA_TEST
+    float _AlphaPreMultiply;
 
 // ================================================== custom light
-    half _CustomLightOn;
-    half3 _LightDir;
-    half3 _LightColor;
-    half _MaxSpecularIntensity;
+    float _CustomLightOn;
+    float3 _LightDir;
+    float3 _LightColor;
+    float _MaxSpecularIntensity;
 
-    // half _SSSOn; //to keyword _FAST_SSS
-    half3 _BackSSSColor,_FrontSSSColor;
-    half _FrontSSSIntensity,_BackSSSIntensity;
-    half _AdditionalLightCalcFastSSS;
+    // float _SSSOn; //to keyword _FAST_SSS
+    float3 _BackSSSColor,_FrontSSSColor;
+    float _FrontSSSIntensity,_BackSSSIntensity;
+    float _AdditionalLightCalcFastSSS;
 // ================================================== parallel
-    // half _ParallaxOn;//to keyword 
-    half _HeightScale;
+    // float _ParallaxOn;//to keyword 
+    float _HeightScale;
 
 // ================================================== custom shadow caster params
-    half4 _CustomShadowBias; // x: depth bias, y: normal bias
+    float4 _CustomShadowBias; // x: depth bias, y: normal bias
 // ================================================== Thin Film
-    half _TFScale,_TFOffset,_TFSaturate,_TFBrightness;
-    half _TFMaskFrom,_TFMaskUsage,_TFSpecMask;
-    half _FogOn;
+    float _TFScale,_TFOffset,_TFSaturate,_TFBrightness;
+    float _TFMaskFrom,_TFMaskUsage,_TFSpecMask;
+    float _FogOn;
 // ================================================== debug data
-    half _ShowGIDiff,_ShowGISpec,_ShowNormal,_ShowOcclusion;
-    half _ShowMetallic,_ShowSmoothness,_ShowSpecular,_ShowDiffuse;
-    // half _EnableDebug; // keyword _POWER_DEBUG
+    float _ShowGIDiff,_ShowGISpec,_ShowNormal,_ShowOcclusion;
+    float _ShowMetallic,_ShowSmoothness,_ShowSpecular,_ShowDiffuse;
+    // float _EnableDebug; // keyword _POWER_DEBUG
 
 CBUFFER_END
 
