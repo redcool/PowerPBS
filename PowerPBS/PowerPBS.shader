@@ -52,6 +52,7 @@ Shader "Character/PowerPBS"
         [GroupHeader(Custom Specular)]
         [GroupToggle(_,_SPECULAR_MAP_FLOW)]_CustomSpecularMapOn("_CustomSpecularMapOn",int) = 0
         _CustomSpecularMap("_CustomSpecularMap(a:Mask(0:DielectricSpec,1:CustomSpecColor))",2d) ="white"{}
+        _SpecMapScale("_SpecMapScale",range(0,1)) = 1
         _CustomSpecularIntensity("_CustomSpecularIntensity",float) = 1
         
         [GroupHeader(Clear Coat)]

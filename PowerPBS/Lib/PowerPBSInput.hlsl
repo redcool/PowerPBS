@@ -75,6 +75,7 @@ CBUFFER_START(UnityPerMaterial)
     float _CoatIndirectSpecularIntensity;
 
     // float _CustomSpecularMapOn; // to keyword _SPECULAR_MAP_FLOW
+    float _SpecMapScale;
     float4 _CustomSpecularMap_ST;
     float _CustomSpecularIntensity;
 
