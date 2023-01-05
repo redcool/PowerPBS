@@ -40,7 +40,7 @@ SHL2 GetOriginalSHFromUnityLightProbe()
 
     return sh;
 }
-#define Luminance(c) dot(float3(.2,.7,.02),c)
+#define LUMINANCE(c) dot(float3(.2,.7,.02),c)
 float3 GetLightDirFromSH(SHL2 sh)
 {
     // float3 lightDirR = normalize(float3(-sh.data[3].r, -sh.data[1].r, sh.data[2].r));
@@ -49,9 +49,9 @@ float3 GetLightDirFromSH(SHL2 sh)
     // lightDir = normalize( 0.3*lightDirR + 0.59*lightDirG + 0.11*lightDirB );
     //lightDir = normalize( lightDirR );
 
-    float luminSH1 = Luminance(float3(sh.data[1].r, sh.data[1].g, sh.data[1].b));
-    float luminSH2 = Luminance(float3(sh.data[2].r, sh.data[2].g, sh.data[2].b));
-    float luminSH3 = Luminance(float3(sh.data[3].r, sh.data[3].g, sh.data[3].b));
+    float luminSH1 = LUMINANCE(float3(sh.data[1].r, sh.data[1].g, sh.data[1].b));
+    float luminSH2 = LUMINANCE(float3(sh.data[2].r, sh.data[2].g, sh.data[2].b));
+    float luminSH3 = LUMINANCE(float3(sh.data[3].r, sh.data[3].g, sh.data[3].b));
 
     return normalize(float3(-luminSH3, -luminSH1, luminSH2));
 }
