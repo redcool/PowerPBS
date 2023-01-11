@@ -39,7 +39,7 @@ v2f vert(appdata input){
     #if defined(SHADOW_PASS)
         output.pos = GetShadowPositionHClip(input);
     #else
-        output.pos = mul(unity_ObjectToWorld,input.vertex);
+        output.pos = mul(UNITY_MATRIX_MVP,input.vertex);
     #endif
     output.uv = TRANSFORM_TEX(input.texcoord,_MainTex);
     return output;

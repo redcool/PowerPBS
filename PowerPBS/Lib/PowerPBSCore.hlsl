@@ -441,7 +441,7 @@ float4 CalcPBS(float3 diffColor,float3 specColor,Light mainLight,UnityIndirect g
 
     #if defined(_CLEARCOAT)
     // if(_ClearCoatOn){
-        directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,data.fresnelTerm ,nl,nh,lh).xyzx;
+        directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,data.fresnelTerm ,nl,nh,lh);
     // }
     #endif
     // apply main light atten 

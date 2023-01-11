@@ -74,8 +74,6 @@ v2f vert (appdata v)
 
 float4 frag (v2f i) : SV_Target
 {
-
-
     // heightClothSSSMask
     float4 heightClothSSSMask = SAMPLE_TEXTURE2D(_HeightClothSSSMask,sampler_linear_repeat,i.uv.zw);
     float height = heightClothSSSMask.x;
