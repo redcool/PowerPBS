@@ -122,7 +122,7 @@ float4 frag (v2f i) : SV_Target
     // if(_ApplyShadowOn)
     {
         i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz); // in vert, has bug
-        float atten = CalcShadow(i._ShadowCoord,worldData.pos);
+        float atten = CalcShadow(i._ShadowCoord,worldData.pos,_MainLightShadowSoftScale);
         light.shadowAttenuation = atten;
     }
     #endif
