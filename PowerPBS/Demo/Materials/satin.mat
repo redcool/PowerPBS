@@ -12,6 +12,7 @@ Material:
   m_ValidKeywords:
   - _ADDITIONAL_LIGHTS
   - _PBRMODE_ANISO
+  - _RECEIVE_SHADOWS_ON
   m_InvalidKeywords:
   - _APPLYSHADOWON_ON
   - _DIFFUSEPROFILEMASKUSERMAINTEXA_ON
@@ -152,6 +153,7 @@ Material:
     - _BackFaceGIDiffuse: 0
     - _BackSSSIntensity: 1
     - _Blend: 0
+    - _BlendVertexNormalOn: 0
     - _BlurSize: 1
     - _BumpScale: 1
     - _ClearCoatMask: 0
@@ -250,6 +252,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecIntensity1: 10
     - _SpecIntensity2: 10
+    - _SpecMapScale: 1
     - _SpecPower1: 1
     - _SpecPower2: 1
     - _SpecularHighlights: 1
@@ -268,6 +271,7 @@ Material:
     - _ThinFilmOn: 0
     - _VertexColorRAttenOn: 1
     - _VertexScale: 0
+    - _VertexScaleOn: 0
     - _WorkflowMode: 1
     - _ZTestMode: 4
     - _ZWrite: 1

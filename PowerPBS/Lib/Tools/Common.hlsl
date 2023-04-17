@@ -14,7 +14,7 @@
 #define kDielectricSpec unity_ColorSpaceDielectricSpec
 
 //---------- custom symbols
-#define if UNITY_BRANCH if
+#define branch_if UNITY_BRANCH if
 
 // #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
 #include "../../PowerShaderLib/Lib/UnityLib.hlsl"

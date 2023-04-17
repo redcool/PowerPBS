@@ -57,7 +57,7 @@ v2f vert (appdata v)
     o.tSpace2 = float4(t.z,b.z,n.z,worldPos.z);
 
     #if defined(_PARALLAX_ON)
-    // if(_ParallaxOn)
+    //branch_if(_ParallaxOn)
     {
         float3 viewWorldSpace = UnityWorldSpaceViewDir(worldPos);
         float3x3 tSpace = float3x3(o.tSpace0.xyz,o.tSpace1.xyz,o.tSpace2.xyz);
@@ -83,7 +83,7 @@ float4 frag (v2f i) : SV_Target
 
     float2 uv = i.uv.xy;
     #if defined(_PARALLAX_ON)
-    // if(_ParallaxOn)
+    //branch_if(_ParallaxOn)
     {
         uv += ParallaxMapOffset(_HeightScale,i.viewTangentSpace,height);
     }
@@ -107,7 +107,7 @@ float4 frag (v2f i) : SV_Target
     float alpha = _AlphaFrom == ALPHA_FROM_MAIN_TEX ? mainTex.a : pbrMask.a * _Color.a;
 
     #if defined(_ALPHA_TEST)
-    // if(_AlphaTestOn)
+    //branch_if(_AlphaTestOn)
         clip(alpha - _Cutoff);
     #endif
 
@@ -119,7 +119,7 @@ float4 frag (v2f i) : SV_Target
     float3 lightColorNoAtten = light.color;
 
     #if defined(_RECEIVE_SHADOWS_ON)
-    // if(_ApplyShadowOn)
+    //branch_if(_ApplyShadowOn)
     {
         i._ShadowCoord = TransformWorldToShadowCoord(worldData.pos.xyz); // in vert, has bug
         float atten = CalcShadow(i._ShadowCoord,worldData.pos,_MainLightShadowSoftScale);
@@ -155,7 +155,7 @@ float4 frag (v2f i) : SV_Target
 
     //for preintegrated lut
     #if defined(_PRESSS)
-    // if(_ScatteringLUTOn)
+    //branch_if(_ScatteringLUTOn)
     {
         float3 lightColor = _LightColorNoAtten ? lightColorNoAtten : light.color;
         float3 scatteredColor = PreScattering(worldData.vertexNormal,light.direction,lightColor,pbsData.nl,mainTex,worldData.pos,_CurvatureScale,_ScatteringIntensity,pbsData.maskData_None_mainTexA_pbrMaskA);
@@ -164,7 +164,7 @@ float4 frag (v2f i) : SV_Target
     #endif
     
     #if defined(_SSSS)
-    // if(_DiffuseProfileOn)
+    //branch_if(_DiffuseProfileOn)
     {
         float2 screenUV = i.pos.xy / _ScreenParams.xy;
         float profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
@@ -181,14 +181,14 @@ float4 frag (v2f i) : SV_Target
     #endif
 
     #if defined(_FAST_SSS)
-    // if(_SSSOn)
+    //branch_if(_SSSOn)
     {
         col.rgb += CalcSSS(light.direction,worldData.view,heightClothSSSMask.zw);
     }
     #endif
 
     //for emission
-    if(_EmissionOn){
+   branch_if(_EmissionOn){
         col.rgb += CalcEmission(surfaceData.diffColor,uv);
     }
 

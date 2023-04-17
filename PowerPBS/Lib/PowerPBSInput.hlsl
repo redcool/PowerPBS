@@ -100,7 +100,7 @@ CBUFFER_START(UnityPerMaterial)
     float _AnisoMaskFrom;
     float _AnisoIntensityUseSmoothness;
     float _AnisoMaskUsage;
-    float _AnisoMaskBlendStandardAniso;
+    // float _AnisoMaskBlendStandardAniso;
 // ================================================== cloth spec
     float4 _ClothSheenColor;
     float2 _ClothSheenRange;
@@ -141,7 +141,7 @@ CBUFFER_START(UnityPerMaterial)
     float _Detail_NormalMapScale;
     DECLARE_DETAIL();
     DECLARE_DETAIL(1);
-    DECLARE_DETAIL(2);
+    // DECLARE_DETAIL(2);
     // DECLARE_DETAIL(3);
     // DECLARE_DETAIL(4);
 // ================================================== ibl

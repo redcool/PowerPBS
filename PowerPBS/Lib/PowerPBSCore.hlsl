@@ -27,7 +27,7 @@ float3 CalcSSS(float3 l,float3 v,float2 fastSSSMask){
 
 float3 GetWorldViewDir(float3 worldPos){
     float3 dir = 0;
-    if(unity_OrthoParams.w != 0){ // ortho
+   branch_if(unity_OrthoParams.w != 0){ // ortho
         // dir = float3(UNITY_MATRIX_MV[0].z,UNITY_MATRIX_MV[1].z,UNITY_MATRIX_MV[2].z);
         dir = UNITY_MATRIX_V[2].xyz;
     }else
@@ -52,7 +52,7 @@ float3 GetIndirectSpecular(float3 reflectDir,float rough){
     float mip = (1.7-0.7*rough)*rough*6;
 
     float4 encodeIrradiance = 0;
-    if(_CustomIBLOn){
+   branch_if(_CustomIBLOn){
         encodeIrradiance = SAMPLE_TEXTURECUBE_LOD(_EnvCube,sampler_linear_repeat,reflectDir,mip);
     }else{
         encodeIrradiance = SAMPLE_TEXTURECUBE_LOD(unity_SpecCube0,sampler_linear_repeat, reflectDir, mip);
@@ -64,7 +64,7 @@ float3 GetIndirectSpecular(float3 reflectDir,float rough){
 
 float3 AlphaPreMultiply (float3 diffColor, float alpha, float oneMinusReflectivity, out float outModifiedAlpha)
 {
-    if(_AlphaPreMultiply){
+   branch_if(_AlphaPreMultiply){
         diffColor *= alpha;
 
         #if (SHADER_TARGET < 30)
@@ -81,7 +81,7 @@ float3 AlphaPreMultiply (float3 diffColor, float alpha, float oneMinusReflectivi
 float3 CalcNormal(float2 uv, float detailMask ){
     float3 tn = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalMap,sampler_NormalMap,uv),_NormalMapScale);
 	
-	// if (_Detail_MapOn) {
+	//branch_if (_Detail_MapOn) {
     #if defined(_DETAIL_MAP)
         float2 dnUV = uv * _Detail_NormalMap_ST.xy + _Detail_NormalMap_ST.zw;
 		float3 dn = UnpackNormalScale(SAMPLE_TEXTURE2D(_Detail_NormalMap,sampler_linear_repeat, dnUV), _Detail_NormalMapScale);
@@ -94,12 +94,12 @@ float3 CalcNormal(float2 uv, float detailMask ){
 
 float CalcDetailAlbedo(inout float4 mainColor, TEXTURE2D(texObj),float2 uv, float detailIntensity,bool isOn,int detailMapMode){
     float detailMask = 0;
-    if(isOn){
+   branch_if(isOn){
         float4 tex = SAMPLE_TEXTURE2D(texObj,sampler_linear_repeat,uv);
 		float3 detailAlbedo = tex.xyz;
         detailMask = tex.w;
         float mask = detailMask * detailIntensity;
-        if(detailMapMode == DETAIL_MAP_MODE_MULTIPLY){
+       branch_if(detailMapMode == DETAIL_MAP_MODE_MULTIPLY){
             mainColor.rgb *= lerp(1,detailAlbedo * unity_ColorSpaceDouble.xyz,mask); //unity_ColorSpaceDouble linear pow(2,2.2)
         }else if(detailMapMode == DETAIL_MAP_MODE_REPLACE){
             mainColor.rgb = lerp(mainColor.xyz,detailAlbedo,mask);
@@ -223,7 +223,7 @@ float3 CalcDirectSpecColor(inout PBSData data,float nl,float nv,float nh,float l
         // specTerm = D_WardAniso(nl,nv,nh,th,bh,anisoRough,1-anisoRough);
         directSpecColor = specTerm * _AnisoIntensity * _AnisoColor.xyz;
         
-        if(_AnisoLayer2On){
+       branch_if(_AnisoLayer2On){
             anisoRough = saturate(_Layer2AnisoRough);
             specTerm = D_GGXAniso(th,bh,nh,anisoRough,(1-anisoRough));
             // D = DV_SmithJointGGXAniso(th,bh,nh,tv,bv,nv,tl,bl,nl,anisoRough,1-anisoRough) ;
@@ -236,7 +236,7 @@ float3 CalcDirectSpecColor(inout PBSData data,float nl,float nv,float nh,float l
         directSpecColor *= lerp(1,1 - data.roughness,_AnisoIntensityUseSmoothness);
         directSpecColor *= specColor;
 
-        if(_AnisoMaskUsage == ANISO_MASK_FOR_BLEND_STANDARD){
+       branch_if(_AnisoMaskUsage == ANISO_MASK_FOR_BLEND_STANDARD){
             float3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
             directSpecColor = lerp(directSpecColor,standardColor,anisoMask);
         }
@@ -251,7 +251,7 @@ float3 CalcDirectSpecColor(inout PBSData data,float nl,float nv,float nh,float l
         // mask control intensity
         directSpecColor *= lerp(1,clothMask,_ClothMaskUsage == CLOTH_MASK_FOR_INTENSITY);
         //mask control blend
-        if(_ClothMaskUsage == CLOTH_MASK_FOR_BLEND_STANDARD){
+       branch_if(_ClothMaskUsage == CLOTH_MASK_FOR_BLEND_STANDARD){
             float3 standardColor = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * specColor;
             directSpecColor = lerp(directSpecColor,standardColor,clothMask);
         }
@@ -287,7 +287,7 @@ float3 CalcDirect(inout PBSData data,float3 diffColor,float3 specColor,float nl,
     // float3 diffuseTerm = DisneyDiffuse(nl,nv,lh,data.roughness2) * diffColor;
     float3 directDiffuseColor = diffColor;
     float3 directSpecColor = 0;
-    // if(!_SpecularOff)
+    //branch_if(!_SpecularOff)
     #if !defined(_SPECULAR_OFF)
     {
         directSpecColor = CalcDirectSpecColor(data,nl,nv,nh,lh,specColor);
@@ -298,7 +298,7 @@ float3 CalcDirect(inout PBSData data,float3 diffColor,float3 specColor,float nl,
 
 float3 CalcDirectApplyClearCoat(float3 directColor,ClearCoatData data,float fresnelTerm,float nl,float nh,float lh){
     float3 specColor = 0;
-    // if(!_SpecularOff)
+    //branch_if(!_SpecularOff)
     #if !defined(_SPECULAR_OFF)
     {
         float3 coatSpec = MinimalistCookTorrance(nh,lh,data.roughness,data.roughness2) * data.specColor;
@@ -334,7 +334,7 @@ float3 CalcDirectAdditionalLight(PBSData data,float3 diffColor,float3 specColor,
     float lightAtten = light.distanceAttenuation * light.shadowAttenuation *nl ;
     // float3 directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh,th,bh);
     float3 directColor = diffColor;
-    // if(!_SpecularOff)
+    //branch_if(!_SpecularOff)
     #if !defined(_SPECULAR_OFF)
     {
         directColor += CalcSpecularTermOnlyStandard(data,nh,specColor);
@@ -352,18 +352,18 @@ float3 CalcPBSAdditionalLight(inout PBSData data,float3 diffColor,float3 specCol
         Light light1 = GetAdditionalLight(lightId,data.worldPos);
         // atten += light1.shadowAttenuation;
         
-        if(light1.distanceAttenuation)
+       branch_if(light1.distanceAttenuation)
             color += CalcDirectAdditionalLight(data/**/,diffColor,specColor,light1);
 
         #if defined(_PRESSS)
-        if(_AdditionalLightCalcScatter){
+       branch_if(_AdditionalLightCalcScatter){
             float3 scatteredColor = PreScattering(data.normal,light1.direction,light1.color,data.nl,data.mainTex,data.worldPos,_CurvatureScale,_ScatteringIntensity,data.maskData_None_mainTexA_pbrMaskA);
             color.rgb += scatteredColor ;
         }
         #endif
         
         #if defined(_FAST_SSS)
-        if(_AdditionalLightCalcFastSSS){
+       branch_if(_AdditionalLightCalcFastSSS){
             color.rgb += CalcSSS(light1.direction,data.viewDir,data.heightClothFastSSSMask.zw);
         }
         #endif
@@ -372,7 +372,7 @@ float3 CalcPBSAdditionalLight(inout PBSData data,float3 diffColor,float3 specCol
 }
 
 float3 CalcIndirectApplySHDirLight(float3 indirectColor,PBSData data,float3 diffColor,float3 specColor){
-    if (HasLightProbe() > 0)
+   branch_if (HasLightProbe() > 0)
     {
         Light light = GetDirLightFromUnityLightProbe();
         float3 lightColor = CalcDirectAdditionalLight(data, diffColor, specColor, light);
@@ -398,7 +398,7 @@ float4 CalcPBS(float3 diffColor,float3 specColor,Light mainLight,UnityIndirect g
     diffColor *= SheenLayer(nh,wnv,_SheenLayerRange.xy,_SheenLayerRange.z,_SheenLayerRange.w);
     // diffColor = diffColor/(1+diffColor);
     // diffColor = GTTone(diffColor);
-    if(_SheenLayerApplyTone){
+   branch_if(_SheenLayerApplyTone){
         // diffColor += lerp(0,float3(.1,0,0),1-wnv);
         diffColor = ACESFilm(diffColor);
     }
@@ -418,14 +418,14 @@ float4 CalcPBS(float3 diffColor,float3 specColor,Light mainLight,UnityIndirect g
     // indirect
     float3 color = CalcIndirect(data,gi.diffuse,gi.specular,diffColor,specColor,data.fresnelTerm );
     #if defined(_CLEARCOAT)
-    // if(_ClearCoatOn){
+    //branch_if(_ClearCoatOn){
         color = CalcIndirectApplyClearCoat(color,coatData,data.fresnelTerm );
     // }
     #endif
 
     // apply sh dir light
     #if defined(_DIRECTIONAL_LIGHT_FROM_SH)
-    // if(_DirectionalLightFromSHOn){
+    //branch_if(_DirectionalLightFromSHOn){
         // color = CalcIndirectApplySHDirLight(color,data,diffColor,specColor);
     // }
     #endif
@@ -436,11 +436,11 @@ float4 CalcPBS(float3 diffColor,float3 specColor,Light mainLight,UnityIndirect g
     // direct
     float3 directColor = 0;
     
-    if(mainLight.distanceAttenuation)
+   branch_if(mainLight.distanceAttenuation)
         directColor = CalcDirect(data/**/,diffColor,specColor,nl,nv,nh,lh);
 
     #if defined(_CLEARCOAT)
-    // if(_ClearCoatOn){
+    //branch_if(_ClearCoatOn){
         directColor = CalcDirectApplyClearCoat(directColor,coatData/**/,data.fresnelTerm ,nl,nh,lh);
     // }
     #endif
@@ -473,7 +473,7 @@ float ReflectivitySpecular(float3 specColor){
 
 void InitSurfaceData(float2 uv,float3 albedo,float alpha,float metallic,out SurfaceData data){
     // --- specular map flow
-    // if(_CustomSpecularMapOn){
+    //branch_if(_CustomSpecularMapOn){
     #if defined(_SPECULAR_MAP_FLOW)
         float2 specUV = TRANSFORM_TEX(uv,_CustomSpecularMap);
         float4 customSpecColor = SAMPLE_TEXTURE2D(_CustomSpecularMap,sampler_linear_repeat,specUV);

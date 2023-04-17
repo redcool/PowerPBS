@@ -254,6 +254,7 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecIntensity1: 10
     - _SpecIntensity2: 10
+    - _SpecMapScale: 1
     - _SpecPower1: 1
     - _SpecPower2: 1
     - _SpecularHighlights: 1
