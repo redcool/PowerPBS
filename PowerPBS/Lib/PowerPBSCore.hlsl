@@ -2,8 +2,7 @@
 #define POWER_PBS_CORE_HLSL
 #include "PowerPBSData.hlsl"
 
-#include "../../PowerShaderLib/UrpLib/URP_GI.hlsl"
-#include "../../PowerShaderLib/UrpLib/URP_Lighting.hlsl"
+#include "../../PowerShaderLib/UrpLib/Lighting.hlsl"
 #include "Tools/ExtractLightFromSH.hlsl"
 #include "../../PowerShaderLib/Lib/BSDF.hlsl"
 #include "../../PowerShaderLib/Lib/Colors.hlsl"
