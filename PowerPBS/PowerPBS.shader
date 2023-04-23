@@ -271,9 +271,13 @@ Shader "Character/PowerPBS"
         [GroupToggle]_ShowMetallic("_ShowMetallic",float) = 0
         [GroupToggle]_ShowSmoothness("_ShowSmoothness",float) = 0
         [GroupToggle]_ShowOcclusion("_ShowOcclusion",float) = 0
-        // [Header(Stencil)]
-        // _StencilRef("_StencilRef",int) = 2
-        // [UnityEngine.Rendering.CompareFunction]_StencilComp("_StencilComp",float) = 0
+// ================================================== stencil settings
+        [Group(Stencil)]
+        [GroupEnum(Stencil,UnityEngine.Rendering.CompareFunction)]_StencilComp ("Stencil Comparison", Float) = 0
+        [GroupItem(Stencil)]_Stencil ("Stencil ID", int) = 0
+        [GroupEnum(Stencil,UnityEngine.Rendering.StencilOp)]_StencilOp ("Stencil Operation", Float) = 0
+        _StencilWriteMask ("Stencil Write Mask", Float) = 255
+        _StencilReadMask ("Stencil Read Mask", Float) = 255
     }
 
     SubShader
@@ -284,11 +288,14 @@ Shader "Character/PowerPBS"
         ZWrite [_ZWriteOn]
         ZTest[_ZTestMode]
         Cull[_CullMode]
-
-        // stencil {
-        //     ref [_StencilRef]
-        //     comp [_StencilComp]
-        // }
+        Stencil
+        {
+            Ref [_Stencil]
+            Comp [_StencilComp]
+            Pass [_StencilOp]
+            ReadMask [_StencilReadMask]
+            WriteMask [_StencilWriteMask]
+        }
 
         Pass
         {
