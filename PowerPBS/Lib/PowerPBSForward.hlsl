@@ -166,7 +166,7 @@ float4 frag (v2f i) : SV_Target
     #if defined(_SSSS)
     //branch_if(_DiffuseProfileOn)
     {
-        float2 screenUV = i.pos.xy / _ScreenParams.xy;
+        float2 screenUV = i.pos.xy / _ScaledScreenParams.xy;
         float profileMask = GetMaskForIntensity(pbsData.maskData_None_mainTexA_pbrMaskA,_SSSSMaskFrom,_SSSSMaskUsage,SSSS_MASK_FOR_INTENSITY);
 
         float3 sss = col.xyz;
