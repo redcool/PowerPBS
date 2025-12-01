@@ -380,6 +380,6 @@ Shader "Character/PowerPBS"
 
 
     }
-    CustomEditor "PowerUtilities.PowerPBSInspector"
+    CustomEditor "PowerUtilities.PowerShaderInspector"
 //     FallBack "Hidden/Universal Render Pipeline/FallbackError"
 }
